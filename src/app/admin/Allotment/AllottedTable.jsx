@@ -31,9 +31,9 @@ const AllottedTable = ({ students, deptName }) => {
   });
 
   return (
-    <div className="backdrop-blur-sm bg-white/80 border border-gray-200 rounded-3xl shadow-xl p-6 transition-all duration-300">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-3">
-        {deptName} <span className="text-gray-500 text-lg font-medium">— Allotted Students</span>
+    <div className="backdrop-blur-sm bg-white/80 border border-gray-200 rounded-3xl shadow-xl p-4 sm:p-6 transition-all duration-300">
+      <h2 className="text-xl sm:text-3xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-3">
+        {deptName} <span className="text-gray-500 text-sm sm:text-lg font-medium">— Allotted Students</span>
       </h2>
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-700">

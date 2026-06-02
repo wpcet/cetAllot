@@ -158,12 +158,12 @@ export default function PartTimeBtech() {
       <AllottedTable students={allottedData['Electrical and Electronics Engineering']} deptName="Electrical & Electronics Engineering" />
       <AllottedTable students={allottedData['Mechanical Engineering']} deptName="Mechanical Engineering" />
       <AllottedTable students={allottedData['Waiting List']} deptName="Waiting List" /> 
-      <h2 className="text-3xl md:text-4xl font-bold text-center text-blue-700 uppercase tracking-wide border-b-4 border-blue-700 pb-2 mt-32">
-  Allotment Results: Non-LET Candidates
-  <p className="mt-4 text-sm md:text-base text-gray-700 text-center max-w-3xl mx-auto px-4">
-  <strong>Note:</strong> Allotment for non-LET candidates follows the official reservation policy. Students belonging to reservation categories are considered first in their respective quotas. General category candidates will be considered only after reserved seats are filled, and purely based on availability. Inclusion in this list does not guarantee admission.
-</p>
-</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-center text-primary uppercase tracking-wide border-b-4 border-primary pb-2 mt-32">
+        Allotment Results: Non-LET Candidates
+      </h2>
+      <p className="mt-4 text-sm md:text-base text-muted-foreground text-center max-w-3xl mx-auto px-4 leading-relaxed">
+        <strong>Note:</strong> Allotment for non-LET candidates follows the official reservation policy. Students belonging to reservation categories are considered first in their respective quotas. General category candidates will be considered only after reserved seats are filled, and purely based on availability. Inclusion in this list does not guarantee admission.
+      </p>
       <AllottedNoTable students={allottedData2['Civil Engineering']} deptName="Civil Engineering" />
       <AllottedNoTable students={allottedData2['Electrical and Electronics Engineering']} deptName="Electrical & Electronics Engineering" />
       <AllottedNoTable students={allottedData2['Mechanical Engineering']} deptName="Mechanical Engineering" />
@@ -188,7 +188,7 @@ export default function PartTimeBtech() {
       Program Highlights
     </h2>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
       {[
         {
           title: "Working Professionals",
@@ -244,6 +244,13 @@ export default function PartTimeBtech() {
           whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: index * 0.15 }}
+          className={
+            item.title === "Eligibility"
+              ? "md:col-span-2 lg:col-span-6"
+              : item.title === "Specializations" || item.title === "Approval"
+              ? "md:col-span-1 lg:col-span-3"
+              : "md:col-span-1 lg:col-span-2"
+          }
         >
           <Card className="transition-all hover:shadow-md h-full">
             <CardHeader>
@@ -257,7 +264,7 @@ export default function PartTimeBtech() {
               <CardTitle>{item.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">{item.description}</p>
+              <div className="text-muted-foreground">{item.description}</div>
             </CardContent>
           </Card>
         </motion.div>

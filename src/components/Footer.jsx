@@ -80,15 +80,15 @@ export default function Footer() {
       </footer>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-          <div className="bg-white dark:bg-zinc-900 border border-muted p-5 rounded-lg w-[90%] max-w-sm shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-background border border-border/40 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative bg-gradient-to-br from-background to-muted/20">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+              className="absolute top-4 right-4 rounded-full p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
             >
               <X className="h-5 w-5" />
             </button>
-            <h2 className="text-lg font-semibold text-foreground mb-4">Developer Contacts</h2>
+            <h2 className="text-xl font-bold text-foreground mb-5 tracking-tight">Developer Contacts</h2>
             <div className="space-y-4 text-sm">
               {developers.map((dev, index) => (
                 <div key={index} className="border-t pt-3 first:border-none first:pt-0">

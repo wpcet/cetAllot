@@ -60,13 +60,22 @@ export default function Navbar() {
     document.body.classList.add("hide-scrollbar");
   }, []);
 
-  // Hide navbar on scroll down
+  // Hide navbar on scroll down, show on scroll up
   useEffect(() => {
     const handleScroll = () => {
+      const currentScrollY = window.scrollY;
       if (!ticking.current) {
         window.requestAnimationFrame(() => {
-          setIsAtTop(window.scrollY === 0);
-          lastScrollY.current = window.scrollY;
+          if (currentScrollY <= 10) {
+            setIsAtTop(true);
+          } else {
+            if (currentScrollY < lastScrollY.current) {
+              setIsAtTop(true); // scrolling up
+            } else if (currentScrollY > 80) {
+              setIsAtTop(false); // scrolling down
+            }
+          }
+          lastScrollY.current = currentScrollY;
           ticking.current = false;
         });
         ticking.current = true;
@@ -113,8 +122,8 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`bg-background sticky top-0 z-40 transition-transform duration-300 ${
-          isAtTop ? "translate-y-0" : "-translate-y-full"
+        className={`sticky top-0 z-40 w-full transition-all duration-300 border-b border-border/40 bg-background/80 backdrop-blur-md ${
+          isAtTop ? "translate-y-0 shadow-none" : "translate-y-0 shadow-sm border-b"
         } ${mobileMenuOpen ? "hidden lg:block" : ""}`}
       >
         <nav
@@ -193,33 +202,33 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-background hide-scrollbar">
-          <div className="flex flex-col h-full">
+        <div className="lg:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-lg hide-scrollbar">
+          <div className="flex flex-col h-full bg-gradient-to-b from-background via-background/90 to-background/80">
             {/* Mobile Header */}
-            <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center justify-between p-4 border-b border-border/40">
               <Link to="/" className="-m-1.5 p-1.5 flex items-center gap-2 group">
-  <div className="relative flex items-center justify-center h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 transition-all group-hover:scale-105">
-    <img
-      src="/logo.png"
-      alt="EduAllot Logo"
-      className="h-6 w-6 object-contain"
-    />
-  </div>
-  <div className="flex flex-col leading-tight">
-    <span className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-      Edu<span className="text-primary">Allot</span>
-    </span>
-    <span className="text-xs text-muted-foreground tracking-wide">
-      B.Tech Admission Portal
-    </span>
-  </div>
-</Link>
+                <div className="relative flex items-center justify-center h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 transition-all group-hover:scale-105">
+                  <img
+                    src="/logo.png"
+                    alt="EduAllot Logo"
+                    className="h-6 w-6 object-contain"
+                  />
+                </div>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                    Edu<span className="text-primary">Allot</span>
+                  </span>
+                  <span className="text-xs text-muted-foreground tracking-wide">
+                    B.Tech Admission Portal
+                  </span>
+                </div>
+              </Link>
               <Button
                 variant="ghost"
-                className="-m-2.5 rounded-2.5"
+                className="rounded-full p-2.5 hover:bg-muted/80"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               </Button>
             </div>
 
