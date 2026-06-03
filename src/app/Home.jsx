@@ -11,6 +11,7 @@ import {
   CheckCircle,
   GraduationCap,
   Users,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -20,19 +21,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 
 const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
 };
 
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.15, ease: [0.25, 0.1, 0.25, 1] },
   },
 };
 
@@ -42,21 +42,19 @@ const AnimatedCard = ({ children, delay = 0 }) => (
     animate="visible"
     variants={fadeIn}
     transition={{ delay }}
-    whileHover={{ y: -5, scale: 1.02 }}
+    whileHover={{ y: -6, scale: 1.01 }}
     className="h-full"
   >
     {children}
   </motion.div>
 );
 
-const SectionWrapper = ({ children, id }) => {
+const SectionWrapper = ({ children, id, className = "" }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: true });
 
   useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    }
+    if (inView) controls.start("visible");
   }, [controls, inView]);
 
   return (
@@ -66,7 +64,7 @@ const SectionWrapper = ({ children, id }) => {
       animate={controls}
       variants={staggerContainer}
       id={id}
-      className="overflow-hidden"
+      className={`overflow-hidden ${className}`}
     >
       {children}
     </motion.section>
@@ -79,332 +77,319 @@ export default function Home() {
 
   useEffect(() => {
     if (heroInView) {
-      heroControls.start({
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.8 },
-      });
+      heroControls.start({ opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] } });
     }
   }, [heroControls, heroInView]);
 
-  // Display Notices for Notice section
-const [notices, setNotices] = useState([]);
+  const [notices, setNotices] = useState([]);
+  const [noticesLoading, setNoticesLoading] = useState(true);
 
-useEffect(() => {
-  const fetchNotices = async () => {
-    try {
-      const snapshot = await getDocs(collection(db, "notices"));
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setNotices(data);
-    } catch (error) {
-      console.error("Error fetching notices:", error);
-    }
-  };
-
-  fetchNotices();
-}, []);
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        setNoticesLoading(true);
+        const snapshot = await getDocs(collection(db, "notices"));
+        const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setNotices(data);
+      } catch (error) {
+        console.error("Error fetching notices:", error);
+      } finally {
+        setNoticesLoading(false);
+      }
+    };
+    fetchNotices();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary/10 to-primary/5 py-20 md:py-32 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary/[0.07] via-primary/[0.03] to-background py-24 md:py-36 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 to-transparent opacity-20"></div>
-          <div className="absolute inset-0 bg-grid-primary/5 [mask-image:radial-gradient(ellipse_at_center,black,transparent)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-30" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent" />
+          {/* Grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
               ref={heroRef}
               initial={{ opacity: 0, y: 40 }}
               animate={heroControls}
-              className="space-y-6"
+              className="space-y-8 order-2 lg:order-1"
             >
-              <motion.h1
-                className="text-4xl md:text-5xl font-bold tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                Admission to BTech Working Professionals program{" "}<br />
-                <span className="text-primary text-3xl md:text-4xl">
-                  College of Engineering Trivandrum
-                </span>
-              </motion.h1>
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.5 }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"
+                >
+                  <Calendar className="h-4 w-4" />
+                  Admissions Open for 2025-26
+                </motion.div>
 
-              <motion.p
-                className="text-xl text-muted-foreground"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                Join our community of engineers and innovators.
-              </motion.p>
+                <motion.h1
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance leading-[1.1]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                >
+                  BTech Working Professionals Program{" "}
+                  <span className="text-primary">CET Trivandrum</span>
+                </motion.h1>
+
+                <motion.p
+                  className="text-lg md:text-xl text-muted-foreground text-pretty max-w-xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35, duration: 0.6 }}
+                >
+                  Advance your engineering career with our industry-aligned evening program designed for working professionals.
+                </motion.p>
+              </div>
 
               <motion.div
                 className="flex flex-col sm:flex-row gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
               >
-                {/* <Link to="/apply">
-                  <Button
-                    size="lg"
-                    className="w-full md:w-auto hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  >
+                <Link to="/apply">
+                  <Button size="lg" className="w-full sm:w-auto shadow-md hover:shadow-lg">
                     Apply Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link> */}
-                
+                </Link>
+                <Link to="/programs">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                    View Programs
+                  </Button>
+                </Link>
               </motion.div>
-            </motion.div> 
+            </motion.div>
 
             <motion.div
-              className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-xl"
+              className="relative h-[180px] sm:h-[260px] md:h-[350px] lg:h-[450px] rounded-2xl overflow-hidden shadow-2xl order-1 lg:order-2"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
+              transition={{ delay: 0.6, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
               whileHover={{ scale: 1.02 }}
             >
               <img
-                src="/cet0.jpg?height=400&width=600"
+                src="/cet0.jpg?height=450&width=600"
                 alt="CET Campus"
-                className="object-cover w-full h-full transition-all duration-500 hover:scale-105"
+                className="object-cover w-full h-full transition-all duration-700 hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             </motion.div>
           </div>
         </div>
       </section>
-      {/* notice section  */}
-<SectionWrapper>
-  <div className="py-16 bg-gray-50">
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <motion.div
-        className="text-center mb-14"
-        variants={fadeIn}
-        initial="hidden"
-        animate="visible"
-      >
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-2">
-          Latest Notices
-        </h2>
-        <p className="text-gray-500 max-w-xl mx-auto text-lg">
-          Stay updated with important announcements and updates.
-        </p>
-      </motion.div>
 
-      {/* Notices List */}
-      <motion.div
-        className="max-w-4xl mx-auto grid gap-6 sm:grid-cols-1 md:grid-cols-2"
-        variants={fadeIn}
-        initial="hidden"
-        animate="visible"
-        transition={{ delay: 0.2 }}
-      >
-        {notices.length === 0 ? (
-          <p className="text-center text-gray-400 col-span-full">
-            No notices at the moment.
-          </p>
-        ) : (
-          notices
-            .sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds)
-            .slice(0, 6)
-            .map((notice, index) => (
-              <motion.div
-                key={notice.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 * index }}
-                whileHover={{ scale: 1.03 }}
-                className="bg-white shadow-lg rounded-xl border border-gray-200 p-6 flex flex-col justify-between group cursor-pointer transition-transform"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <time
-                    className="text-sm font-semibold text-indigo-600"
-                    dateTime={new Date(
-                      notice.createdAt?.seconds * 1000
-                    ).toISOString()}
-                  >
-                    {new Date(notice.createdAt?.seconds * 1000).toLocaleDateString(
-                      "en-GB",
-                      { day: "2-digit", month: "short", year: "numeric" }
-                    )}
-                  </time>
+      {/* Notices Section */}
+      <SectionWrapper className="bg-muted/30">
+        <div className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div className="text-center mb-14" variants={fadeIn}>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+                <Bell className="h-4 w-4" />
+                Latest Updates
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Notices & Announcements</h2>
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                Stay informed with important updates regarding admissions, allotments, and schedules.
+              </p>
+            </motion.div>
 
-                  {notice.important && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-300 select-none">
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 8v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
-                        ></path>
-                      </svg>
-                      Important
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
-                  {notice.title}
-                </h3>
-
-                <p className="text-gray-600 whitespace-pre-line">
-                  {notice.message}
+            <motion.div
+              className="max-w-4xl mx-auto grid gap-5 sm:grid-cols-1 md:grid-cols-2"
+              variants={fadeIn}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.2 }}
+            >
+              {noticesLoading ? (
+                <>
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="col-span-1">
+                      <SkeletonCard />
+                    </div>
+                  ))}
+                </>
+              ) : notices.length === 0 ? (
+                <p className="text-center text-muted-foreground col-span-full py-12">
+                  No notices at the moment. Check back later.
                 </p>
-              </motion.div>
-            ))
-        )}
-      </motion.div>
-    </div>
-  </div>
-</SectionWrapper>
-
-{/*Fees Structure */}
-<SectionWrapper>
-  <div className="py-16 bg-background relative">
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <motion.div className="text-center mb-12" variants={fadeIn}>
-        <h2 className="text-3xl font-bold mb-4">Fee Structure</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Below is the detailed breakdown of the fee components applicable at the time of admission and during the course.
-        </p>
-      </motion.div>
-
-      <motion.div
-        className="max-w-2xl mx-auto space-y-6 text-base leading-relaxed text-muted-foreground"
-        variants={fadeIn}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="flex justify-between border-b pb-2">
-          <span className="font-medium text-foreground">Admission Fee</span>
-          <span>Rs. 1500/- <span className="text-sm text-gray-500">(to be paid at the time of admission)</span></span>
+              ) : (
+                notices
+                  .sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds)
+                  .slice(0, 6)
+                  .map((notice, index) => (
+                    <motion.div
+                      key={notice.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index, duration: 0.4 }}
+                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                      className="group cursor-pointer"
+                    >
+                      <Card
+                        className={`h-full transition-all duration-300 card-hover ${
+                          notice.important ? "border-red-200/70 bg-red-50/30" : ""
+                        }`}
+                      >
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <time
+                              className="text-xs font-medium text-primary"
+                              dateTime={new Date(notice.createdAt?.seconds * 1000).toISOString()}
+                            >
+                              {new Date(notice.createdAt?.seconds * 1000).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </time>
+                            {notice.important && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">
+                                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                                Important
+                              </span>
+                            )}
+                          </div>
+                          <CardTitle className="text-base font-semibold leading-snug group-hover:text-primary transition-colors">
+                            {notice.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-muted-foreground line-clamp-3">
+                            {notice.message}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))
+              )}
+            </motion.div>
+          </div>
         </div>
-
-        <div className="flex justify-between border-b pb-2">
-          <span className="font-medium text-foreground">Tuition Fee</span>
-          <span>Rs. 31,000/- <span className="text-sm text-gray-500">(per semester)</span></span>
-        </div>
-
-        <div className="flex justify-between border-b pb-2">
-          <span className="font-medium text-foreground">Special Fee</span>
-          <span>Rs. 3,150/- <span className="text-sm text-gray-500">(per year)</span></span>
-        </div>
-
-        <div className="flex justify-between border-b pb-2">
-          <span className="font-medium text-foreground">Caution Deposit</span>
-          <span>Rs. 2,500/- <span className="text-sm text-gray-500">(to be paid at the time of admission [refundable])</span></span>
-        </div>
-
-        <div className="flex justify-between border-b pb-2">
-          <span className="font-medium text-foreground">Pre-Matriculation & Registration Fee</span>
-          <span>Rs. 4,955/-</span>
-        </div>
-
-        <div className="flex justify-between border-b pb-2">
-          <span className="font-medium text-foreground">PTA Fees</span>
-          <span>Rs. 10,000/-</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span className="font-medium text-foreground">Bus Fee</span>
-          <span>Rs. 2,000/-</span>
-        </div>
-
-        {/* Highlighted Note */}
-        <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
-          <strong>Note:</strong> Government and University fee payment is accepted only through <strong>QR Code, UPI, or Online payment methods</strong>. <br />
-          <span className="font-medium">Card and cash payments are not accepted.</span>
-        </div>
-      </motion.div>
-    </div>
-  </div>
-</SectionWrapper>
-
+      </SectionWrapper>
 
       {/* Programs Section */}
       <SectionWrapper>
-        <div className="py-16 bg-background">
+        <div className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div className="text-center mb-12" variants={fadeIn}>
-              <h2 className="text-3xl font-bold mb-4">Our BTech Programs</h2>
+            <motion.div className="text-center mb-14" variants={fadeIn}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Our BTech Programs</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Explore our diverse range of bachelors programs designed to push
-                the boundaries of knowledge and innovation.
+                Industry-aligned engineering programs designed for working professionals seeking career advancement.
               </p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
-  title: "Electrical and Electronics Engineering",
-  description:
-    "Covers power generation, electrical machines, control systems, electronics, and renewable energy technologies.",
-  icon: <BookOpen className="h-10 w-10 text-primary" />,
-},
-{
-  title: "Civil Engineering",
-  description:
-    "Focuses on structural engineering, transportation systems, geotechnical engineering, water resources, and construction management.",
-  icon: <GraduationCap className="h-10 w-10 text-primary" />,
-},
-{
-  title: "Mechanical Engineering",
-  description:
-    "Explores thermodynamics, fluid mechanics, manufacturing processes, machine design, CAD/CAM, and automotive systems.",
-  icon: <Users className="h-10 w-10 text-primary" />,
-},
-
+                  title: "Electrical and Electronics Engineering",
+                  description:
+                    "Covers power generation, electrical machines, control systems, electronics, and renewable energy technologies.",
+                  icon: <BookOpen className="h-10 w-10 text-primary" />,
+                },
+                {
+                  title: "Civil Engineering",
+                  description:
+                    "Focuses on structural engineering, transportation systems, geotechnical engineering, water resources, and construction management.",
+                  icon: <GraduationCap className="h-10 w-10 text-primary" />,
+                },
+                {
+                  title: "Mechanical Engineering",
+                  description:
+                    "Explores thermodynamics, fluid mechanics, manufacturing processes, machine design, CAD/CAM, and automotive systems.",
+                  icon: <Users className="h-10 w-10 text-primary" />,
+                },
               ].map((program, index) => (
                 <AnimatedCard key={index} delay={index * 0.1}>
-                  <Card className="h-full transition-all hover:shadow-lg hover:border-primary/30 group">
+                  <Card className="h-full transition-all duration-300 card-hover group">
                     <CardHeader>
-                      <div className="mb-4 group-hover:scale-110 transition-transform duration-300">
-                        {program.icon}
+                      <div className="mb-4 p-3 w-fit rounded-xl bg-primary/5 group-hover:bg-primary/10 transition-colors duration-300">
+                        <div className="group-hover:scale-110 transition-transform duration-300">
+                          {program.icon}
+                        </div>
                       </div>
-                      <CardTitle>{program.title}</CardTitle>
-                      <CardDescription>{program.description}</CardDescription>
+                      <CardTitle className="text-xl">{program.title}</CardTitle>
+                      <CardDescription className="text-sm leading-relaxed">
+                        {program.description}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Link
-                        to={`/programs#${program.title
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}`}
+                        to={`/programs#${program.title.toLowerCase().replace(/\s+/g, "-")}`}
                       >
-                        {/* <Button
+                        <Button
                           variant="outline"
-                          className="w-full group-hover:bg-primary/10 group-hover:text-primary"
+                          className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300"
                         >
-                          Learn More{" "}
+                          Learn More
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </Button> */}
+                        </Button>
                       </Link>
                     </CardContent>
                   </Card>
                 </AnimatedCard>
               ))}
             </div>
+          </div>
+        </div>
+      </SectionWrapper>
+
+      {/* Fee Structure */}
+      <SectionWrapper className="bg-muted/30">
+        <div className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div className="text-center mb-14" variants={fadeIn}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Fee Structure</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Transparent and affordable fee structure for the BTech Working Professionals program.
+              </p>
+            </motion.div>
 
             <motion.div
-              className="text-center mt-12"
+              className="max-w-2xl mx-auto"
               variants={fadeIn}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
             >
-              
+              <Card className="overflow-hidden">
+                <div className="divide-y divide-border">
+                  {[
+                    { label: "Admission Fee", value: "Rs. 1,500/-", note: "one-time" },
+                    { label: "Tuition Fee", value: "Rs. 31,000/-", note: "per semester" },
+                    { label: "Special Fee", value: "Rs. 3,150/-", note: "per year" },
+                    { label: "Caution Deposit", value: "Rs. 2,500/-", note: "refundable" },
+                    { label: "Pre-Matriculation & Registration Fee", value: "Rs. 4,955/-", note: "" },
+                    { label: "PTA Fees", value: "Rs. 10,000/-", note: "" },
+                    { label: "Bus Fee", value: "Rs. 2,000/-", note: "" },
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors"
+                    >
+                      <span className="text-sm font-medium text-foreground">{item.label}</span>
+                      <span className="text-sm text-right">
+                        <span className="font-semibold text-foreground">{item.value}</span>
+                        {item.note && (
+                          <span className="text-xs text-muted-foreground ml-1">({item.note})</span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-6 py-4 bg-yellow-50 border-t border-yellow-200">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> Government and University fee payment is accepted only through{" "}
+                    <strong>QR Code, UPI, or Online payment methods</strong>. Card and cash payments are not accepted.
+                  </p>
+                </div>
+              </Card>
             </motion.div>
           </div>
         </div>
@@ -412,78 +397,76 @@ useEffect(() => {
 
       {/* Admission Process */}
       <SectionWrapper>
-        <div className="py-16 bg-muted relative">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10"></div>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <motion.div className="text-center mb-12" variants={fadeIn}>
-              <h2 className="text-3xl font-bold mb-4">Admission Process</h2>
+        <div className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div className="text-center mb-14" variants={fadeIn}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Admission Process</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Our streamlined admission process is designed to identify and
-                support the most promising engineers.
+                A streamlined process designed to make your admission journey smooth and transparent.
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {[
                 {
                   title: "1. Application",
                   description:
-                    "Submit your online application with all required documents.",
+                    "Submit your online application with all required documents and preferences.",
                   icon: <Calendar className="h-10 w-10 text-primary" />,
                 },
                 {
                   title: "2. Allotment",
                   description:
-                    "Applications are reviewed and and allotment will be published based on the choice of candidates, LET rank list and reservations.",
+                    "Applications are reviewed based on LET rank, reservation policy, and candidate preferences.",
                   icon: <CheckCircle className="h-10 w-10 text-primary" />,
                 },
                 {
                   title: "3. Document Verification",
-                  description:(
-    <>
-      Candidates will have to appear physically at CET with the originals of all documents mentioned for admission. Admission will be guaranteed only on payment of full fees on the day of admission. Fees has to be paid electronically via digipay. No cash payment is allowed.
-      <br />
-      <span className="text-sm">
-        Documents to be produced at the time of admission:{" "}
-        <Link
-          to="https://drive.google.com/file/d/1KNvGF_31V_tL_hl0X3VbDy1QnPttbAju/view?usp=sharing"
-          className="text-primary underline hover:text-primary/80"
-        >
-          Click here
-        </Link>
-      </span>
-      <br />
-      <span className="text-sm">
-        Instructions to candidate:{" "}
-        <Link
-          to="https://drive.google.com/file/d/1WLgFCCfhTuiGxBcKL0uLFjzzd1K3CrUz/view?usp=sharing"
-          className="text-primary underline hover:text-primary/80"
-        >
-          Click here
-        </Link>
-      </span>
-    </>
-  ),
-  icon: <Users className="h-10 w-10 text-primary" />,
+                  description: (
+                    <>
+                      <p>
+                        Candidates must appear physically at CET with all original documents. Admission is confirmed
+                        only on payment of full fees via digipay (no cash).
+                      </p>
+                      <div className="mt-2 space-x-4">
+                        <Link
+                          to="https://drive.google.com/file/d/1KNvGF_31V_tL_hl0X3VbDy1QnPttbAju/view?usp=sharing"
+                          className="text-primary text-sm underline-offset-2 hover:underline"
+                        >
+                          Documents required →
+                        </Link>
+                        <Link
+                          to="https://drive.google.com/file/d/1WLgFCCfhTuiGxBcKL0uLFjzzd1K3CrUz/view?usp=sharing"
+                          className="text-primary text-sm underline-offset-2 hover:underline"
+                        >
+                          Instructions →
+                        </Link>
+                      </div>
+                    </>
+                  ),
+                  icon: <Users className="h-10 w-10 text-primary" />,
                 },
                 {
-                  title: "4. Commencement of classes",
-                  description: "Admitted candidates will have to attend classes commencing from July 1st.",
+                  title: "4. Commencement of Classes",
+                  description:
+                    "Admitted candidates begin classes from July 1st. Classes held 5:45 PM - 9:15 PM on weekdays.",
                   icon: <GraduationCap className="h-10 w-10 text-primary" />,
                 },
               ].map((step, index) => (
                 <AnimatedCard key={index} delay={index * 0.1}>
-                  <Card className="transition-all hover:shadow-lg hover:border-primary/30 group h-full">
+                  <Card className="transition-all duration-300 card-hover group h-full">
                     <CardHeader>
-                      <div className="mb-4 group-hover:-translate-y-1 transition-transform">
-                        {step.icon}
+                      <div className="mb-4 p-3 w-fit rounded-xl bg-primary/5 group-hover:bg-primary/10 transition-colors">
+                        <div className="group-hover:-translate-y-1 transition-transform duration-300">
+                          {step.icon}
+                        </div>
                       </div>
-                      <CardTitle>{step.title}</CardTitle>
+                      <CardTitle className="text-xl">{step.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground group-hover:text-foreground transition-colors">
+                      <div className="text-muted-foreground text-sm leading-relaxed group-hover:text-foreground/80 transition-colors">
                         {step.description}
-                      </p>
+                      </div>
                     </CardContent>
                   </Card>
                 </AnimatedCard>
@@ -495,70 +478,67 @@ useEffect(() => {
               variants={fadeIn}
               transition={{ delay: 0.4 }}
             >
-              {/* <Link to="/admission">
-                <Button className="hover:scale-105 transition-transform">
-                  Learn More About Admissions{" "}
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              <Link to="/admission">
+                <Button className="shadow-md hover:shadow-lg">
+                  Learn More About Admissions
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link> */}
+              </Link>
             </motion.div>
           </div>
         </div>
       </SectionWrapper>
 
-      
-
       {/* CTA Section */}
       <SectionWrapper>
-        <div className="py-16 bg-primary text-primary-foreground relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent"></div>
-          </div>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
-              className="text-center max-w-3xl mx-auto"
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground p-10 md:p-16 text-center"
               variants={fadeIn}
             >
-              <h2 className="text-3xl font-bold mb-4">
-                Ready to Begin Your BTech Journey?
-              </h2>
-              <p className="text-primary-foreground/80 mb-8">
-                Join our vibrant community of engineers and make significant
-                contributions to your field.
-              </p>
-              <motion.div
-                className="flex flex-col sm:flex-row gap-4 justify-center"
-                variants={fadeIn}
-                transition={{ delay: 0.2 }}
-              >
-                <Link to="/apply">
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    className="w-full sm:w-auto hover:scale-105 transition-transform hover:shadow-lg"
-                  >
-                    Apply Now
-                  </Button>
-                </Link>
-                <Link to="/contact">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full sm:w-auto border-primary text-black hover:bg-primary/10 hover:scale-105 transition-transform"
-                  >
-                    Contact Us
-                  </Button>
-                </Link>
-                <Link to="https://drive.google.com/file/d/1N9gARnxlDe95UEgKyLyoqndtDi17Qcy1/view?usp=sharing">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full sm:w-auto border-primary text-black hover:bg-primary/10 hover:scale-105 transition-transform"
-                  >
-                    Press Release
-                  </Button>
-                </Link>
-              </motion.div>
+              {/* Decorative elements */}
+              <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/5 blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-white/5 blur-3xl" />
+
+              <div className="relative z-10 max-w-3xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Ready to Begin Your BTech Journey?
+                </h2>
+                <p className="text-primary-foreground/80 text-lg mb-10 max-w-2xl mx-auto">
+                  Join CET's prestigious BTech Working Professionals program and take your engineering career to the next level.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link to="/apply">
+                    <Button
+                      size="lg"
+                      variant="secondary"
+                      className="w-full sm:w-auto shadow-md hover:shadow-lg"
+                    >
+                      Apply Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link to="/contact">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="w-full sm:w-auto bg-transparent border-white/40 text-white hover:bg-white hover:text-primary hover:border-white transition-all duration-300"
+                    >
+                      Contact Us
+                    </Button>
+                  </Link>
+                  <Link to="https://drive.google.com/file/d/1N9gARnxlDe95UEgKyLyoqndtDi17Qcy1/view?usp=sharing">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="w-full sm:w-auto bg-transparent border-white/40 text-white hover:bg-white hover:text-primary hover:border-white transition-all duration-300"
+                    >
+                      Press Release
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>

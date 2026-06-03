@@ -17,7 +17,7 @@ export default function HelpCenter() {
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -25,19 +25,15 @@ export default function HelpCenter() {
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
   };
 
-  const branches = ["Civil Engineering (CE)", "Electrical and Electronics Engineering(EEE)", "Mechanical Engineering (ME)"];
+  const branches = ["Civil Engineering (CE)", "Electrical and Electronics Engineering (EEE)", "Mechanical Engineering (ME)"];
 
   const commonReservation = {
     "State Merit": "50%",
     "EWS": "10%",
-    "SEBC":"30%",
+    "SEBC": "30%",
     "Ezhava": "9%",
     "Muslim": "8%",
     "Other Backward Hindu": "3%",
@@ -49,7 +45,7 @@ export default function HelpCenter() {
     "Kudumbi": "1%",
     "Scheduled Caste": "8%",
     "Scheduled Tribe": "2%",
-    "PD (Physically Disabled)": "5% (min. of 40% disability)",
+    "PD (Physically Disabled)": "5% (min. 40% disability)",
     "Transgender": "1 seat",
     "Sports Quota": "1 seat",
     "DTE Staff": "1 seat",
@@ -59,97 +55,96 @@ export default function HelpCenter() {
   const faqs = [
     {
       question: "How are seats allocated in the BTech Working Professionals programme?",
-      answer:
-        "Seats are allocated based on LET rank list published by LBS Centre for Science and Technology and reservation norms of Government of Kerala.",
+      answer: "Seats are allocated based on LET rank list published by LBS Centre for Science and Technology and reservation norms of Government of Kerala.",
     },
     {
       question: "Is there any management quota in BTech Working Professionals programme?",
-      answer:
-        "No, CET follows strict merit-based admission for all seats in the BTech Working Professionals programme.",
+      answer: "No, CET follows strict merit-based admission for all seats in the BTech Working Professionals programme.",
     },
     {
       question: "Can I apply for multiple branches?",
-      answer:
-        "Yes, you can indicate branch preferences in your application form.",
+      answer: "Yes, you can indicate branch preferences in your application form.",
     },
     {
       question: "What's the duration of the BTech Working Professionals programme?",
-      answer:
-        "The BTech Working Professionals programme duration is 3 years (6 semesters).",
+      answer: "The BTech Working Professionals programme duration is 3 years (6 semesters).",
     },
     {
       question: "What's the time of conduct of classes for BTech Working Professionals programme?",
-      answer:
-        "All classes including theory and practicals will be conducted from 5.45 pm to 9.15 pm on all weekdays. On weekends extra classes may be arranged by students as per the convenience of students and teachers.",
-    }
+      answer: "All classes including theory and practicals will be conducted from 5:45 PM to 9:15 PM on all weekdays. On weekends, extra classes may be arranged as per convenience of students and teachers.",
+    },
   ];
 
   return (
-    <div ref={containerRef} className="relative overflow-hidden min-h-screen bg-white">
-      {/* Parallax Background */}
+    <div ref={containerRef} className="relative overflow-hidden min-h-screen">
       <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white -z-10"
+        className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] to-background -z-10"
         style={{ y }}
       />
 
-      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        {/* Page Header */}
+      <div className="container mx-auto px-4 py-14 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           initial="hidden"
           animate="visible"
           variants={fadeIn}
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="text-center max-w-3xl mx-auto mb-14"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">Help Center</h1>
-          <p className="text-lg text-gray-600">College of Engineering Trivandrum (CET)</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-3">Help Center</h1>
+          <p className="text-lg text-muted-foreground">
+            College of Engineering Trivandrum (CET) — BTech Working Professionals Program
+          </p>
         </motion.div>
 
         {/* Branch List */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="max-w-4xl mx-auto mb-12"
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="max-w-4xl mx-auto mb-10"
         >
-          <Card className="border border-blue-100 shadow-sm">
+          <Card className="border-border/50 shadow-sm card-hover">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                <Users className="h-6 w-6" />
-                Departments Offering BTech for working professionals.
+                <Users className="h-5 w-5" />
+                Departments Offering BTech for Working Professionals
               </CardTitle>
               <CardDescription>All departments follow the same seat structure</CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="list-disc pl-6 space-y-1 text-gray-700">
+              <ul className="space-y-2">
                 {branches.map((branch, idx) => (
-                  <li key={idx}>{branch}</li>
+                  <li key={idx} className="flex items-center gap-3 text-sm">
+                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+                    <span>{branch}</span>
+                  </li>
                 ))}
               </ul>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Common Reservation Table */}
+        {/* Reservation Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
           className="max-w-4xl mx-auto mb-16"
         >
-          <Card className="border border-blue-100 shadow-sm">
+          <Card className="border-border/50 shadow-sm card-hover">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                <Users className="h-6 w-6" />
+                <Users className="h-5 w-5" />
                 Reservation-Based Seat Distribution
               </CardTitle>
               <CardDescription>Total Intake per Branch: 30 Seats</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
                 {Object.entries(commonReservation).map(([category, seats]) => (
-                  <div key={category} className="flex justify-between border-b py-1">
-                    <span className="text-gray-700">{category}</span>
-                    <span className="font-medium text-right">{seats}</span>
+                  <div key={category} className="flex justify-between border-b border-border/50 py-2 hover:bg-muted/20 px-2 rounded transition-colors">
+                    <span className="text-sm text-foreground">{category}</span>
+                    <span className="text-sm font-semibold text-right text-primary">{seats}</span>
                   </div>
                 ))}
               </div>
@@ -161,30 +156,32 @@ export default function HelpCenter() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <h2 className="text-2xl font-semibold text-primary flex items-center gap-2 mb-6">
-            <Info className="h-6 w-6" />
+          <h2 className="text-2xl font-semibold text-primary flex items-center gap-2 mb-8">
+            <Info className="h-5 w-5" />
             Frequently Asked Questions
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
+                transition={{ delay: 0.5 + index * 0.08, duration: 0.4 }}
               >
-                <Card className="border border-gray-100 shadow-sm">
-                  <CardHeader className="pb-1">
+                <Card className="border-border/40 shadow-sm card-hover">
+                  <CardHeader className="pb-2">
                     <CardTitle className="text-base font-medium">
                       {faq.question}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 text-sm">{faq.answer}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {faq.answer}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>

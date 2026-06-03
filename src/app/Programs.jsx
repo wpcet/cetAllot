@@ -18,14 +18,14 @@ export default function Programs() {
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
   const programs = [
     {
       id: "electronics-engineering",
       title: "Electronics Engineering",
       description:
-        "CET's flagship program with 60+ years of excellence in VLSI, embedded systems, and semiconductor technologies. Our graduates lead in top tech companies worldwide.",
+        "CET's flagship program with 60+ years of excellence in VLSI, embedded systems, and semiconductor technologies.",
       icon: <Cpu className="h-10 w-10 text-primary" />,
       image: "/ec.avif",
       areas: [
@@ -37,18 +37,9 @@ export default function Programs() {
         "Control Systems and Robotics",
       ],
       faculty: [
-        {
-          name: "Dr. R. S. Sheshadri",
-          specialization: "VLSI Design (Former HOD)",
-        },
-        {
-          name: "Dr. K. Radhakrishnan",
-          specialization: "Embedded Systems",
-        },
-        {
-          name: "Dr. M. Geetha",
-          specialization: "Signal Processing",
-        },
+        { name: "Dr. R. S. Sheshadri", specialization: "VLSI Design (Former HOD)" },
+        { name: "Dr. K. Radhakrishnan", specialization: "Embedded Systems" },
+        { name: "Dr. M. Geetha", specialization: "Signal Processing" },
       ],
     },
     {
@@ -67,18 +58,9 @@ export default function Programs() {
         "Smart Grid Technologies",
       ],
       faculty: [
-        {
-          name: "Dr. P. Vijayakumar",
-          specialization: "Power Systems (Former Principal)",
-        },
-        {
-          name: "Dr. L. Ramesh",
-          specialization: "Renewable Energy",
-        },
-        {
-          name: "Dr. S. Kumar",
-          specialization: "Control Systems",
-        },
+        { name: "Dr. P. Vijayakumar", specialization: "Power Systems (Former Principal)" },
+        { name: "Dr. L. Ramesh", specialization: "Renewable Energy" },
+        { name: "Dr. S. Kumar", specialization: "Control Systems" },
       ],
     },
     {
@@ -97,54 +79,32 @@ export default function Programs() {
         "Computational Fluid Dynamics",
       ],
       faculty: [
-        {
-          name: "Dr. T. Nair",
-          specialization: "Thermal Systems (HOD)",
-        },
-        {
-          name: "Dr. A. Menon",
-          specialization: "Robotics",
-        },
-        {
-          name: "Dr. D. Pillai",
-          specialization: "Materials Science",
-        },
+        { name: "Dr. T. Nair", specialization: "Thermal Systems (HOD)" },
+        { name: "Dr. A. Menon", specialization: "Robotics" },
+        { name: "Dr. D. Pillai", specialization: "Materials Science" },
       ],
     },
   ];
 
   return (
     <div className="relative overflow-hidden" ref={containerRef}>
-      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        {/* Hero Section with Enhanced Animation */}
+      <div className="container mx-auto px-4 py-14 sm:px-6 lg:px-8">
+        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="max-w-4xl mx-auto text-center mb-16"
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="max-w-4xl mx-auto text-center mb-20"
         >
-          <motion.h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-          >
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6">
             Engineering Programs
-          </motion.h1>
-
-          <motion.p
-            className="text-xl text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-          >
-            Industry-aligned technical education with 80+ years of academic
-            excellence and hands-on learning experiences.
-          </motion.p>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Industry-aligned technical education with 80+ years of academic excellence and hands-on learning experiences.
+          </p>
         </motion.div>
 
-        {/* Programs List with Parallax */}
+        {/* Programs List */}
         <div className="space-y-32">
           {programs.map((program, idx) => (
             <motion.section
@@ -153,15 +113,16 @@ export default function Programs() {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: idx * 0.15 }}
-              className="scroll-mt-24"
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              className="scroll-mt-28"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
                 <div className="space-y-6 order-2 lg:order-1">
                   <div className="flex items-center gap-4">
                     <motion.div
-                      whileHover={{ rotate: 10, scale: 1.1 }}
-                      transition={{ type: "spring" }}
+                      whileHover={{ rotate: 8, scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                      className="p-3 rounded-2xl bg-primary/5"
                     >
                       {program.icon}
                     </motion.div>
@@ -174,19 +135,12 @@ export default function Programs() {
                     {program.description}
                   </p>
 
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Link to="/apply">
-                      <Button className="group">
-                        <span className="flex items-center">
-                          Apply Now{" "}
-                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </span>
-                      </Button>
-                    </Link>
-                  </motion.div>
+                  <Link to="/apply">
+                    <Button className="group shadow-sm">
+                      Apply Now
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
 
                 <motion.div
@@ -195,7 +149,7 @@ export default function Programs() {
                   initial={{ opacity: 0, x: idx % 2 === 0 ? 50 : -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
+                  transition={{ duration: 0.6, delay: 0.15 }}
                   whileHover={{ scale: 1.02 }}
                 >
                   <img
@@ -203,19 +157,19 @@ export default function Programs() {
                     alt={program.title}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </motion.div>
               </div>
 
-              {/* Program Details */}
+              {/* Program Details Tabs */}
               <Tabs defaultValue="areas" className="mt-16">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  <TabsList className="grid grid-cols-3 w-full max-w-md bg-background">
+                  <TabsList className="grid grid-cols-3 w-full max-w-md bg-muted/50">
                     <TabsTrigger value="areas">Specializations</TabsTrigger>
                     <TabsTrigger value="faculty">Faculty</TabsTrigger>
                     <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
@@ -229,12 +183,12 @@ export default function Programs() {
                         key={index}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 + 0.2 }}
+                        transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
                         viewport={{ once: true }}
-                        className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg"
+                        className="flex items-start gap-3 p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors"
                       >
                         <div className="h-2 w-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                        <span>{area}</span>
+                        <span className="text-sm">{area}</span>
                       </motion.li>
                     ))}
                   </ul>
@@ -247,13 +201,13 @@ export default function Programs() {
                         key={index}
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 + 0.2 }}
+                        transition={{ delay: index * 0.1 + 0.2, duration: 0.4 }}
                         viewport={{ once: true }}
-                        whileHover={{ y: -5 }}
+                        whileHover={{ y: -4 }}
                       >
-                        <Card className="hover:shadow-md transition-shadow">
+                        <Card className="card-hover">
                           <CardHeader>
-                            <CardTitle className="text-primary">
+                            <CardTitle className="text-primary text-base">
                               {faculty.name}
                             </CardTitle>
                             <CardDescription>
@@ -267,7 +221,7 @@ export default function Programs() {
                 </TabsContent>
 
                 <TabsContent value="curriculum" className="mt-8">
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {[
                       "First Year: Basic Sciences and Engineering Fundamentals",
                       "Second Year: Core Departmental Courses",
@@ -280,9 +234,9 @@ export default function Programs() {
                         key={index}
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 + 0.2 }}
+                        transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
                         viewport={{ once: true }}
-                        className="p-4 bg-muted/50 rounded-lg"
+                        className="p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors text-sm"
                       >
                         {item}
                       </motion.div>
@@ -293,11 +247,11 @@ export default function Programs() {
 
               {idx < programs.length - 1 && (
                 <motion.div
-                  className="border-t border-muted mt-20"
+                  className="border-t border-border/50 mt-20"
                   initial={{ scaleX: 0, originX: 0 }}
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1, delay: 0.3 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
                 />
               )}
             </motion.section>

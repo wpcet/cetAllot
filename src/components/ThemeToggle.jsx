@@ -1,14 +1,14 @@
 import React from "react";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes"; // You can still use this in React.js if it's properly wrapped
+import { useTheme } from "next-themes";
 
-import { Button } from "./components/ui/Button";
+import { Button } from "./ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../components/ui/DropdownMenu";
+} from "./ui/DropdownMenu";
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();

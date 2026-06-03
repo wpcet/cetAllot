@@ -1,22 +1,37 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Home } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const NotFound = () => {
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-900 via-purple-800 to-gray-700 text-white px-6">
-      <div className="text-center max-w-xl">
-        <h1 className="text-7xl font-extrabold mb-4">404</h1>
-        <h2 className="text-3xl font-semibold mb-2">Page Not Found</h2>
-        <p className="text-lg mb-6 text-gray-300">
-          The page you are looking for doesn't exist or has been moved.
-        </p>
-        <Link
-          to="/"
-          className="inline-block px-6 py-3 bg-white text-gray-900 font-semibold rounded-md shadow-md hover:bg-gray-100 transition"
+    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center max-w-xl"
+      >
+        <motion.h1
+          className="text-8xl md:text-9xl font-extrabold text-primary/20 mb-4"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
-          Back to Home
+          404
+        </motion.h1>
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Page Not Found</h2>
+        <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+          The page you are looking for doesn't exist or has been moved. Let's get you back on track.
+        </p>
+        <Link to="/">
+          <Button size="lg" className="shadow-md">
+            <Home className="mr-2 h-4 w-4" />
+            Back to Home
+          </Button>
         </Link>
-      </div>
+      </motion.div>
     </div>
   );
 };

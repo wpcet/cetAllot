@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { Facebook, Instagram, Linkedin, Twitter, X, Mail, Github } from "lucide-react";
+import { Button } from "../components/ui/Button";
 
 export default function Footer() {
   const [showModal, setShowModal] = useState(false);
 
   const developers = [
+    {
+      name: "Muhamme Ajmal U K",
+      email: "ajmaluk.me@gmail.com",
+      github: "https://github.com/ajmaluk",
+      linkedin: "https://www.linkedin.com/in/ajmaluk/",
+      instagram: "https://www.instagram.com/ajmaluk.me/",
+    },
     {
       name: "Suneeb S",
       email: "suneebsunilkumar12@gmail.com",
@@ -26,85 +34,118 @@ export default function Footer() {
       linkedin: "https://www.linkedin.com/in/yadhukrishnx/",
       instagram: "https://www.instagram.com/yadhukrishnx/",
     },
+
   ];
 
   return (
     <>
-      <footer className="bg-muted">
-        <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
-          <div className="flex justify-center space-x-6 md:order-2">
-            <a href="https://www.facebook.com/CollegeOfEngineeringTrivandrum/" className="text-muted-foreground hover:text-foreground">
-              <span className="sr-only">Facebook</span>
-              <Facebook className="h-5 w-5" />
-            </a>
-            <a href="https://www.instagram.com/cetians_/" className="text-muted-foreground hover:text-foreground">
-              <span className="sr-only">Instagram</span>
-              <Instagram className="h-5 w-5" />
-            </a>
-            <a href="https://x.com/cet_trivandrum" className="text-muted-foreground hover:text-foreground">
-              <span className="sr-only">Twitter</span>
-              <Twitter className="h-5 w-5" />
-            </a>
-            <a href="https://in.linkedin.com/school/college-of-engineering-trivandrum/" className="text-muted-foreground hover:text-foreground">
-              <span className="sr-only">LinkedIn</span>
-              <Linkedin className="h-5 w-5" />
-            </a>
+      <footer className="bg-muted/50 border-t border-border/40">
+        <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            {/* Social links */}
+            <div className="flex justify-center md:order-2 gap-3">
+              {[
+                { icon: Facebook, href: "https://www.facebook.com/CollegeOfEngineeringTrivandrum/", label: "Facebook" },
+                { icon: Instagram, href: "https://www.instagram.com/cetians_/", label: "Instagram" },
+                { icon: Twitter, href: "https://x.com/cet_trivandrum", label: "Twitter" },
+                { icon: Linkedin, href: "https://in.linkedin.com/school/college-of-engineering-trivandrum/", label: "LinkedIn" },
+              ].map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="flex items-center justify-center h-9 w-9 rounded-full bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                >
+                  <span className="sr-only">{label}</span>
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+
+            {/* Copyright */}
+            <div className="md:order-1">
+              <p className="text-center text-xs leading-5 text-muted-foreground">
+                &copy; {new Date().getFullYear()} College of Engineering Trivandrum. All rights reserved.
+              </p>
+            </div>
           </div>
-          <div className="mt-8 md:order-1 md:mt-0">
-            <p className="text-center text-xs leading-5 text-muted-foreground">
-              &copy; {new Date().getFullYear()} College of Engineering Trivandrum. All rights reserved.
-            </p>
-          </div>
-        </div>
-        <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
-          <div className="border-t border-muted-foreground/10 pt-8 md:flex md:items-center md:justify-between">
-            <div className="flex space-x-6 md:order-2">
-              {/* <a href="/privacy-policy" className="text-sm leading-6 text-muted-foreground hover:text-foreground">
-                Privacy Policy
-              </a>
-              <a href="/terms" className="text-sm leading-6 text-muted-foreground hover:text-foreground">
-                Terms of Service
-              </a> */}
+
+          {/* Bottom bar */}
+          <div className="mt-8 pt-6 border-t border-border/40 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex justify-center md:order-2 gap-6">
               <button
                 onClick={() => setShowModal(true)}
-                className="text-sm leading-6 text-muted-foreground hover:text-foreground"
+                className="text-xs leading-6 text-muted-foreground hover:text-foreground transition-colors"
               >
-                Contact
+                Contact Developers
               </button>
             </div>
-            <p className="mt-8 text-xs leading-5 text-muted-foreground md:order-1 md:mt-0">
-              Designed and Developed by CET MCA Department
+            <p className="text-center text-xs leading-5 text-muted-foreground md:order-1">
+              Designed & Developed by <span className="font-medium text-foreground/80">CET MCA Department</span>
             </p>
           </div>
         </div>
       </footer>
 
+      {/* Developer Contact Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-background border border-border/40 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative bg-gradient-to-br from-background to-muted/20">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 rounded-full p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <h2 className="text-xl font-bold text-foreground mb-5 tracking-tight">Developer Contacts</h2>
-            <div className="space-y-4 text-sm">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-background border border-border/40 p-6 rounded-2xl w-full max-w-sm shadow-2xl animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold tracking-tight">Developer Contacts</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="rounded-full p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="space-y-4">
               {developers.map((dev, index) => (
-                <div key={index} className="border-t pt-3 first:border-none first:pt-0">
-                  <p className="font-medium text-foreground mb-1">{dev.name}</p>
-                  <div className="flex space-x-4 items-center">
-                    <a href={`mailto:${dev.email}`} className="hover:text-foreground" aria-label="Email">
-                      <Mail className="h-4 w-4" />
+                <div
+                  key={index}
+                  className="p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  <p className="font-medium text-sm mb-2">{dev.name}</p>
+                  <div className="flex gap-3">
+                    <a
+                      href={`mailto:${dev.email}`}
+                      className="flex items-center justify-center h-8 w-8 rounded-full bg-background text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      aria-label="Email"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
                     </a>
-                    <a href={dev.github} target="_blank" rel="noopener noreferrer" className="hover:text-foreground" aria-label="GitHub">
-                      <Github className="h-4 w-4" />
+                    <a
+                      href={dev.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center h-8 w-8 rounded-full bg-background text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      aria-label="GitHub"
+                    >
+                      <Github className="h-3.5 w-3.5" />
                     </a>
-                    <a href={dev.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-foreground" aria-label="LinkedIn">
-                      <Linkedin className="h-4 w-4" />
+                    <a
+                      href={dev.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center h-8 w-8 rounded-full bg-background text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      aria-label="LinkedIn"
+                    >
+                      <Linkedin className="h-3.5 w-3.5" />
                     </a>
-                    <a href={dev.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-foreground" aria-label="Instagram">
-                      <Instagram className="h-4 w-4" />
+                    <a
+                      href={dev.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center h-8 w-8 rounded-full bg-background text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      aria-label="Instagram"
+                    >
+                      <Instagram className="h-3.5 w-3.5" />
                     </a>
                   </div>
                 </div>

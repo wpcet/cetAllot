@@ -3,7 +3,7 @@ import { useFormContext, FormProvider as RHFormProvider, useController } from "r
 
 // Form Component: Wraps the form and expects methods to be passed in
 export function Form({ children, onSubmit, ...props }) {
-  const methods = useFormContext(); // Accessing the form context here
+  const methods = useFormContext();
   return (
     <form {...methods} onSubmit={onSubmit} {...props}>
       {children}
@@ -15,28 +15,33 @@ export function Form({ children, onSubmit, ...props }) {
 export function FormProviderWrapper({ children, methods, onSubmit }) {
   return (
     <RHFormProvider {...methods}>
-      {/* Removed the <form> tag here */}
       {children}
     </RHFormProvider>
   );
 }
 
 // FormField: Takes a name and render function to handle form field rendering
+// Passes fieldId so labels and inputs can be associated for accessibility
 export function FormField({ name, render }) {
-  const { control } = useFormContext(); // Use form context to retrieve control
+  const { control } = useFormContext();
   const { field, fieldState } = useController({ name, control });
+  const fieldId = `field-${name.replace(/\./g, "-")}`;
 
-  return render({ field, fieldState });
+  return render({ field: { ...field, id: fieldId }, fieldState, fieldId });
 }
 
-// FormItem: A wrapper for form item styling (you can customize this)
+// FormItem: A wrapper for form item styling
 export function FormItem({ children, className }) {
   return <div className={`space-y-2 ${className || ""}`}>{children}</div>;
 }
 
-// FormLabel: Label component for form fields
-export function FormLabel({ children, className }) {
-  return <label className={`block text-sm font-medium ${className}`}>{children}</label>;
+// FormLabel: Label component for form fields with htmlFor support
+export function FormLabel({ children, className, htmlFor }) {
+  return (
+    <label htmlFor={htmlFor} className={`block text-sm font-medium ${className || ""}`}>
+      {children}
+    </label>
+  );
 }
 
 // FormControl: A wrapper for the form control (input or other form controls)
@@ -46,7 +51,7 @@ export function FormControl({ children, className }) {
 
 // FormMessage: Displays an error message if provided
 export function FormMessage({ message, className }) {
-  return message ? <p className={`text-red-500 text-sm ${className}`}>{message}</p> : null;
+  return message ? <p className={`text-red-500 text-sm ${className || ""}`}>{message}</p> : null;
 }
 
 // FormDescription: A description that appears under a form control

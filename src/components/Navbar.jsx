@@ -6,30 +6,20 @@ import { Button } from "../components/ui/Button";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase";
 
-// Add CSS for hiding scrollbars
-const scrollbarStyles = `
-  .hide-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
 const baseNavigation = [
   { name: "Home", href: "/" },
-  // { name: "About", href: "/about" },
-  // { name: "Programs", href: "/programs" },
+  { name: "About", href: "/about" },
+  { name: "Programs", href: "/programs" },
   { name: "Admission", href: "/admission" },
-  // { name: "Eligibility", href: "/eligibility" },
+  { name: "Eligibility", href: "/eligibility" },
   { name: "Help", href: "/help" },
   { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAtTop, setIsAtTop] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -49,39 +39,29 @@ export default function Navbar() {
     return () => unsub();
   }, []);
 
-  // Scrollbar style
-  useEffect(() => {
-    if (!document.getElementById("hide-scrollbar-styles")) {
-      const styleElement = document.createElement("style");
-      styleElement.id = "hide-scrollbar-styles";
-      styleElement.innerHTML = scrollbarStyles;
-      document.head.appendChild(styleElement);
-    }
-    document.body.classList.add("hide-scrollbar");
-  }, []);
-
-  // Hide navbar on scroll down, show on scroll up
+  // Hide navbar on scroll down, show on scroll up + track scrolled state
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
       if (!ticking.current) {
         window.requestAnimationFrame(() => {
-          if (currentScrollY <= 10) {
-            setIsAtTop(true);
+          const currentScrollY = window.scrollY;
+          setScrolled(currentScrollY > 20);
+
+          if (currentScrollY < lastScrollY.current) {
+            setIsVisible(true); // scrolling up
+          } else if (currentScrollY > 80) {
+            setIsVisible(false); // scrolling down
           } else {
-            if (currentScrollY < lastScrollY.current) {
-              setIsAtTop(true); // scrolling up
-            } else if (currentScrollY > 80) {
-              setIsAtTop(false); // scrolling down
-            }
+            setIsVisible(true);
           }
+
           lastScrollY.current = currentScrollY;
           ticking.current = false;
         });
         ticking.current = true;
       }
     };
-    setIsAtTop(window.scrollY === 0);
+    setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -104,7 +84,6 @@ export default function Navbar() {
         window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
       }
     }
-
     return () => {
       document.body.style.position = "";
       document.body.style.top = "";
@@ -119,81 +98,99 @@ export default function Navbar() {
     navigate("/");
   };
 
+  const isActive = (href) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-300 border-b border-border/40 bg-background/80 backdrop-blur-md ${
-          isAtTop ? "translate-y-0 shadow-none" : "translate-y-0 shadow-sm border-b"
-        } ${mobileMenuOpen ? "hidden lg:block" : ""}`}
+        className={`sticky top-0 z-40 w-full transition-all duration-500 ease-out
+          ${
+            isVisible
+              ? "translate-y-0"
+              : "-translate-y-full"
+          }
+          ${
+            scrolled
+              ? "glass-strong shadow-sm"
+              : "bg-transparent"
+          }`}
       >
         <nav
-          className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8"
+          className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-8"
           aria-label="Global"
         >
           <div className="flex lg:flex-1">
             <Link to="/" className="-m-1.5 p-1.5 flex items-center gap-2 group">
-  <div className="relative flex items-center justify-center h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 transition-all group-hover:scale-105">
-    <img
-      src="/logo.png"
-      alt="EduAllot Logo"
-      className="h-6 w-6 object-contain"
-    />
-  </div>
-  <div className="flex flex-col leading-tight">
-    <span className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-      Edu<span className="text-primary">Allot</span>
-    </span>
-    <span className="text-xs text-muted-foreground tracking-wide">
-      B.Tech WP Admission Portal
-    </span>
-  </div>
-</Link>
-
+              <div className="relative flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10 transition-all duration-300 group-hover:scale-105 group-hover:bg-primary/20">
+                <img
+                  src="/logo.png"
+                  alt="EduAllot Logo"
+                  className="h-5 w-5 object-contain"
+                />
+              </div>
+              <div className="flex flex-col leading-tight">
+                <span className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                  Edu<span className="text-primary">Allot</span>
+                </span>
+                <span className="text-[10px] text-muted-foreground tracking-wide hidden sm:block">
+                  B.Tech WP Admission Portal
+                </span>
+              </div>
+            </Link>
           </div>
 
           {/* Mobile menu icon */}
           <div className="flex lg:hidden">
             <Button
               variant="ghost"
-              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
+              size="icon"
+              className="rounded-full"
               onClick={() => setMobileMenuOpen(true)}
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5" />
             </Button>
           </div>
 
           {/* Desktop navigation */}
-          <div className="hidden lg:flex lg:gap-x-8">
+          <div className="hidden lg:flex lg:gap-x-1">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`relative text-sm font-semibold leading-6 transition-all duration-200 
-                after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 
-                after:bg-primary after:transition-all after:duration-300 hover:after:w-full
-                ${
-                  pathname === item.href
-                    ? "text-primary font-bold"
-                    : "text-muted-foreground hover:text-primary"
-                }`}
+                className={`relative px-3 py-2 text-sm font-medium leading-6 rounded-lg transition-all duration-200
+                  ${
+                    isActive(item.href)
+                      ? "text-primary bg-primary/5"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
               >
                 {item.name}
+                {isActive(item.href) && (
+                  <span className="absolute inset-x-3 -bottom-0 h-0.5 bg-primary rounded-full" />
+                )}
               </Link>
             ))}
           </div>
 
           {/* Desktop buttons */}
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-4">
-            {/* <Link to="/apply">
-              <Button>Apply Now</Button>
-            </Link> */}
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-3">
+            <Link to="/apply">
+              <Button size="sm" className="shadow-sm">
+                Apply Now
+              </Button>
+            </Link>
             {user ? (
-              <Button variant="outline" onClick={handleLogout}>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
                 Logout
               </Button>
             ) : (
               <Link to="/admin">
-                <Button variant="outline">Admin Login</Button>
+                <Button variant="outline" size="sm">
+                  Admin
+                </Button>
               </Link>
             )}
           </div>
@@ -202,30 +199,35 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-lg hide-scrollbar">
-          <div className="flex flex-col h-full bg-gradient-to-b from-background via-background/90 to-background/80">
+        <div className="lg:hidden fixed inset-0 z-50 glass-strong animate-fade-in">
+          <div className="flex flex-col h-full">
             {/* Mobile Header */}
             <div className="flex items-center justify-between p-4 border-b border-border/40">
-              <Link to="/" className="-m-1.5 p-1.5 flex items-center gap-2 group">
-                <div className="relative flex items-center justify-center h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 transition-all group-hover:scale-105">
+              <Link
+                to="/"
+                className="flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10">
                   <img
                     src="/logo.png"
                     alt="EduAllot Logo"
-                    className="h-6 w-6 object-contain"
+                    className="h-5 w-5 object-contain"
                   />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                  <span className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     Edu<span className="text-primary">Allot</span>
                   </span>
-                  <span className="text-xs text-muted-foreground tracking-wide">
+                  <span className="text-[10px] text-muted-foreground tracking-wide">
                     B.Tech Admission Portal
                   </span>
                 </div>
               </Link>
               <Button
                 variant="ghost"
-                className="rounded-full p-2.5 hover:bg-muted/80"
+                size="icon"
+                className="rounded-full"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <X className="h-5 w-5" />
@@ -233,16 +235,16 @@ export default function Navbar() {
             </div>
 
             {/* Mobile links */}
-            <div className="flex-1 overflow-y-auto py-6 px-4">
-              <div className="flex flex-col space-y-4">
+            <div className="flex-1 overflow-y-auto py-4 px-4">
+              <div className="flex flex-col space-y-1">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`block py-3 text-base font-semibold leading-7 ${
-                      pathname === item.href
-                        ? "text-primary font-bold"
-                        : "text-muted-foreground hover:text-foreground"
+                    className={`block px-4 py-3 rounded-xl text-base font-medium leading-7 transition-all ${
+                      isActive(item.href)
+                        ? "text-primary bg-primary/5 font-semibold"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -252,9 +254,9 @@ export default function Navbar() {
               </div>
 
               {/* Mobile footer buttons */}
-              <div className="mt-8 flex flex-col gap-4">
+              <div className="mt-8 flex flex-col gap-3 px-2">
                 <Link to="/apply" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full">Apply Now</Button>
+                  <Button className="w-full shadow-sm">Apply Now</Button>
                 </Link>
                 {user ? (
                   <>

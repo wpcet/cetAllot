@@ -3,70 +3,55 @@ import React from "react";
 const AllottedTable = ({ students, deptName }) => {
   if (!students || students.length === 0) return null;
 
-  // Define education priority order
   const educationOrder = {
-    'BE': 1,
-    'BTech': 1,
-    'Diploma': 2,
-    'BSc': 3,
-    'BVoc': 4
+    BE: 1,
+    BTech: 1,
+    Diploma: 2,
+    BSc: 3,
+    BVoc: 4,
   };
 
-  // ✅ Sort students: First by education priority, then by rank
   const sortedStudents = [...students].sort((a, b) => {
-    // Get education priorities (default to 999 for unknown education types)
     const eduPriorityA = educationOrder[a.education] || 999;
     const eduPriorityB = educationOrder[b.education] || 999;
-
-    // First sort by education priority
-    if (eduPriorityA !== eduPriorityB) {
-      return eduPriorityA - eduPriorityB;
-    }
-
-    // If education is the same, sort by rank
+    if (eduPriorityA !== eduPriorityB) return eduPriorityA - eduPriorityB;
     const rankA = parseFloat(a.letRank ?? Infinity);
     const rankB = parseFloat(b.letRank ?? Infinity);
-
     return rankA - rankB;
   });
 
   return (
-    <div className="backdrop-blur-sm bg-white/80 border border-gray-200 rounded-3xl shadow-xl p-4 sm:p-6 transition-all duration-300">
-      <h2 className="text-xl sm:text-3xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-3">
-        {deptName} <span className="text-gray-500 text-sm sm:text-lg font-medium">— Allotted Students</span>
-      </h2>
+    <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+      <div className="px-6 py-4 border-b border-border/40">
+        <h3 className="text-xl font-bold">
+          {deptName}
+          <span className="text-sm font-medium text-muted-foreground ml-2">
+            — {sortedStudents.length} Allotted Student{sortedStudents.length !== 1 ? "s" : ""}
+          </span>
+        </h3>
+      </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-primary text-white uppercase text-xs tracking-widest">
-            <tr>
-              <th className="px-3 py-3 rounded-tl-2xl border-r border-white/30">No.</th>
-              <th className="px-3 py-3 border-r border-white/30">Name</th>
-              <th className="px-3 py-3 border-r border-white/30">Education</th>
-              <th className="px-3 py-3 border-r border-white/30">Rank</th>
-              <th className="px-3 py-3 rounded-tr-2xl">Category</th>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-primary text-white text-xs uppercase tracking-wider">
+              <th className="px-4 py-3 text-left font-medium">No.</th>
+              <th className="px-4 py-3 text-left font-medium">Name</th>
+              <th className="px-4 py-3 text-left font-medium">Education</th>
+              <th className="px-4 py-3 text-left font-medium">Rank</th>
+              <th className="px-4 py-3 text-left font-medium">Category</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border/40">
             {sortedStudents.map((student, index) => (
               <tr
                 key={student.id}
-                className="hover:bg-gray-50 transition duration-150"
+                className="hover:bg-muted/30 even:bg-muted/10 transition-colors"
               >
-                <td className="px-3 py-3 font-medium text-gray-800 border-r border-gray-200/50 whitespace-nowrap">
-                  {index + 1}
-                </td>
-                <td className="px-3 py-3 border-r border-gray-200/50 whitespace-nowrap">
-                  {student.name}
-                </td>
-                <td className="px-3 py-3 border-r border-gray-200/50 whitespace-nowrap">
-                  {student.education || "-"}
-                </td>
-                <td className="px-3 py-3 border-r border-gray-200/50 whitespace-nowrap">
-                  {student.letRank || "-"}
-                </td>
-                <td className="px-3 py-3 whitespace-nowrap">
-                  {student.allottedCategory}
-                </td>
+                <td className="px-4 py-3 font-medium whitespace-nowrap">{index + 1}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{student.name}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{student.education || "-"}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{student.letRank || "-"}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{student.allottedCategory}</td>
               </tr>
             ))}
           </tbody>
@@ -76,4 +61,4 @@ const AllottedTable = ({ students, deptName }) => {
   );
 };
 
-export default AllottedTable;
+export default AllottedTable;

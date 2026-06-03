@@ -5,7 +5,7 @@ import { runAllotmentHandler } from "../utils/runAllotmentHandler";
 import uploadRealData from "../utils/uploadRealData";
 import { useState } from "react";
 
-export const DashboardHeader = () => {
+export const DashboardHeader = ({ onNewNotice, onLogout }) => {
   const [loadingAllotment, setLoadingAllotment] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -34,31 +34,37 @@ export const DashboardHeader = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      <div className="w-full sm:w-auto">
-        <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Manage BTech applications and departments
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          Manage BTech applications, allotments, and notices
         </p>
       </div>
-      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-        {/* <Button 
-          variant="outline" 
-          onClick={handleUploadRealData} 
+      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <Button
+          variant="outline"
+          onClick={handleUploadRealData}
           disabled={uploading}
-          className="w-full sm:w-auto justify-center sm:justify-start"
+          className="w-full sm:w-auto shadow-sm"
         >
           <UploadCloud className="mr-2 h-4 w-4" />
           {uploading ? "Uploading..." : "Upload Real Data"}
-        </Button> */}
-        <Button 
-          variant="outline" 
-          onClick={handleRunAllotment} 
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleRunAllotment}
           disabled={loadingAllotment}
-          className="w-full sm:w-auto justify-center sm:justify-start"
+          className="w-full sm:w-auto shadow-sm"
         >
           <Check className="mr-2 h-4 w-4" />
           {loadingAllotment ? "Running..." : "Run Allotment"}
+        </Button>
+        <Button onClick={onNewNotice} className="w-full sm:w-auto shadow-sm">
+          New Notice
+        </Button>
+        <Button variant="ghost" onClick={onLogout} className="w-full sm:w-auto">
+          Logout
         </Button>
       </div>
     </div>

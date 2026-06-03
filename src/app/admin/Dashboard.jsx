@@ -6,19 +6,24 @@ import { ApplicationTable } from "./ApplicationTable";
 import { NoticeCards } from "./Notices/NoticeCards";
 import { NoticeDialog } from "./Notices/NoticeDialog";
 import { AllotmentResults } from "./Allotment/AllotmentResults";
+import { DashboardStats, DashboardStatsSkeleton } from "./DashboardStats";
+import { Skeleton, SkeletonTable, SkeletonNoticeCard } from "@/components/ui/Skeleton";
 import { db } from "@/firebase";
-import { collection, getDocs } from "firebase/firestore";
-import { saveNoticeToFirestore,deleteNoticeFromFirestore } from "../utils/saveNotice";
+import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { saveNoticeToFirestore, deleteNoticeFromFirestore } from "../utils/saveNotice";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [notices, setNotices] = useState([]);
+  const [allottedCount, setAllottedCount] = useState(0);
+  const [isPublished, setIsPublished] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [isNoticeDialogOpen, setNoticeDialogOpen] = useState(false);
   const [editNoticeData, setEditNoticeData] = useState(null);
 
@@ -28,9 +33,11 @@ export default function Dashboard() {
       try {
         setIsLoading(true);
 
-        const applicationsSnapshot = await getDocs(collection(db, "applications"));
-        const noticesSnapshot = await getDocs(collection(db, "notices"));
-        const allotmentSnapshot = await getDocs(collection(db, "allotment"));
+        const [applicationsSnapshot, noticesSnapshot, allotmentSnapshot] = await Promise.all([
+          getDocs(collection(db, "applications")),
+          getDocs(collection(db, "notices")),
+          getDocs(collection(db, "allotment")),
+        ]);
 
         const applicationsData = applicationsSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -49,11 +56,37 @@ export default function Dashboard() {
 
         setApplications(applicationsData);
         setNotices(noticesData);
-        setDepartments(allotmentData);  // Assuming the data includes department details
+        setDepartments(allotmentData);
+
+        // Calculate allotted count across all departments
+        const deptNames = ["Civil Engineering", "Electrical and Electronics Engineering", "Mechanical Engineering", "Waiting List"];
+        let totalAllotted = 0;
+        for (const dept of deptNames) {
+          try {
+            const snap = await getDocs(collection(db, `allotment/${dept}/students`));
+            totalAllotted += snap.size;
+            const snap2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
+            totalAllotted += snap2.size;
+          } catch {
+            // Skip if subcollection doesn't exist yet
+          }
+        }
+        setAllottedCount(totalAllotted);
+
+        // Check publish status
+        try {
+          const publishDoc = await getDoc(doc(db, "allotment", "publishStatus"));
+          if (publishDoc.exists()) {
+            setIsPublished(!!publishDoc.data().published);
+          }
+        } catch {
+          // ignore if not set up yet
+        }
       } catch (error) {
         console.error("Error fetching dashboard data: ", error);
       } finally {
         setIsLoading(false);
+        setInitialLoading(false);
       }
     };
 
@@ -75,46 +108,40 @@ export default function Dashboard() {
 
   // Handling Save Notices
   const handleSaveNotice = async () => {
-  if (!editNoticeData) return;
-  setIsLoading(true);
-  try {
-    await saveNoticeToFirestore(editNoticeData);
-    setNoticeDialogOpen(false);
-    setEditNoticeData(null);
+    if (!editNoticeData) return;
+    setIsLoading(true);
+    try {
+      await saveNoticeToFirestore(editNoticeData);
+      setNoticeDialogOpen(false);
+      setEditNoticeData(null);
 
-    // Re-fetch notices after saving
-    const noticesSnapshot = await getDocs(collection(db, "notices"));
-    const noticesData = noticesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setNotices(noticesData);
-  } catch (error) {
-    console.error("Error saving notice:", error);
-    // Optionally show user feedback (e.g., toast)
-  } finally {
-    setIsLoading(false);
-  }
-};
-const handleDeleteNotice = async (noticeId) => {
-  const confirm = window.confirm("Are you sure you want to delete this notice?");
-  if (!confirm) return;
+      const noticesSnapshot = await getDocs(collection(db, "notices"));
+      const noticesData = noticesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotices(noticesData);
+    } catch (error) {
+      console.error("Error saving notice:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  setIsLoading(true);
-  try {
-    await deleteNoticeFromFirestore(noticeId);
+  const handleDeleteNotice = async (noticeId) => {
+    const confirm = window.confirm("Are you sure you want to delete this notice?");
+    if (!confirm) return;
 
-    // Update the local state without refetching everything
-    setNotices((prev) => prev.filter((n) => n.id !== noticeId));
-  } catch (error) {
-    console.error("Error deleting notice:", error);
-    // Optionally show a toast or alert here
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-
+    setIsLoading(true);
+    try {
+      await deleteNoticeFromFirestore(noticeId);
+      setNotices((prev) => prev.filter((n) => n.id !== noticeId));
+    } catch (error) {
+      console.error("Error deleting notice:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -128,55 +155,106 @@ const handleDeleteNotice = async (noticeId) => {
           });
           setNoticeDialogOpen(true);
         }}
-        onPublishAllotments={() => setAllotmentDialogOpen(true)}
         onLogout={handleLogout}
       />
 
-      <Tabs defaultValue="applications" className="space-y-4">
-        <TabsList>
+      {/* Stats Overview */}
+      {initialLoading ? (
+        <DashboardStatsSkeleton />
+      ) : (
+        <div className="mb-8">
+          <DashboardStats
+            applications={applications}
+            notices={notices}
+            allottedCount={allottedCount}
+            isPublished={isPublished}
+          />
+        </div>
+      )}
+
+      <Tabs defaultValue="applications" className="space-y-6">
+        <TabsList className="bg-muted/50 p-1">
           <TabsTrigger value="applications">Applications</TabsTrigger>
           <TabsTrigger value="allotment">Allotment</TabsTrigger>
           <TabsTrigger value="notices">Notices & Updates</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="applications">
-          <ApplicationTable
-            applications={filteredApplications}
-            departments={departments}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            departmentFilter={departmentFilter}
-            setDepartmentFilter={setDepartmentFilter}
-            isLoading={isLoading}
-            onEdit={() => {}} // Placeholder
-            onNewApplication={() => {}} // Placeholder
-          />
+        <TabsContent value="applications" className="space-y-4">
+          {initialLoading ? (
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex justify-between mb-6">
+                <Skeleton className="h-10 w-72 rounded-lg" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                  <Skeleton className="h-9 w-28 rounded-md" />
+                  <Skeleton className="h-9 w-36 rounded-md" />
+                </div>
+              </div>
+              <SkeletonTable rows={8} columns={14} />
+            </div>
+          ) : (
+            <ApplicationTable
+              applications={filteredApplications}
+              departments={departments}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              departmentFilter={departmentFilter}
+              setDepartmentFilter={setDepartmentFilter}
+              isLoading={isLoading}
+              onEdit={() => {}}
+              onNewApplication={() => {}}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="allotment">
-          <AllotmentResults />
+          {initialLoading ? (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex justify-between">
+                <Skeleton className="h-10 w-36 rounded-lg" />
+                <Skeleton className="h-10 w-40 rounded-lg" />
+              </div>
+              <SkeletonTable rows={5} columns={5} />
+              <SkeletonTable rows={3} columns={5} />
+              <SkeletonTable rows={4} columns={5} />
+            </div>
+          ) : (
+            <AllotmentResults />
+          )}
         </TabsContent>
 
         <TabsContent value="notices">
-          <NoticeCards
-            notices={notices}
-            onEdit={(notice) => {
-            setEditNoticeData(notice);
-            setNoticeDialogOpen(true);
-            }}
-            onDelete={handleDeleteNotice}
-            onNewNotice={() => {
-              setEditNoticeData({
-                title: "",
-                message: "",
-                date: new Date().toISOString().split("T")[0],
-                important: false,
-              });
-              setNoticeDialogOpen(true);
-            }}
-          />
+          {initialLoading ? (
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex justify-between items-center mb-6">
+                <Skeleton className="h-7 w-44" />
+                <Skeleton className="h-9 w-32 rounded-md" />
+              </div>
+              {[1, 2, 3].map((i) => (
+                <SkeletonNoticeCard key={i} />
+              ))}
+            </div>
+          ) : (
+            <NoticeCards
+              notices={notices}
+              onEdit={(notice) => {
+                setEditNoticeData(notice);
+                setNoticeDialogOpen(true);
+              }}
+              onDelete={handleDeleteNotice}
+              onNewNotice={() => {
+                setEditNoticeData({
+                  title: "",
+                  message: "",
+                  date: new Date().toISOString().split("T")[0],
+                  important: false,
+                });
+                setNoticeDialogOpen(true);
+              }}
+            />
+          )}
         </TabsContent>
       </Tabs>
 

@@ -12,55 +12,58 @@ import { Pencil, Trash2, PlusCircle } from "lucide-react";
 export const NoticeCards = ({ notices, onEdit, onDelete, onNewNotice }) => {
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">Notices & Updates</h2>
-        <Button onClick={onNewNotice}>
+        <Button onClick={onNewNotice} className="shadow-sm">
           <PlusCircle className="mr-2 h-4 w-4" /> New Notice
         </Button>
       </div>
 
-      <div className="space-y-4">
-        {notices.map((notice) => (
-          <Card
-            key={notice.id}
-            className={notice.important ? "border-red-300" : ""}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="flex items-center">
-                    {notice.title}
-                    {notice.important && (
-                      <Badge className="ml-2 bg-red-100 text-red-800 border-red-300">
-                        Important
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <CardDescription>{notice.date}</CardDescription>
+      <div className="space-y-5">
+        {notices.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p className="text-lg font-medium">No notices yet</p>
+            <p className="text-sm mt-1">Create your first notice to get started.</p>
+          </div>
+        ) : (
+          notices.map((notice) => (
+            <Card
+              key={notice.id}
+              className={`card-hover ${notice.important ? "border-red-200/70" : "border-border/50"}`}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="space-y-1">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      {notice.title}
+                      {notice.important && (
+                        <Badge variant="default" className="bg-red-100 text-red-700 border-red-200 text-[10px]">
+                          Important
+                        </Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription>
+                      {notice.date}
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <Button size="sm" variant="outline" onClick={() => onEdit(notice)}>
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => onDelete(notice.id)}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(notice)}
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => onDelete(notice.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p>{notice.message}</p>
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
+                  {notice.message}
+                </p>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </>
   );

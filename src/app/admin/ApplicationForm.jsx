@@ -3,6 +3,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 import {
   FormField,
@@ -20,6 +21,23 @@ import {
 } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import {
+  User,
+  Mail,
+  Phone,
+  Hash,
+  Trophy,
+  Users,
+  BookOpen,
+  MapPin,
+  Building,
+  Briefcase,
+  Calendar,
+  FileText,
+  GraduationCap,
+  Percent,
+  Star,
+} from "lucide-react";
 
 // Firebase
 import { db } from "@/firebase";
@@ -77,12 +95,9 @@ const initialFormData = {
 const getFirstErrorMessage = (errors) => {
   for (const key in errors) {
     if (!errors[key]) continue;
-
     if (typeof errors[key]?.message === "string") {
       return errors[key].message;
     }
-
-    // Handle nested errors like priorityChoices
     if (typeof errors[key] === "object") {
       const nestedMessage = getFirstErrorMessage(errors[key]);
       if (nestedMessage) return nestedMessage;
@@ -93,12 +108,31 @@ const getFirstErrorMessage = (errors) => {
 
 const onError = (errors) => {
   const message = getFirstErrorMessage(errors) || "Please correct the errors and try again.";
-  toast.error("Submission Failed", {
-    description: message,
-  });
+  toast.error("Submission Failed", { description: message });
 };
 
+// Form section component
+const FormSection = ({ title, icon: Icon, children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="space-y-5 p-6 rounded-xl bg-muted/20 border border-border/40"
+  >
+    <div className="flex items-center gap-3 pb-3 border-b border-border/30">
+      <div className="p-2 rounded-lg bg-primary/5">
+        <Icon className="h-5 w-5 text-primary" />
+      </div>
+      <h3 className="text-base font-semibold text-foreground">{title}</h3>
+    </div>
+    <div className="space-y-5">{children}</div>
+  </motion.div>
+);
 
+const required = (label) => (
+  <span>
+    {label} <span className="text-red-500">*</span>
+  </span>
+);
 
 export const ApplicationForm = ({ onSuccess }) => {
   const form = useForm({
@@ -130,12 +164,12 @@ export const ApplicationForm = ({ onSuccess }) => {
       toast.error("Please fill all required fields correctly.");
       return;
     }
-  
+
     const confirmed = window.confirm(
       "Are you sure all fields are filled in correctly?"
     );
     if (!confirmed) return;
-  
+
     try {
       const formattedData = {
         ...data,
@@ -146,274 +180,250 @@ export const ApplicationForm = ({ onSuccess }) => {
         category: data.reservationCategory,
         submittedAt: Timestamp.now(),
       };
-  
-      await addDoc(collection(db, "applications"), formattedData);
-  
-      toast.success("Submitted!", {
-  duration: 4000,
-  description: "We’ve received your application.",
-});
 
-  
-      form.reset(initialFormData); // 👈 Reset the form
-      setSelectedBranches({ "1": "", "2": "", "3": "" }); // 👈 Reset selected branches
-      onSuccess?.(); // optional callback
+      await addDoc(collection(db, "applications"), formattedData);
+
+      toast.success("Submitted!", {
+        duration: 4000,
+        description: "We've received your application.",
+      });
+
+      form.reset(initialFormData);
+      setSelectedBranches({ "1": "", "2": "", "3": "" });
+      onSuccess?.();
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Submission failed!", {
-  description: "Please try again later or contact support.",
-});
-
+        description: "Please try again later or contact support.",
+      });
     }
   };
-  
 
-  const required = (label) => (
-    <span>
-      {label} <span className="text-red-500">*</span>
-    </span>
+  // Input field with optional icon and accessible label
+  const renderInputField = ({ name, label, type = "text", step, icon: Icon }) => (
+    <FormField
+      key={name}
+      name={name}
+      render={({ field, fieldState, fieldId }) => (
+        <FormItem>
+          <FormLabel htmlFor={fieldId}>{label}</FormLabel>
+          <FormControl>
+            <div className="relative">
+              {Icon && (
+                <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              )}
+              <Input
+                id={fieldId}
+                {...field}
+                type={type}
+                step={step}
+                className={`${Icon ? "pl-10" : ""} ${
+                  fieldState.invalid ? "border-red-500 ring-red-500/20" : ""
+                }`}
+              />
+            </div>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  // Select field wrapper with accessible label
+  const renderSelectField = ({ name, label, placeholder, options }) => (
+    <FormField
+      key={name}
+      name={name}
+      render={({ field, fieldId }) => (
+        <FormItem>
+          <FormLabel htmlFor={fieldId}>{label}</FormLabel>
+          <FormControl>
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger id={fieldId}>
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((opt) => (
+                  <SelectItem key={opt} value={opt}>
+                    {opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit,onError)} className="space-y-4">
-        {/* Required Inputs */}
-        {[
-          { name: "name", label: required("Name") },
-          { name: "email", label: required("Email Address") },
-          { name: "phone", label: required("Phone Number (preferably with WA)"), type: "number" },
-          { name: "letRegNo", label: required("LET Registration Number (enter 0 if not written)"), type: "text" },
-          { name: "letRank", label: required("LET Rank (enter 0 if not written)"), type: "number" },
-          // { name: "highestEducation", label: required("Highest Education") },
-          // {
-          //   name: "mark",
-          //   label: required("Marks % ( Obtained in diploma/Bsc/BVoc exam )"),
-          //   type: "number",
-          //   step: "0.01",
-          // },
-          {
-            name: "distance",
-            label: required("Distance in KM (between your workplace and CET)"),
-            type: "number",
-          },
-        ].map(({ name, label, type = "text", step }) => (
-          <FormField
-            key={name}
-            name={name}
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel>{label}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type={type}
-                    step={step}
-                    // placeholder={name}
-                    className={fieldState.invalid ? "border-red-500" : ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
+      <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8">
+        {/* Personal Information */}
+        <FormSection title="Personal Information" icon={User}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {renderInputField({ name: "name", label: required("Full Name"), icon: User })}
+            {renderInputField({ name: "email", label: required("Email Address"), type: "email", icon: Mail })}
+            {renderInputField({ name: "phone", label: required("Phone Number (with WhatsApp)"), type: "tel", icon: Phone })}
+            {renderInputField({ name: "adharNumber", label: "Aadhaar Number", type: "text", icon: Hash })}
+          </div>
+        </FormSection>
 
-{/* Caste Dropdown */}
-<FormField
-  name="highestEducation"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>{required("Education Type")}</FormLabel>
-      <FormControl>
-        <Select value={field.value} onValueChange={field.onChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select your highest education type" />
-          </SelectTrigger>
-          <SelectContent>
-            {["BTech","BE","Diploma", "BSc", "DVoc"].map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+        {/* Academic Details */}
+        <FormSection title="Academic Details" icon={GraduationCap}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {renderSelectField({
+              name: "highestEducation",
+              label: required("Education Type"),
+              placeholder: "Select your highest education",
+              options: ["BTech", "BE", "Diploma", "BSc", "DVoc"],
+            })}
+            {renderInputField({
+              name: "mark",
+              label: required("Highest Education Marks %"),
+              type: "number",
+              step: "0.01",
+              icon: Percent,
+            })}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {renderInputField({ name: "letRegNo", label: required("LET Registration No. (enter 0 if N/A)"), icon: FileText })}
+            {renderInputField({ name: "letRank", label: required("LET Rank (enter 0 if N/A)"), type: "number", icon: Trophy })}
+          </div>
+        </FormSection>
 
-<FormField
-            key={"mark"}
-            name={"mark"}
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel>{required("Highest Education Marks % ( Obtained in BTech/BE/Diploma/Bsc/DVoc exam )")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type={"number"}
-                    step={"0.01"}
-                    // placeholder={name}
-                    className={fieldState.invalid ? "border-red-500" : ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Demographic Details */}
+        <FormSection title="Demographic Details" icon={Users}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {renderSelectField({
+              name: "caste",
+              label: required("Caste"),
+              placeholder: "Select your caste",
+              options: [
+                "Latin Catholic", "Roman Catholic", "Orthodox Syrian",
+                "Jacobite Syrian", "Marthoma", "Dalit Christian",
+                "Mappila", "Islam",
+                "Nair", "Ezhava", "Nadar", "Viswakarma", "Thiyya",
+                "Pulaya", "Cheramar", "Panan", "Velan", "Chakyar",
+                "Brahmin", "Others",
+              ],
+            })}
+            {renderSelectField({
+              name: "religion",
+              label: required("Religion"),
+              placeholder: "Select your religion",
+              options: ["Hindu", "Muslim/Islam", "Christian", "Other"],
+            })}
+            {renderSelectField({
+              name: "reservationCategory",
+              label: required("Reservation Category"),
+              placeholder: "Select your category",
+              options: [
+                "EWS", "Ezhava", "Muslim", "Other Backward Hindu",
+                "Latin Catholic and Anglo Indian", "Dheevara", "Viswakarma",
+                "Kusavan", "OBC Christian", "Kudumbi", "SC", "ST",
+                "Physically Disabled", "Transgender", "Sports",
+                "DTE Staff", "Central govt. employee", "General",
+              ],
+            })}
+          </div>
+        </FormSection>
 
-<FormField
-  name="caste"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>{required("Caste")}</FormLabel>
-      <FormControl>
-        <Select value={field.value} onValueChange={field.onChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select your caste" />
-          </SelectTrigger>
-          <SelectContent>
-            {["Latin Catholic","Roman Catholic","Orthodox Syrian",  "Jacobite Syrian", "Marthoma","Dalit Christian",
-            "Mappila","Islam",
-            "Nair","Ezhava","Nadar","Viswakarma","Thiyya","Pulaya","Cheramar", "Panan",  "Velan", "Chakyar","Brahmin", "Others"].map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+        {/* Branch Preferences */}
+        <FormSection title="Branch Preferences" icon={BookOpen}>
+          <p className="text-sm text-muted-foreground -mt-2">
+            Select your branch preferences in order of priority. Each option must be unique.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {["1", "2", "3"].map((key) => {
+              const otherSelected = Object.entries(selectedBranches)
+                .filter(([k]) => k !== key)
+                .map(([, v]) => v);
+              const availableOptions = allBranches.filter(
+                (branch) => !otherSelected.includes(branch)
+              );
+              const icons = { "1": Star, "2": Star, "3": Star };
+              const labels = { "1": "1st", "2": "2nd", "3": "3rd" };
+              const Icon = icons[key];
 
+              return (
+                <FormField
+                  key={key}
+                  name={`priorityChoices.${key}`}
+                  render={({ fieldId }) => (
+                    <FormItem>
+                      <FormLabel htmlFor={fieldId}>{required(`${labels[key]} Preference`)}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Select
+                            value={selectedBranches[key]}
+                            onValueChange={(value) => handleBranchChange(key, value)}
+                          >
+                            <SelectTrigger className="pl-10" id={fieldId}>
+                              <SelectValue placeholder={`Select branch...`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableOptions.map((branch) => (
+                                <SelectItem key={branch} value={branch}>
+                                  {branch}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              );
+            })}
+          </div>
+        </FormSection>
 
-{/* Religion Dropdown */}
-<FormField
-  name="religion"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>{required("Religion")}</FormLabel>
-      <FormControl>
-        <Select value={field.value} onValueChange={field.onChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select your religion" />
-          </SelectTrigger>
-          <SelectContent>
-            {["Hindu", "Muslim/Islam", "Christian", "Other"].map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+        {/* Professional Details */}
+        <FormSection title="Professional Details" icon={Briefcase}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {renderInputField({ name: "company", label: "Current Company", icon: Building })}
+            {renderInputField({ name: "experience", label: "Work Experience (years)", type: "number", icon: Calendar })}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {renderInputField({ name: "distance", label: required("Distance in KM (workplace to CET)"), type: "number", icon: MapPin })}
+            {renderInputField({ name: "age", label: "Age", type: "number", icon: Calendar })}
+          </div>
+          {renderInputField({ name: "address", label: "Address", icon: Building })}
+        </FormSection>
 
-
-        
-
-        {/* Reservation Category */}
-        <FormField
-          name="reservationCategory"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{required("Reservation Category")}</FormLabel>
-              <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["EWS","Ezhava","Muslim","Other Backward Hindu","Latin Catholic and Anglo Indian","Dheevara","Viswakarma","Kusavan","OBC Christian","Kudumbi","SC", "ST", "Physically Disabled","Transgender", "Sports", "DTE Staff","Central govt. employee", "General"].map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Branch Priority */}
-        {["1", "2", "3"].map((key) => {
-          const otherSelected = Object.entries(selectedBranches)
-            .filter(([k]) => k !== key)
-            .map(([, v]) => v);
-
-          const availableOptions = allBranches.filter(
-            (branch) => !otherSelected.includes(branch)
-          );
-
-          return (
-            <FormField
-              key={key}
-              name={`priorityChoices.${key}`}
-              render={() => (
-                <FormItem>
-                  <FormLabel>{required(`Branch - Option ${key}`)}</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={selectedBranches[key]}
-                      onValueChange={(value) => handleBranchChange(key, value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={`Select Branch Option ${key}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableOptions.map((branch) => (
-                          <SelectItem key={branch} value={branch}>
-                            {branch}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          );
-        })}
-
-        {/* Optional Inputs */}
-        {[
-          { name: "adharNumber", label: "Aadhaar Number", type: "number" },
-          { name: "age", label: "Age", type: "number" },
-          { name: "company", label: "Company" },
-          { name: "experience", label: "Experience (in years)", type: "number" },
-          { name: "address", label: "Address" },
-        ].map(({ name, label, type = "text", step }) => (
-          <FormField
-            key={name}
-            name={name}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{label}</FormLabel>
-                <FormControl>
-                  <Input {...field} type={type} step={step}  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-
-        <Button
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full mt-6 bg-primary text-white"
+        {/* Submit */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="pt-4"
         >
-          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
+          <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 mb-6">
+            <p className="text-sm text-amber-800">
+              <strong>Please review carefully:</strong> Once submitted, editing will not be possible.
+              Ensure all details are accurate and complete before submitting.
+            </p>
+          </div>
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg"
+          >
+            {form.formState.isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                Submitting...
+              </span>
+            ) : (
+              "Submit Application"
+            )}
+          </Button>
+        </motion.div>
       </form>
     </FormProvider>
   );
