@@ -162,11 +162,7 @@ export default function Home() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Link to="/programs">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                    View Programs
-                  </Button>
-                </Link>
+
               </motion.div>
             </motion.div>
 
@@ -277,7 +273,7 @@ export default function Home() {
       </SectionWrapper>
 
       {/* Programs Section */}
-      <SectionWrapper>
+      <SectionWrapper id="programs">
         <div className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div className="text-center mb-14" variants={fadeIn}>
@@ -322,14 +318,12 @@ export default function Home() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Link
-                        to={`/programs#${program.title.toLowerCase().replace(/\s+/g, "-")}`}
-                      >
+                      <Link to="/apply">
                         <Button
                           variant="outline"
                           className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300"
                         >
-                          Learn More
+                          Apply Now
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                       </Link>

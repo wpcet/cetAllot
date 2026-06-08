@@ -9,7 +9,6 @@ import { auth } from "../firebase";
 const baseNavigation = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
-  { name: "Programs", href: "/programs" },
   { name: "Admission", href: "/admission" },
   { name: "Eligibility", href: "/eligibility" },
   { name: "Help", href: "/help" },

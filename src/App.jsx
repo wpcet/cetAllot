@@ -16,7 +16,6 @@ import Admission from "./app/Admission";
 import NotFound from "./app/NotFound";
 import HelpDesk from "./app/HelpDesk";
 import About from "./app/About";
-import Programs from "./app/Programs";
 import Eligibility from "./app/Eligibility";
 
 import Apply from "./app/Apply";
@@ -74,14 +73,6 @@ const App = () => {
           element={
             <PageTransition>
               <About />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/programs"
-          element={
-            <PageTransition>
-              <Programs />
             </PageTransition>
           }
         />

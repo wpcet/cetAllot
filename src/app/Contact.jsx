@@ -22,10 +22,7 @@ const CONTACT_INFO = {
   },
   phone: [
     { label: "Main Office", number: "+91 471 299 8391" },
-    { label: "Binu S", number: "+91 94952 07212" },
-    { label: "Anas S", number: "+91 96336 33094" },
     { label: "Prathibha P G", number: "+91 94472 47959" },
-    { label: "Ratheesh Kumar K", number: "+91 70255 70025" },
   ],
   email: [
     { label: "General Inquiries", address: "hodptdc@cet.ac.in" },
