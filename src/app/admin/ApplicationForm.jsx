@@ -112,6 +112,7 @@ const onError = (errors) => {
 };
 
 // Form section component
+// eslint-disable-next-line no-unused-vars
 const FormSection = ({ title, icon: Icon, children }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }}
@@ -223,7 +224,7 @@ export const ApplicationForm = ({ onSuccess }) => {
               />
             </div>
           </FormControl>
-          <FormMessage />
+          <FormMessage fieldState={fieldState} />
         </FormItem>
       )}
     />
@@ -234,7 +235,7 @@ export const ApplicationForm = ({ onSuccess }) => {
     <FormField
       key={name}
       name={name}
-      render={({ field, fieldId }) => (
+      render={({ field, fieldState, fieldId }) => (
         <FormItem>
           <FormLabel htmlFor={fieldId}>{label}</FormLabel>
           <FormControl>
@@ -251,7 +252,7 @@ export const ApplicationForm = ({ onSuccess }) => {
               </SelectContent>
             </Select>
           </FormControl>
-          <FormMessage />
+          <FormMessage fieldState={fieldState} />
         </FormItem>
       )}
     />
@@ -351,7 +352,7 @@ export const ApplicationForm = ({ onSuccess }) => {
                 <FormField
                   key={key}
                   name={`priorityChoices.${key}`}
-                  render={({ fieldId }) => (
+                  render={({ fieldId, fieldState }) => (
                     <FormItem>
                       <FormLabel htmlFor={fieldId}>{required(`${labels[key]} Preference`)}</FormLabel>
                       <FormControl>
@@ -374,7 +375,7 @@ export const ApplicationForm = ({ onSuccess }) => {
                           </Select>
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage fieldState={fieldState} />
                     </FormItem>
                   )}
                 />

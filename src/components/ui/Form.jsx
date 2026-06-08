@@ -12,7 +12,7 @@ export function Form({ children, onSubmit, ...props }) {
 }
 
 // FormProviderWrapper: Provides the form context to the children and handles form submission
-export function FormProviderWrapper({ children, methods, onSubmit }) {
+export function FormProviderWrapper({ children, methods }) {
   return (
     <RHFormProvider {...methods}>
       {children}
@@ -49,9 +49,10 @@ export function FormControl({ children, className }) {
   return <div className={className}>{children}</div>;
 }
 
-// FormMessage: Displays an error message if provided
-export function FormMessage({ message, className }) {
-  return message ? <p className={`text-red-500 text-sm ${className || ""}`}>{message}</p> : null;
+// FormMessage: Displays an error message if provided, or from fieldState
+export function FormMessage({ message, fieldState, className }) {
+  const msg = message || fieldState?.error?.message;
+  return msg ? <p className={`text-red-500 text-sm ${className || ""}`}>{msg}</p> : null;
 }
 
 // FormDescription: A description that appears under a form control

@@ -49,7 +49,7 @@ export default function Footer() {
                 { icon: Instagram, href: "https://www.instagram.com/cetians_/", label: "Instagram" },
                 { icon: Twitter, href: "https://x.com/cet_trivandrum", label: "Twitter" },
                 { icon: Linkedin, href: "https://in.linkedin.com/school/college-of-engineering-trivandrum/", label: "LinkedIn" },
-              ].map(({ icon: Icon, href, label }) => (
+              ].map(({ icon: Icon, href, label }) => ( // eslint-disable-line no-unused-vars
                 <a
                   key={label}
                   href={href}

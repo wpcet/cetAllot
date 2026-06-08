@@ -33,7 +33,6 @@ export default function PartTimeBtech() {
     const fetchData = async () => {
       try {
         const publishSnap = await getDoc(doc(db, "allotment", "publishStatus"));
-        const publishSnap2 = await getDoc(doc(db, "no_exam_allotment", "publishStatus"));
         const published = publishSnap.exists() && publishSnap.data().published;
         setIsPublished(published);
         if (!published) return;
