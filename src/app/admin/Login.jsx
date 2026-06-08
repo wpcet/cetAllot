@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
@@ -77,7 +76,7 @@ export default function Login() {
                 <FormField
                   control={form.control}
                   name="email"
-                  render={({ field, fieldId }) => (
+                  render={({ field, fieldState, fieldId }) => (
                     <FormItem>
                       <FormLabel htmlFor={fieldId}>Email</FormLabel>
                       <FormControl>
@@ -91,7 +90,7 @@ export default function Login() {
                           />
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage fieldState={fieldState} />
                     </FormItem>
                   )}
                 />
@@ -99,7 +98,7 @@ export default function Login() {
                 <FormField
                   control={form.control}
                   name="password"
-                  render={({ field, fieldId }) => (
+                  render={({ field, fieldState, fieldId }) => (
                     <FormItem>
                       <FormLabel htmlFor={fieldId}>Password</FormLabel>
                       <FormControl>
@@ -114,7 +113,7 @@ export default function Login() {
                           />
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage fieldState={fieldState} />
                     </FormItem>
                   )}
                 />

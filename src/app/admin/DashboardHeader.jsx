@@ -1,4 +1,3 @@
-"use client";
 import { Button } from "@/components/ui/Button";
 import { Check, UploadCloud } from "lucide-react";
 import { runAllotmentHandler } from "../utils/runAllotmentHandler";

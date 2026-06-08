@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 // ─── Stat Card ─────────────────────────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
 function StatCard({ icon: Icon, label, value, sub, color = "primary", trend }) {
   const colorMap = {
     primary: "from-primary/10 to-primary/5 border-primary/20 text-primary",

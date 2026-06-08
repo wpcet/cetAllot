@@ -1,7 +1,9 @@
 const getCategoryKey = (app) => {
   const map = {
     'EWS': 'EWS', 'Ezhava': 'EZ', 'Muslim': 'M', 'OBH': 'BH',
-    'Latin Catholic': 'LC', 'Dheevara': 'DV', 'Viswakarma': 'VK',
+    'Other Backward Hindu': 'BH',
+    'Latin Catholic': 'LC', 'Latin Catholic and Anglo Indian': 'LC',
+    'Dheevara': 'DV', 'Viswakarma': 'VK',
     'Kusavan': 'KN', 'OBC Christian': 'BX', 'Kudumbi': 'KU',
     'SC': 'SC', 'ST': 'ST', 'Physically Disabled': 'PD', 'Transgender': 'TG',
     'Sports': 'SPORTS', 'DTE Staff': 'STAFF', 'Central govt. employee': 'CENTRAL',
@@ -84,7 +86,7 @@ const sortByEducationThenRankThenMarks = (applications) => {
 
 // Helper function to check if application is eligible for allotment
 const isEligibleForAllotment = (app) => {
-const validMark = parseFloat(app.mark) >= getMinMarkForCategory(app);
+  const validMark = parseFloat(app.mark) >= getMinMarkForCategory(app);
   const validDistance = parseFloat(app.distance) <= MAX_DISTANCE;
   const validRank = isValidRank(app.letRank);
   const validExperience = parseFloat(app.experience) >= MIN_EXPERIENCE;
@@ -93,7 +95,7 @@ const validMark = parseFloat(app.mark) >= getMinMarkForCategory(app);
 
 // Helper function to check basic eligibility (without experience)
 const isBasicEligible = (app) => {
-const validMark = parseFloat(app.mark) >= getMinMarkForCategory(app);
+  const validMark = parseFloat(app.mark) >= getMinMarkForCategory(app);
   const validDistance = parseFloat(app.distance) <= MAX_DISTANCE;
   const validRank = isValidRank(app.letRank);
   return validDistance && validRank && validMark;

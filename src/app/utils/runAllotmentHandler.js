@@ -51,8 +51,7 @@ export const runAllotmentHandler = async () => {
     "totalSeats":100
 }
 ]
-    const { updatedApplications, updatedDepartments,noExamApplications } = calculateAllotment(applications, departments);
-    const noApplication = calculateAllotment(noExamApplications, departments)["updatedApplications"];
+    const { updatedApplications, updatedDepartments, noExamApplications } = calculateAllotment(applications, departments);
     
     // console.log("🧮 Allotment completed. Departments:", updatedDepartments);
 
@@ -79,7 +78,7 @@ export const runAllotmentHandler = async () => {
     }
 
     for (const dept of updatedDepartments) {
-      const studentsInDept = noApplication.filter(
+      const studentsInDept = noExamApplications.filter(
         (app) => app.allottedDepartment === dept.name
       );
       // console.log(`📤 Uploading ${studentsInDept.length} students to dept: ${dept.name}`);

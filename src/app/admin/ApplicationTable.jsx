@@ -39,13 +39,10 @@ import * as XLSX from "xlsx";
 export const ApplicationTable = ({
   departments,
   statusFilter,
-  setStatusFilter,
   departmentFilter,
-  setDepartmentFilter,
   searchTerm,
   setSearchTerm,
   isLoading,
-  onEdit,
   onNewApplication,
 }) => {
   const [applications, setApplications] = useState([]);

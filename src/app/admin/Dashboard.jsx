@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { DashboardHeader } from "./DashboardHeader";
 import { ApplicationTable } from "./ApplicationTable";
@@ -93,8 +95,9 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const handleLogout = () => {
-    navigate("/login");
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/admin");
   };
 
   const filteredApplications = applications.filter((app) => {
