@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Textarea } from "@/components/ui/Textarea";
+import { Textarea } from "@/components/ui/TextArea";
 import { Button } from "@/components/ui/Button";
 
 export const DepartmentDialog = ({
