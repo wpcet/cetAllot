@@ -47,6 +47,7 @@ export const ApplicationTable = ({
 }) => {
   const [applications, setApplications] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [yearFilter, setYearFilter] = useState(String(new Date().getFullYear()));
 
   useEffect(() => {
     const q = query(collection(db, "applications"), orderBy("submittedAt", "asc"));
@@ -85,13 +86,27 @@ export const ApplicationTable = ({
     setIsModalOpen(false);
   };
 
+  const getAppYear = (app) => {
+    if (!app.submittedAt) return 2025; // Default legacy to 2025
+    try {
+      const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
+      return date.getFullYear();
+    } catch {
+      return 2025;
+    }
+  };
+
   const filteredApps = applications.filter((app) => {
     const matchesSearch =
       app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.email?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || app.status === statusFilter;
     const matchesDepartment = departmentFilter === "all" || app.department === departmentFilter;
-    return matchesSearch && matchesStatus && matchesDepartment;
+    
+    const appYear = getAppYear(app);
+    const matchesYear = yearFilter === "all" || String(appYear) === yearFilter;
+    
+    return matchesSearch && matchesStatus && matchesDepartment && matchesYear;
   });
 
   const onExport = () => {
@@ -122,15 +137,30 @@ export const ApplicationTable = ({
     <>
       {/* Header & Filters */}
       <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search applications..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full"
-            type="search"
-          />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-xl">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search applications..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full"
+              type="search"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Year:</span>
+            <Select value={yearFilter} onValueChange={setYearFilter}>
+              <SelectTrigger className="w-[120px] h-10 text-sm">
+                <SelectValue placeholder="Select Year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="2026">2026</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="flex gap-2 flex-wrap justify-end items-center">

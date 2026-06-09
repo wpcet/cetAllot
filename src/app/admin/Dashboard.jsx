@@ -60,14 +60,18 @@ export default function Dashboard() {
         setNotices(noticesData);
         setDepartments(allotmentData);
 
-        // Calculate allotted count across all departments
-        const deptNames = ["Civil Engineering", "Electrical and Electronics Engineering", "Mechanical Engineering", "Waiting List"];
+        const currentYear = new Date().getFullYear();
+
+        // Calculate allotted count across all departments for current year
+        const deptNames = currentYear === 2025
+          ? ["Civil Engineering", "Electrical and Electronics Engineering", "Mechanical Engineering", "Waiting List"]
+          : ["Computer Science and Engineering", "Electronics and Communication Engineering", "Mechanical Engineering", "Waiting List"];
         let totalAllotted = 0;
         for (const dept of deptNames) {
           try {
-            const snap = await getDocs(collection(db, `allotment/${dept}/students`));
+            const snap = await getDocs(collection(db, `allotment/${dept}_${currentYear}/students`));
             totalAllotted += snap.size;
-            const snap2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
+            const snap2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${currentYear}/students`));
             totalAllotted += snap2.size;
           } catch {
             // Skip if subcollection doesn't exist yet
@@ -75,9 +79,9 @@ export default function Dashboard() {
         }
         setAllottedCount(totalAllotted);
 
-        // Check publish status
+        // Check publish status for current year
         try {
-          const publishDoc = await getDoc(doc(db, "allotment", "publishStatus"));
+          const publishDoc = await getDoc(doc(db, "allotment", `publishStatus_${currentYear}`));
           if (publishDoc.exists()) {
             setIsPublished(!!publishDoc.data().published);
           }

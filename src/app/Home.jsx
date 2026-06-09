@@ -127,7 +127,7 @@ export default function Home() {
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"
                 >
                   <Calendar className="h-4 w-4" />
-                  Admissions Open for 2025-26
+                  Admissions Open for 2026-27
                 </motion.div>
 
                 <motion.h1
@@ -286,15 +286,15 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
-                  title: "Electrical and Electronics Engineering",
+                  title: "Computer Science and Engineering",
                   description:
-                    "Covers power generation, electrical machines, control systems, electronics, and renewable energy technologies.",
+                    "Covers software engineering, data structures, algorithms, databases, computer networks, and artificial intelligence.",
                   icon: <BookOpen className="h-10 w-10 text-primary" />,
                 },
                 {
-                  title: "Civil Engineering",
+                  title: "Electronics and Communication Engineering",
                   description:
-                    "Focuses on structural engineering, transportation systems, geotechnical engineering, water resources, and construction management.",
+                    "Focuses on semiconductor devices, analog and digital circuits, signals and systems, communication engineering, and VLSI design.",
                   icon: <GraduationCap className="h-10 w-10 text-primary" />,
                 },
                 {
@@ -522,7 +522,7 @@ export default function Home() {
                       Contact Us
                     </Button>
                   </Link>
-                  <Link to="https://drive.google.com/file/d/1N9gARnxlDe95UEgKyLyoqndtDi17Qcy1/view?usp=sharing">
+                  {/* <Link to="https://drive.google.com/file/d/1N9gARnxlDe95UEgKyLyoqndtDi17Qcy1/view?usp=sharing">
                     <Button
                       size="lg"
                       variant="outline"
@@ -530,7 +530,7 @@ export default function Home() {
                     >
                       Press Release
                     </Button>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </motion.div>

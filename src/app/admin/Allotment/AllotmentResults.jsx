@@ -6,56 +6,94 @@ import AllottedNoTable from "./AllottedNoTable";
 import * as XLSX from "xlsx";
 import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 
 export const AllotmentResults = () => {
-  const [allottedData, setAllottedData] = useState({ ce: [], ee: [], mech: [] });
-  const [allottedData2, setAllottedData2] = useState({ ce: [], ee: [], mech: [] });
+  const [allottedData, setAllottedData] = useState({});
+  const [allottedData2, setAllottedData2] = useState({});
   const [loading, setLoading] = useState(true);
   const [isPublished, setIsPublished] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(String(currentYear));
+
+  const getDepartmentsForYear = (year) => {
+    return year === "2025"
+      ? [
+          "Civil Engineering",
+          "Electrical and Electronics Engineering",
+          "Mechanical Engineering",
+          "Waiting List",
+        ]
+      : [
+          "Computer Science and Engineering",
+          "Electronics and Communication Engineering",
+          "Mechanical Engineering",
+          "Waiting List",
+        ];
+  };
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const departments = ["Civil Engineering", "Electrical and Electronics Engineering", "Mechanical Engineering", "Waiting List"];
-        const data = { ce: [], ee: [], mech: [] };
-        const data2 = { ce: [], ee: [], mech: [] };
+        setLoading(true);
+        const departments = getDepartmentsForYear(selectedYear);
+        const data = {};
+        const data2 = {};
 
         for (const dept of departments) {
-          const snapshot = await getDocs(collection(db, `allotment/${dept}/students`));
-          const snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
+          let snapshot = await getDocs(collection(db, `allotment/${dept}_${selectedYear}/students`));
+          let snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${selectedYear}/students`));
+
+          if (selectedYear === "2025" && snapshot.empty && snapshot2.empty) {
+            snapshot = await getDocs(collection(db, `allotment/${dept}/students`));
+            snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
+          }
+
           const students = [];
           const students2 = [];
 
           snapshot.forEach((doc) => students.push({ id: doc.id, ...doc.data() }));
           snapshot2.forEach((doc) => students2.push({ id: doc.id, ...doc.data() }));
 
-          students.sort((a, b) => {
+          const sortFn = (a, b) => {
             const rankA = Number(a.letRank);
             const rankB = Number(b.letRank);
             if (isNaN(rankA)) return 1;
             if (isNaN(rankB)) return -1;
             return rankA - rankB;
-          });
-          students2.sort((a, b) => {
-            const rankA = Number(a.letRank);
-            const rankB = Number(b.letRank);
-            if (isNaN(rankA)) return 1;
-            if (isNaN(rankB)) return -1;
-            return rankA - rankB;
-          });
+          };
+          students.sort(sortFn);
+          students2.sort(sortFn);
+
           data[dept] = students;
           data2[dept] = students2;
         }
         setAllottedData(data);
         setAllottedData2(data2);
 
-        const docRef = doc(db, "allotment", "publishStatus");
-        const docRef2 = doc(db, "no_exam_allotment", "publishStatus");
+        const docRef = doc(db, "allotment", `publishStatus_${selectedYear}`);
+        const docRef2 = doc(db, "no_exam_allotment", `publishStatus_${selectedYear}`);
         const docSnap = await getDoc(docRef);
         const docSnap2 = await getDoc(docRef2);
-        if (docSnap.exists()) setIsPublished(!!docSnap.data().published);
-        if (docSnap2.exists()) setIsPublished(!!docSnap2.data().published);
+        
+        let pubStatus = false;
+        if (docSnap.exists()) {
+          pubStatus = !!docSnap.data().published;
+        } else if (docSnap2.exists()) {
+          pubStatus = !!docSnap2.data().published;
+        } else if (selectedYear === "2025") {
+          const legacySnap = await getDoc(doc(db, "allotment", "publishStatus"));
+          pubStatus = legacySnap.exists() && legacySnap.data().published;
+        }
+        setIsPublished(pubStatus);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -63,20 +101,31 @@ export const AllotmentResults = () => {
       }
     };
     fetchAll();
-  }, []);
+  }, [selectedYear]);
 
   const togglePublish = async () => {
     setPublishing(true);
     try {
       const newStatus = !isPublished;
-      await setDoc(doc(db, "allotment", "publishStatus"), {
+      await setDoc(doc(db, "allotment", `publishStatus_${selectedYear}`), {
         published: newStatus,
         timestamp: new Date().toISOString(),
       });
-      await setDoc(doc(db, "no_exam_allotment", "publishStatus"), {
+      await setDoc(doc(db, "no_exam_allotment", `publishStatus_${selectedYear}`), {
         published: newStatus,
         timestamp: new Date().toISOString(),
       });
+      
+      if (selectedYear === "2025") {
+        await setDoc(doc(db, "allotment", "publishStatus"), {
+          published: newStatus,
+          timestamp: new Date().toISOString(),
+        });
+        await setDoc(doc(db, "no_exam_allotment", "publishStatus"), {
+          published: newStatus,
+          timestamp: new Date().toISOString(),
+        });
+      }
       setIsPublished(newStatus);
     } catch (error) {
       console.error("Error updating publish status:", error);
@@ -119,14 +168,21 @@ export const AllotmentResults = () => {
       XLSX.utils.book_append_sheet(workbook, ws, label);
     };
 
-    appendSheet(allottedData['Civil Engineering'], "Civil Engineering");
-    appendSheet(allottedData['Electrical and Electronics Engineering'], "Electrical Engineering");
-    appendSheet(allottedData['Mechanical Engineering'], "Mechanical Engineering");
-    appendSheet(allottedData['Waiting List'], "Waiting List");
-    appendSheet(allottedData2['Civil Engineering'], "NO EXAM Civil Engineering");
-    appendSheet(allottedData2['Electrical and Electronics Engineering'], "NO EXAM Electrical");
-    appendSheet(allottedData2['Mechanical Engineering'], "NO EXAM Mechanical");
-    appendSheet(allottedData2['Waiting List'], "NO EXAM Waiting List");
+    const activeDepts = getDepartmentsForYear(selectedYear);
+    activeDepts.forEach((dept) => {
+      const label = dept === "Electrical and Electronics Engineering" ? "Electrical Engineering"
+        : dept === "Electronics and Communication Engineering" ? "ECE"
+        : dept === "Computer Science and Engineering" ? "CSE"
+        : dept;
+      appendSheet(allottedData[dept] || [], label);
+    });
+    activeDepts.forEach((dept) => {
+      const label = dept === "Electrical and Electronics Engineering" ? "NO EXAM Electrical"
+        : dept === "Electronics and Communication Engineering" ? "NO EXAM ECE"
+        : dept === "Computer Science and Engineering" ? "NO EXAM CSE"
+        : `NO EXAM ${dept}`;
+      appendSheet(allottedData2[dept] || [], label);
+    });
 
     XLSX.writeFile(workbook, "Allotment_Results.xlsx");
   };
@@ -140,28 +196,33 @@ export const AllotmentResults = () => {
     );
   }
 
-  const hasData =
-    allottedData['Civil Engineering'].length > 0 ||
-    allottedData['Electrical and Electronics Engineering'].length > 0 ||
-    allottedData['Mechanical Engineering'].length > 0;
-
-  if (!hasData) {
-    return (
-      <div className="text-center py-16 text-muted-foreground">
-        <p className="text-lg font-medium">No students allotted yet.</p>
-        <p className="text-sm mt-1">Run the allotment process to see results here.</p>
-      </div>
-    );
-  }
+  const activeDepts = getDepartmentsForYear(selectedYear);
+  const hasData = activeDepts.some(
+    (dept) => (allottedData[dept]?.length || 0) > 0 || (allottedData2[dept]?.length || 0) > 0
+  );
 
   return (
     <div className="space-y-8">
       {/* Actions Bar */}
-      <div className="flex items-center justify-between gap-4 bg-card border border-border/50 rounded-xl p-4">
-        <Button onClick={exportToExcel} variant="outline" className="shadow-sm">
-          <Download className="h-4 w-4 mr-2" />
-          Export to Excel
-        </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border/50 rounded-xl p-4">
+        <div className="flex items-center gap-3">
+          <Button onClick={exportToExcel} variant="outline" className="shadow-sm" disabled={!hasData}>
+            <Download className="h-4 w-4 mr-2" />
+            Export to Excel
+          </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Year:</span>
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-[120px] h-9 text-xs">
+                <SelectValue placeholder="Select Year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2026">2026</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <Button
           onClick={togglePublish}
           disabled={publishing}
@@ -177,22 +238,37 @@ export const AllotmentResults = () => {
         </Button>
       </div>
 
-      {/* LET Allotment Tables */}
-      <AllottedTable students={allottedData['Civil Engineering']} deptName="Civil Engineering" />
-      <AllottedTable students={allottedData['Electrical and Electronics Engineering']} deptName="Electrical & Electronics Engineering" />
-      <AllottedTable students={allottedData['Mechanical Engineering']} deptName="Mechanical Engineering" />
-      <AllottedTable students={allottedData['Waiting List']} deptName="Waiting List" />
+      {!hasData ? (
+        <div className="text-center py-16 bg-card border border-border/50 rounded-xl text-muted-foreground">
+          <p className="text-lg font-medium">No students allotted yet for {selectedYear}.</p>
+          <p className="text-sm mt-1">Run the allotment process to see results here.</p>
+        </div>
+      ) : (
+        <>
+          {/* LET Allotment Tables */}
+          {getDepartmentsForYear(selectedYear).map((dept) => (
+            <AllottedTable
+              key={dept}
+              students={allottedData[dept] || []}
+              deptName={dept === "Electrical and Electronics Engineering" ? "Electrical & Electronics Engineering" : dept}
+            />
+          ))}
 
-      {/* Non-LET Section */}
-      <div className="pt-8 border-t border-border">
-        <h2 className="text-2xl font-bold text-center text-primary mb-8">
-          Allotment Results: Non-LET Candidates
-        </h2>
-        <AllottedNoTable students={allottedData2['Civil Engineering']} deptName="Civil Engineering" />
-        <AllottedNoTable students={allottedData2['Electrical and Electronics Engineering']} deptName="Electrical & Electronics Engineering" />
-        <AllottedNoTable students={allottedData2['Mechanical Engineering']} deptName="Mechanical Engineering" />
-        <AllottedNoTable students={allottedData2['Waiting List']} deptName="Waiting List" />
-      </div>
+          {/* Non-LET Section */}
+          <div className="pt-8 border-t border-border">
+            <h2 className="text-2xl font-bold text-center text-primary mb-8">
+              Allotment Results: Non-LET Candidates
+            </h2>
+            {getDepartmentsForYear(selectedYear).map((dept) => (
+              <AllottedNoTable
+                key={dept}
+                students={allottedData2[dept] || []}
+                deptName={dept === "Electrical and Electronics Engineering" ? "Electrical & Electronics Engineering" : dept}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

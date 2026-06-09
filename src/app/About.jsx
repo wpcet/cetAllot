@@ -153,21 +153,21 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                title: "Electrical Engineering",
-                icon: <Zap className="h-10 w-10 text-primary" />,
-                duration: "4 Years",
+                title: "Computer Science and Engineering",
+                icon: <Cpu className="h-10 w-10 text-primary" />,
+                duration: "3 Years",
                 seats: "30 Seats",
               },
               {
                 title: "Mechanical Engineering",
                 icon: <Settings className="h-10 w-10 text-primary" />,
-                duration: "4 Years",
+                duration: "3 Years",
                 seats: "30 Seats",
               },
               {
-                title: "Electronics Engineering",
-                icon: <Cpu className="h-10 w-10 text-primary" />,
-                duration: "4 Years",
+                title: "Electronics and Communication Engineering",
+                icon: <Zap className="h-10 w-10 text-primary" />,
+                duration: "3 Years",
                 seats: "30 Seats",
               },
             ].map((program, index) => (
@@ -299,7 +299,7 @@ export default function About() {
             Start Your Engineering Journey
           </h2>
           <p className="text-lg text-primary-foreground/80 mb-8 max-w-3xl mx-auto relative z-10">
-            Applications for 2025 admissions are now open. Secure your seat in our prestigious BTech program.
+            Applications for 2026-27 admissions are now open. Secure your seat in our prestigious BTech program.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
             <Link to="/apply">
@@ -310,8 +310,8 @@ export default function About() {
             <Link to="/contact">
               <Button
                 size="lg"
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 hover:text-white shadow-md"
+                variant="ghost"
+                className="border-white/20 text-white hover:bg-white/10 hover:text-white hover:border-white/30 shadow-md"
               >
                 Contact Admissions
               </Button>
