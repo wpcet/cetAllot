@@ -522,7 +522,7 @@ export default function Home() {
                       Contact Us
                     </Button>
                   </Link>
-                  <Link to="https://drive.google.com/file/d/1N9gARnxlDe95UEgKyLyoqndtDi17Qcy1/view?usp=sharing">
+                  {/* <Link to="https://drive.google.com/file/d/1N9gARnxlDe95UEgKyLyoqndtDi17Qcy1/view?usp=sharing">
                     <Button
                       size="lg"
                       variant="outline"
@@ -530,7 +530,7 @@ export default function Home() {
                     >
                       Press Release
                     </Button>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </motion.div>
