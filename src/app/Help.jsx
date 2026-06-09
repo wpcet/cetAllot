@@ -28,7 +28,11 @@ export default function HelpCenter() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
   };
 
-  const branches = ["Civil Engineering (CE)", "Electrical and Electronics Engineering (EEE)", "Mechanical Engineering (ME)"];
+  const branches = [
+    "Computer Science and Engineering (CSE)",
+    "Electronics and Communication Engineering (ECE)",
+    "Mechanical Engineering (ME)",
+  ];
 
   const commonReservation = {
     "State Merit": "50%",

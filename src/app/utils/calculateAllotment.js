@@ -16,6 +16,8 @@ const mapDepartmentNameToKey = (name) => {
     "Electrical and Electronics Engineering": "ee",
     "Mechanical Engineering": "mech",
     "Civil Engineering": "ce",
+    "Computer Science and Engineering": "cse",
+    "Electronics and Communication Engineering": "ece",
   };
   return map[name] || null;
 };

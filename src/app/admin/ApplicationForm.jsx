@@ -143,8 +143,8 @@ export const ApplicationForm = ({ onSuccess }) => {
   });
 
   const allBranches = [
-    "Civil Engineering",
-    "Electrical and Electronics Engineering",
+    "Computer Science and Engineering",
+    "Electronics and Communication Engineering",
     "Mechanical Engineering",
   ];
 

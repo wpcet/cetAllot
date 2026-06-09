@@ -10,6 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { SkeletonTable } from "@/components/ui/Skeleton";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 import { db } from "@/firebase";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import AllottedTable from "./admin/Allotment/AllottedTable";
@@ -24,46 +31,81 @@ export default function PartTimeBtech() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(String(currentYear));
   const [isPublished, setIsPublished] = useState(false);
-  const [allottedData, setAllottedData] = useState({ ce: [], ee: [], mech: [] });
-  const [allottedData2, setAllottedData2] = useState({ ce: [], ee: [], mech: [] });
+  const [allottedData, setAllottedData] = useState({});
+  const [allottedData2, setAllottedData2] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const getDepartmentsForYear = (year) => {
+    return year === "2025"
+      ? [
+          "Civil Engineering",
+          "Electrical and Electronics Engineering",
+          "Mechanical Engineering",
+          "Waiting List",
+        ]
+      : [
+          "Computer Science and Engineering",
+          "Electronics and Communication Engineering",
+          "Mechanical Engineering",
+          "Waiting List",
+        ];
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const publishSnap = await getDoc(doc(db, "allotment", "publishStatus"));
-        const published = publishSnap.exists() && publishSnap.data().published;
+        setLoading(true);
+        
+        let published = false;
+        const publishRef = doc(db, "allotment", `publishStatus_${selectedYear}`);
+        const publishSnap = await getDoc(publishRef);
+        
+        if (publishSnap.exists()) {
+          published = !!publishSnap.data().published;
+        } else if (selectedYear === "2025") {
+          const legacySnap = await getDoc(doc(db, "allotment", "publishStatus"));
+          published = legacySnap.exists() && legacySnap.data().published;
+        }
+        
         setIsPublished(published);
-        if (!published) return;
+        if (!published) {
+          setAllottedData({});
+          setAllottedData2({});
+          return;
+        }
 
-        const departments = ["Civil Engineering", "Electrical and Electronics Engineering", "Mechanical Engineering", "Waiting List"];
-        const data = { ce: [], ee: [], mech: [] };
-        const data2 = { ce: [], ee: [], mech: [] };
+        const depts = getDepartmentsForYear(selectedYear);
+        const data = {};
+        const data2 = {};
 
-        for (const dept of departments) {
-          const snapshot = await getDocs(collection(db, `allotment/${dept}/students`));
-          const snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
+        for (const dept of depts) {
+          let snapshot = await getDocs(collection(db, `allotment/${dept}_${selectedYear}/students`));
+          let snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${selectedYear}/students`));
+          
+          if (selectedYear === "2025" && snapshot.empty && snapshot2.empty) {
+            snapshot = await getDocs(collection(db, `allotment/${dept}/students`));
+            snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
+          }
+
           const students = [];
           const students2 = [];
 
           snapshot.forEach((doc) => students.push({ id: doc.id, ...doc.data() }));
           snapshot2.forEach((doc) => students2.push({ id: doc.id, ...doc.data() }));
 
-          students.sort((a, b) => {
+          const sortFn = (a, b) => {
             const rankA = Number(a.letRank);
             const rankB = Number(b.letRank);
             if (isNaN(rankA)) return 1;
             if (isNaN(rankB)) return -1;
             return rankA - rankB;
-          });
-          students2.sort((a, b) => {
-            const rankA = Number(a.letRank);
-            const rankB = Number(b.letRank);
-            if (isNaN(rankA)) return 1;
-            if (isNaN(rankB)) return -1;
-            return rankA - rankB;
-          });
+          };
+          students.sort(sortFn);
+          students2.sort(sortFn);
+
           data[dept] = students;
           data2[dept] = students2;
         }
@@ -76,7 +118,7 @@ export default function PartTimeBtech() {
       }
     };
     fetchData();
-  }, []);
+  }, [selectedYear]);
 
   return (
     <div className="relative overflow-hidden" ref={containerRef}>
@@ -91,9 +133,21 @@ export default function PartTimeBtech() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6">
             Admission Results
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-muted-foreground mb-8">
             View your admission status for the BTech Working Professionals program at CET Trivandrum.
           </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+            <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Academic Year:</span>
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-[180px] shadow-sm bg-card border border-border/80 rounded-xl px-4 py-2 hover:bg-muted/30 transition-colors font-medium">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border border-border bg-popover text-popover-foreground shadow-lg">
+                <SelectItem value="2026" className="rounded-lg">2026</SelectItem>
+                <SelectItem value="2025" className="rounded-lg">2025</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </motion.div>
 
         {/* Loading State — Skeleton Tables */}
@@ -124,10 +178,13 @@ export default function PartTimeBtech() {
               </div>
             </div>
 
-            <AllottedTable students={allottedData['Civil Engineering']} deptName="Civil Engineering" />
-            <AllottedTable students={allottedData['Electrical and Electronics Engineering']} deptName="Electrical & Electronics Engineering" />
-            <AllottedTable students={allottedData['Mechanical Engineering']} deptName="Mechanical Engineering" />
-            <AllottedTable students={allottedData['Waiting List']} deptName="Waiting List" />
+            {getDepartmentsForYear(selectedYear).map((dept) => (
+              <AllottedTable
+                key={dept}
+                students={allottedData[dept] || []}
+                deptName={dept === "Electrical and Electronics Engineering" ? "Electrical & Electronics Engineering" : dept}
+              />
+            ))}
 
             <div className="pt-8 mt-8 border-t border-border">
               <h2 className="text-3xl font-bold text-center text-primary mb-4">
@@ -142,10 +199,13 @@ export default function PartTimeBtech() {
                   Inclusion in this list does not guarantee admission.
                 </p>
               </div>
-              <AllottedNoTable students={allottedData2['Civil Engineering']} deptName="Civil Engineering" />
-              <AllottedNoTable students={allottedData2['Electrical and Electronics Engineering']} deptName="Electrical & Electronics Engineering" />
-              <AllottedNoTable students={allottedData2['Mechanical Engineering']} deptName="Mechanical Engineering" />
-              <AllottedNoTable students={allottedData2['Waiting List']} deptName="Waiting List" />
+              {getDepartmentsForYear(selectedYear).map((dept) => (
+                <AllottedNoTable
+                  key={dept}
+                  students={allottedData2[dept] || []}
+                  deptName={dept === "Electrical and Electronics Engineering" ? "Electrical & Electronics Engineering" : dept}
+                />
+              ))}
             </div>
           </div>
         ) : (
@@ -202,7 +262,9 @@ export default function PartTimeBtech() {
                 },
                 {
                   title: "Specializations",
-                  description: "Electrical and Electronics, Mechanical, and Civil Engineering",
+                  description: selectedYear === "2025"
+                    ? "Electrical and Electronics, Mechanical, and Civil Engineering"
+                    : "Computer Science, Electronics & Communication, and Mechanical Engineering",
                   icon: <Aperture className="h-10 w-10 text-primary" />,
                   span: "md:col-span-1 lg:col-span-2",
                 },

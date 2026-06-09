@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function Eligibility() {
@@ -57,167 +56,97 @@ export default function Eligibility() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto space-y-6"
         >
-          <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1">
-              <TabsTrigger value="general" className="text-sm data-[state=active]:shadow-sm">
-                General Criteria
-              </TabsTrigger>
-              <TabsTrigger value="branch" className="text-sm data-[state=active]:shadow-sm">
-                Branch Specific
-              </TabsTrigger>
-            </TabsList>
+          {/* General Criteria */}
+          <motion.div variants={fadeIn} initial="hidden" animate="visible">
+            <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-2xl">Academic Qualifications</CardTitle>
+                <CardDescription className="text-base">
+                  Minimum requirements for all BTech Working Professionals applicants
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  {
+                    title: "Diploma in Engineering",
+                    description:
+                      "3-year diploma in relevant engineering branch with minimum 50% marks from Kerala State Board of Technical Education or equivalent",
+                  },
+                  {
+                    title: "Work Experience",
+                    description:
+                      "Minimum 2 years of professional experience in relevant field after diploma",
+                  },
+                  {
+                    title: "CET Admission Test",
+                    description:
+                      "Qualified in CET's part-time BTech entrance examination",
+                  },
+                  {
+                    title: "Employer NOC",
+                    description:
+                      "No Objection Certificate from current employer (for working professionals)",
+                  },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/[0.03] transition-colors"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * idx, duration: 0.4 }}
+                  >
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-foreground">{item.title}</p>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {item.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
 
-            {/* General Criteria */}
-            <TabsContent value="general" className="space-y-6 mt-8">
-              <motion.div variants={fadeIn}>
-                <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Academic Qualifications</CardTitle>
-                    <CardDescription className="text-base">
-                      Minimum requirements for all BTech Working Professionals applicants
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {[
-                      {
-                        title: "Diploma in Engineering",
-                        description:
-                          "3-year diploma in relevant engineering branch with minimum 50% marks from Kerala State Board of Technical Education or equivalent",
-                      },
-                      {
-                        title: "Work Experience",
-                        description:
-                          "Minimum 2 years of professional experience in relevant field after diploma",
-                      },
-                      {
-                        title: "CET Admission Test",
-                        description:
-                          "Qualified in CET's part-time BTech entrance examination",
-                      },
-                      {
-                        title: "Employer NOC",
-                        description:
-                          "No Objection Certificate from current employer (for working professionals)",
-                      },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={idx}
-                        className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/[0.03] transition-colors"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * idx, duration: 0.4 }}
-                      >
-                        <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-foreground">{item.title}</p>
-                          <p className="text-sm text-muted-foreground mt-0.5">
-                            {item.description}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={fadeIn} transition={{ delay: 0.2 }}>
-                <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Age & Other Requirements</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <motion.div
-                      className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/[0.03] transition-colors"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.3, duration: 0.4 }}
-                    >
-                      <XCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-foreground">No Age Limit</p>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          No upper age limit, but candidates must be at least 18 years old
-                        </p>
-                      </div>
-                    </motion.div>
-                    <motion.div
-                      className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/[0.03] transition-colors"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.4, duration: 0.4 }}
-                    >
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-foreground">Residency</p>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          Preference given to candidates currently working in Kerala
-                        </p>
-                      </div>
-                    </motion.div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </TabsContent>
-
-            {/* Branch Specific Criteria */}
-            <TabsContent value="branch" className="space-y-6 mt-8">
-              {[
-                {
-                  title: "Electrical Engineering (EE)",
-                  points: [
-                    "Diploma in Electrical Engineering/Power Systems",
-                    "Work experience in electrical maintenance, power distribution, or related fields",
-                    "Basic knowledge of electrical circuits and machines",
-                  ],
-                },
-                {
-                  title: "Electronics & Communication (EC)",
-                  points: [
-                    "Diploma in Electronics/Communication Engineering",
-                    "Experience in electronics manufacturing, telecom, or related industries",
-                    "Familiarity with electronic components and circuits",
-                  ],
-                },
-                {
-                  title: "Mechanical Engineering (ME)",
-                  points: [
-                    "Diploma in Mechanical/Automobile Engineering",
-                    "Experience in mechanical workshops, manufacturing, or related fields",
-                    "Knowledge of mechanical drawings and workshop practices",
-                  ],
-                },
-              ].map((branch, index) => (
+          <motion.div variants={fadeIn} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
+            <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-2xl">Age & Other Requirements</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.4 }}
+                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/[0.03] transition-colors"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.4 }}
                 >
-                  <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-xl text-primary">{branch.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {branch.points.map((point, idx) => (
-                        <motion.div
-                          key={idx}
-                          className="flex items-start gap-4 p-3 rounded-lg hover:bg-primary/[0.03] transition-colors"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * idx + 0.1 * index, duration: 0.3 }}
-                        >
-                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-muted-foreground">{point}</p>
-                        </motion.div>
-                      ))}
-                    </CardContent>
-                  </Card>
+                  <XCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-foreground">No Age Limit</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      No upper age limit, but candidates must be at least 18 years old
+                    </p>
+                  </div>
                 </motion.div>
-              ))}
-            </TabsContent>
-          </Tabs>
+                <motion.div
+                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/[0.03] transition-colors"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
+                >
+                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-foreground">Residency</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      Preference given to candidates currently working in Kerala
+                    </p>
+                  </div>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </motion.div>
 
         {/* CTA Section */}
@@ -246,7 +175,7 @@ export default function Eligibility() {
             </Link>
           </div>
           <p className="text-xs text-muted-foreground mt-6">
-            Last updated: 2025 | College of Engineering Trivandrum
+            Last updated: 2026 | College of Engineering Trivandrum
           </p>
         </motion.div>
       </div>

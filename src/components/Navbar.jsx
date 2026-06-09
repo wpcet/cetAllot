@@ -126,16 +126,16 @@ export default function Navbar() {
               <div className="relative flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10 transition-all duration-300 group-hover:scale-105 group-hover:bg-primary/20">
                 <img
                   src="/logo.png"
-                  alt="EduAllot Logo"
+                  alt="WP Admission Logo"
                   className="h-5 w-5 object-contain"
                 />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                  Edu<span className="text-primary">Allot</span>
+                  WP<span className="text-primary">Admission</span>
                 </span>
                 <span className="text-[10px] text-muted-foreground tracking-wide hidden sm:block">
-                  B.Tech WP Admission Portal
+                  Official CET WP Admission Portal
                 </span>
               </div>
             </Link>
@@ -210,16 +210,16 @@ export default function Navbar() {
                 <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10">
                   <img
                     src="/logo.png"
-                    alt="EduAllot Logo"
+                    alt="WP Admission Logo"
                     className="h-5 w-5 object-contain"
                   />
                 </div>
                 <div className="flex flex-col leading-tight">
                   <span className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                    Edu<span className="text-primary">Allot</span>
+                    WP<span className="text-primary">Admission</span>
                   </span>
                   <span className="text-[10px] text-muted-foreground tracking-wide">
-                    B.Tech Admission Portal
+                    Official CET WP Admission Portal
                   </span>
                 </div>
               </Link>

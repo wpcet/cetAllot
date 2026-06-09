@@ -3,22 +3,20 @@ import { calculateAllotment } from "./calculateAllotment";
 import { db } from "@/firebase";
 
 // Helper function to clear previous allotment
-const clearPreviousAllotment = async (department) => {
-  const snapshot = await getDocs(collection(db, `allotment/${department}/students`));
+const clearPreviousAllotment = async (department, year) => {
+  const snapshot = await getDocs(collection(db, `allotment/${department}_${year}/students`));
   const deletions = snapshot.docs.map((docSnap) =>
-    deleteDoc(doc(db, `allotment/${department}/students`, docSnap.id))
+    deleteDoc(doc(db, `allotment/${department}_${year}/students`, docSnap.id))
   );
   await Promise.all(deletions);
-  // console.log(`🗑️ Cleared previous data in allotment/${department}/students`);
 };
 
-const clearPreviousAllotment2 = async (department) => {
-  const snapshot = await getDocs(collection(db, `no_exam_allotment/${department}/students`));
+const clearPreviousAllotment2 = async (department, year) => {
+  const snapshot = await getDocs(collection(db, `no_exam_allotment/${department}_${year}/students`));
   const deletions = snapshot.docs.map((docSnap) =>
-    deleteDoc(doc(db, `no_exam_allotment/${department}/students`, docSnap.id))
+    deleteDoc(doc(db, `no_exam_allotment/${department}_${year}/students`, docSnap.id))
   );
   await Promise.all(deletions);
-  // console.log(`🗑️ Cleared previous data in allotment/${department}/students`);
 };
 
 export const runAllotmentHandler = async () => {
@@ -33,32 +31,51 @@ export const runAllotmentHandler = async () => {
     // console.log("📘 Sample Application:", applications[0]);
 
     // console.log("⚙️ Running calculateAllotment...");
-    const departments = [
-  {
-    "name": "Electrical and Electronics Engineering",
-    "totalSeats": 30
-  },
-  {
-    "name": "Mechanical Engineering",
-    "totalSeats": 30
-  },
-  {
-    "name": "Civil Engineering",
-    "totalSeats":30
-},
-  {
-    "name": "Waiting List",
-    "totalSeats":100
-}
-]
+    const currentYear = new Date().getFullYear();
+    const departments = currentYear === 2025 ? [
+      {
+        "name": "Electrical and Electronics Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Mechanical Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Civil Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Waiting List",
+        "totalSeats": 100
+      }
+    ] : [
+      {
+        "name": "Computer Science and Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Electronics and Communication Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Mechanical Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Waiting List",
+        "totalSeats": 100
+      }
+    ];
+
     const { updatedApplications, updatedDepartments, noExamApplications } = calculateAllotment(applications, departments);
     
     // console.log("🧮 Allotment completed. Departments:", updatedDepartments);
 
     // 🔄 Clear old data before inserting new ones
     for (const dept of updatedDepartments) {
-      await clearPreviousAllotment(dept.name);
-      await clearPreviousAllotment2(dept.name);
+      await clearPreviousAllotment(dept.name, currentYear);
+      await clearPreviousAllotment2(dept.name, currentYear);
     }
 
     // ✅ Write new allotment results
@@ -70,7 +87,7 @@ export const runAllotmentHandler = async () => {
 
       for (const student of studentsInDept) {
         await setDoc(
-          doc(db, "allotment", dept.name, "students", student.id),
+          doc(db, "allotment", `${dept.name}_${currentYear}`, "students", student.id),
           student
         );
         // console.log(`✅ Written to allotment/${dept.name}/students/${student.id}`);
@@ -85,7 +102,7 @@ export const runAllotmentHandler = async () => {
 
       for (const student of studentsInDept) {
         await setDoc(
-          doc(db, "no_exam_allotment", dept.name, "students", student.id),
+          doc(db, "no_exam_allotment", `${dept.name}_${currentYear}`, "students", student.id),
           student
         );
         // console.log(`✅ Written to allotment/${dept.name}/students/${student.id}`);

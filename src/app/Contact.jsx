@@ -22,10 +22,12 @@ const CONTACT_INFO = {
   phone: [
     { label: "Main Office", number: "+91 471 299 8391" },
     { label: "Prathibha P G", number: "+91 94472 47959" },
+    { label: "Shaiju M", number: "+91 94974 35750" },
+    { label: "Jishnu Vijo J V", number: "+91 95677 60989" },
   ],
   email: [
-    { label: "General Inquiries", address: "hodptdc@cet.ac.in" },
-    { label: "Admissions", address: "cetptdc@gmail.com" },
+    { label: "General Inquiries", address: "hod.wp@cet.ac.in" },
+    { label: "Admissions", address: "cetwp@cet.ac.in" },
   ],
   hours: [{ day: "Monday - Saturday", time: "2:00 PM - 5:00 PM" }],
 };
@@ -72,7 +74,7 @@ export default function Contact() {
             Contact Us
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Office of the Evening Degree Programmes — College of Engineering Trivandrum
+            Office of Programs for Working Professionals — College of Engineering Trivandrum
           </p>
         </motion.div>
 
@@ -99,7 +101,7 @@ export default function Contact() {
                   <div>
                     <h3 className="font-medium text-sm text-foreground mb-1">Address</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Department of Evening Degree Programmes
+                      Office of Programs for Working Professionals
                       <br />
                       {CONTACT_INFO.address.name}
                       <br />
