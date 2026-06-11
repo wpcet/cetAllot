@@ -27,7 +27,6 @@ import {
   Mail,
   Phone,
   Hash,
-  Trophy,
   Users,
   BookOpen,
   MapPin,
@@ -37,13 +36,13 @@ import {
   FileText,
   GraduationCap,
   Percent,
-  Star,
+  Banknote,
+  QrCode,
   ArrowLeft,
   Download,
   Check,
 } from "lucide-react";
 
-// Firebase
 import { db } from "@/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
@@ -52,28 +51,21 @@ const FormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required").regex(/^\d{10}$/, "Phone number must be exactly 10 digits and only numbers"),
-  letRegNo: z.string().min(1, "LET registration number is required"),
-  letRank: z.string().min(1, "LET Rank is required"),
   caste: z.string().min(1, "Caste is required"),
   religion: z.string().min(1, "Religion is required"),
   reservationCategory: z.string().min(1, "Reservation Category is required"),
-  priorityChoices: z
-    .object({
-      "1": z.string().min(1, "Branch Option 1 is required"),
-      "2": z.string().min(1, "Branch Option 2 is required"),
-      "3": z.string().min(1, "Branch Option 3 is required"),
-    })
-    .refine(
-      (data) => new Set([data["1"], data["2"], data["3"]]).size === 3,
-      { message: "Branch options must be unique", path: ["priorityChoices"] }
-    ),
-  mark: z.string().min(1, "% marks is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Marks must be a valid number").refine(val => parseFloat(val) >= 45, "Percentage marks must be 45 or greater"),
-  age: z.string().optional(),
+  btechDegree: z.string().min(1, "B.Tech degree is required"),
+  btechMark: z.string().min(1, "B.Tech marks are required").refine(val => /^\d+(\.\d+)?$/.test(val), "Marks must be a valid number").refine(val => parseFloat(val) >= 45, "B.Tech marks must be 45 or greater"),
+  btechCollege: z.string().min(1, "College name is required"),
+  btechUniversity: z.string().min(1, "University is required"),
+  btechYear: z.string().min(1, "Year of passing is required"),
+  specialization: z.string().min(1, "Specialization is required"),
   company: z.string().optional(),
-  experience: z.string().optional(),
-  address: z.string().optional(),
-  highestEducation: z.string().min(1, "Highest Education is required"),
+  experience: z.string().min(1, "Work experience is required"),
   distance: z.string().min(1, "Distance is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Distance must be a valid number").refine(val => parseFloat(val) <= 75, "Distance must be 75 km or less (not eligible if greater)"),
+  address: z.string().optional(),
+  age: z.string().optional(),
+  transactionId: z.string().min(1, "Transaction ID is required").regex(/^\d{12}$/, "Transaction ID must be exactly 12 digits and only numbers"),
 });
 
 const initialFormData = {
@@ -81,19 +73,21 @@ const initialFormData = {
   name: "",
   email: "",
   phone: "",
-  letRegNo: "",
-  letRank: "",
   caste: "",
   religion: "",
   reservationCategory: "",
-  priorityChoices: { "1": "", "2": "", "3": "" },
-  mark: "",
-  age: "",
+  btechDegree: "",
+  btechMark: "",
+  btechCollege: "",
+  btechUniversity: "",
+  btechYear: "",
+  specialization: "",
   company: "",
   experience: "",
-  address: "",
-  highestEducation: "",
   distance: "",
+  address: "",
+  age: "",
+  transactionId: "",
 };
 
 const getFirstErrorMessage = (errors) => {
@@ -115,8 +109,6 @@ const onError = (errors) => {
   toast.error("Submission Failed", { description: message });
 };
 
-// Form section component
-// eslint-disable-next-line no-unused-vars
 const FormSection = ({ title, icon: Icon, children }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }}
@@ -133,7 +125,7 @@ const FormSection = ({ title, icon: Icon, children }) => (
   </motion.div>
 );
 
-const generateBtechPDF = (data) => {
+const generateMtechPDF = (data) => {
   const doc = new jsPDF();
   
   const darkColor = [31, 41, 55]; // Gray-800
@@ -146,7 +138,7 @@ const generateBtechPDF = (data) => {
   
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("B.Tech (Working Professionals) Admission Application 2026-27", 15, 28);
+  doc.text("M.Tech (Working Professionals) Admission Application 2026-27", 15, 28);
   
   // Header dividing line
   doc.setDrawColor(0, 0, 0);
@@ -193,23 +185,22 @@ const generateBtechPDF = (data) => {
   drawRow("Phone Number", data.phone, "Aadhaar Number", data.adharNumber);
   y += 4;
   
-  // Academic Details
-  drawSectionHeader("Academic Details");
-  drawRow("Highest Education", data.highestEducation, "Marks Percentage", `${data.mark}%`);
-  drawRow("LET Registration No", data.letRegNo, "LET Rank", data.letRank);
+  // Qualifying Degree Details
+  drawSectionHeader("B.Tech / Qualifying Degree Details");
+  drawRow("B.Tech Degree Branch", data.btechDegree, "B.Tech Marks %", `${data.btechMark}%`);
+  drawRow("College Name", data.btechCollege, "University", data.btechUniversity);
+  drawRow("Year of Passing", data.btechYear);
+  y += 4;
+  
+  // Specialization Choice
+  drawSectionHeader("M.Tech Preference");
+  drawRow("Preferred Specialization", data.specialization);
   y += 4;
   
   // Demographic Details
   drawSectionHeader("Demographic Details");
   drawRow("Religion", data.religion, "Caste", data.caste);
   drawRow("Reservation Category", data.reservationCategory || data.category);
-  y += 4;
-  
-  // Branch Preferences
-  drawSectionHeader("Branch Preferences");
-  drawRow("1st Preference", data.priorityChoices?.["1"]);
-  drawRow("2nd Preference", data.priorityChoices?.["2"]);
-  drawRow("3rd Preference", data.priorityChoices?.["3"]);
   y += 4;
   
   // Professional Details
@@ -228,6 +219,11 @@ const generateBtechPDF = (data) => {
   doc.text(addressLines, 55, y);
   
   y += addressLines.length * 5 + 6;
+  
+  // Registration Fee Details
+  drawSectionHeader("Registration Fee Details");
+  drawRow("Transaction / UTR ID", data.transactionId);
+  y += 4;
   
   // Signature/Declaration
   if (y > 245) {
@@ -256,7 +252,7 @@ const generateBtechPDF = (data) => {
   doc.text("Signature of the Applicant", 145, y);
   doc.line(145, y - 4, 190, y - 4);
   
-  doc.save(`Application_BTech_${data.name.replace(/\s+/g, "_")}.pdf`);
+  doc.save(`Application_MTech_${data.name.replace(/\s+/g, "_")}.pdf`);
 };
 
 const required = (label) => (
@@ -265,33 +261,16 @@ const required = (label) => (
   </span>
 );
 
-export const ApplicationForm = ({ onSuccess }) => {
+export const MtechApplicationForm = ({ onSuccess }) => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: initialFormData,
     mode: "onChange",
   });
 
-  const allBranches = [
-    "Computer Science and Engineering",
-    "Electronics and Communication Engineering",
-    "Mechanical Engineering",
-  ];
-
-  const [selectedBranches, setSelectedBranches] = useState({
-    "1": "",
-    "2": "",
-    "3": "",
-  });
-
   const [step, setStep] = useState("fill"); // "fill" | "review" | "success"
   const [submittedData, setSubmittedData] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleBranchChange = (key, value) => {
-    setSelectedBranches((prev) => ({ ...prev, [key]: value }));
-    form.setValue(`priorityChoices.${key}`, value, { shouldValidate: true });
-  };
 
   const handleReviewData = (data) => {
     setSubmittedData(data);
@@ -306,17 +285,18 @@ export const ApplicationForm = ({ onSuccess }) => {
         ...submittedData,
         age: submittedData.age ? Number(submittedData.age) : null,
         experience: submittedData.experience ? Number(submittedData.experience) : null,
-        mark: Number(submittedData.mark),
+        btechMark: Number(submittedData.btechMark),
         distance: submittedData.distance ? Number(submittedData.distance) : null,
         category: submittedData.reservationCategory,
+        degreeType: "mtech",
         submittedAt: Timestamp.now(),
       };
 
-      await addDoc(collection(db, "applications"), formattedData);
+      await addDoc(collection(db, "mtech_applications"), formattedData);
 
       toast.success("Submitted!", {
         duration: 4000,
-        description: "We've received your application.",
+        description: "We've received your M.Tech application.",
       });
 
       onSuccess?.();
@@ -331,7 +311,6 @@ export const ApplicationForm = ({ onSuccess }) => {
     }
   };
 
-  // Input field with optional icon and accessible label
   const renderInputField = ({ name, label, type = "text", step, maxLength, icon: Icon, placeholder }) => (
     <FormField
       key={name}
@@ -370,7 +349,6 @@ export const ApplicationForm = ({ onSuccess }) => {
     />
   );
 
-  // Select field wrapper with accessible label
   const renderSelectField = ({ name, label, placeholder, options }) => (
     <FormField
       key={name}
@@ -409,7 +387,7 @@ export const ApplicationForm = ({ onSuccess }) => {
     return (
       <div className="space-y-8">
         <div className="border-b pb-4">
-          <h2 className="text-2xl font-bold text-foreground">Confirm Application Details</h2>
+          <h2 className="text-2xl font-bold text-foreground">Confirm M.Tech Application Details</h2>
           <p className="text-sm text-muted-foreground mt-1">
             Please review your entered details carefully before final submission.
           </p>
@@ -429,16 +407,27 @@ export const ApplicationForm = ({ onSuccess }) => {
             </div>
           </div>
 
-          {/* Academic Details */}
+          {/* B.Tech / Qualifying Degree Details */}
           <div className="p-6 rounded-xl bg-muted/20 border border-border/40 space-y-4">
             <h3 className="text-base font-semibold text-primary flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" /> Academic Details
+              <GraduationCap className="h-4 w-4" /> B.Tech / Qualifying Degree Details
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {renderReviewItem("Education Type", submittedData.highestEducation)}
-              {renderReviewItem("Highest Education Marks %", `${submittedData.mark}%`)}
-              {renderReviewItem("LET Registration No", submittedData.letRegNo)}
-              {renderReviewItem("LET Rank", submittedData.letRank)}
+              {renderReviewItem("B.Tech Degree Branch", submittedData.btechDegree)}
+              {renderReviewItem("B.Tech Marks %", `${submittedData.btechMark}%`)}
+              {renderReviewItem("College Name", submittedData.btechCollege)}
+              {renderReviewItem("University", submittedData.btechUniversity)}
+              {renderReviewItem("Year of Passing", submittedData.btechYear)}
+            </div>
+          </div>
+
+          {/* M.Tech Preference */}
+          <div className="p-6 rounded-xl bg-muted/20 border border-border/40 space-y-4">
+            <h3 className="text-base font-semibold text-primary flex items-center gap-2">
+              <BookOpen className="h-4 w-4" /> M.Tech Specialization Preference
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
+              {renderReviewItem("Preferred Specialization", submittedData.specialization)}
             </div>
           </div>
 
@@ -451,18 +440,6 @@ export const ApplicationForm = ({ onSuccess }) => {
               {renderReviewItem("Religion", submittedData.religion)}
               {renderReviewItem("Caste", submittedData.caste)}
               {renderReviewItem("Reservation Category", submittedData.reservationCategory)}
-            </div>
-          </div>
-
-          {/* Branch Preferences */}
-          <div className="p-6 rounded-xl bg-muted/20 border border-border/40 space-y-4">
-            <h3 className="text-base font-semibold text-primary flex items-center gap-2">
-              <BookOpen className="h-4 w-4" /> Branch Preferences
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {renderReviewItem("1st Preference", submittedData.priorityChoices?.["1"])}
-              {renderReviewItem("2nd Preference", submittedData.priorityChoices?.["2"])}
-              {renderReviewItem("3rd Preference", submittedData.priorityChoices?.["3"])}
             </div>
           </div>
 
@@ -479,6 +456,16 @@ export const ApplicationForm = ({ onSuccess }) => {
               <div className="col-span-full">
                 {renderReviewItem("Address", submittedData.address)}
               </div>
+            </div>
+          </div>
+
+          {/* Fee details */}
+          <div className="p-6 rounded-xl bg-muted/20 border border-border/40 space-y-4">
+            <h3 className="text-base font-semibold text-primary flex items-center gap-2">
+              <Banknote className="h-4 w-4" /> Registration Fee Payment
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
+              {renderReviewItem("Transaction / UTR ID", submittedData.transactionId)}
             </div>
           </div>
         </div>
@@ -522,7 +509,7 @@ export const ApplicationForm = ({ onSuccess }) => {
         <div className="space-y-2">
           <h2 className="text-3xl font-bold text-foreground">Application Submitted!</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Your application for B.Tech (Working Professionals) Admission 2026-27 has been successfully registered.
+            Your application for M.Tech (Working Professionals) Admission 2026-27 has been successfully registered.
           </p>
         </div>
 
@@ -531,7 +518,7 @@ export const ApplicationForm = ({ onSuccess }) => {
             A confirmation email has been sent to <strong className="text-foreground">{submittedData?.email}</strong>. Please download and keep a copy of your application form for verification during admissions.
           </p>
           <Button
-            onClick={() => generateBtechPDF(submittedData)}
+            onClick={() => generateMtechPDF(submittedData)}
             className="w-full h-11 font-semibold flex items-center justify-center gap-2"
           >
             <Download className="h-4 w-4" /> Download Application PDF
@@ -543,7 +530,6 @@ export const ApplicationForm = ({ onSuccess }) => {
             variant="ghost"
             onClick={() => {
               form.reset(initialFormData);
-              setSelectedBranches({ "1": "", "2": "", "3": "" });
               setSubmittedData(null);
               setStep("fill");
             }}
@@ -565,32 +551,50 @@ export const ApplicationForm = ({ onSuccess }) => {
             {renderInputField({ name: "name", label: required("Full Name"), icon: User, placeholder: "e.g. AJMAL UK" })}
             {renderInputField({ name: "email", label: required("Email Address"), type: "email", icon: Mail, placeholder: "e.g. ajmal@example.com" })}
             {renderInputField({ name: "phone", label: required("Phone Number (with WhatsApp)"), type: "tel", maxLength: 10, icon: Phone, placeholder: "e.g. 9876543210" })}
-            {renderInputField({ name: "adharNumber", label: "Aadhaar Number", type: "text", maxLength: 12, icon: Hash, placeholder: "e.g. 123456789012" })}
+            {renderInputField({ name: "adharNumber", label: "Aadhaar Number", maxLength: 12, icon: Hash, placeholder: "e.g. 123456789012" })}
           </div>
         </FormSection>
 
         {/* Academic Details */}
-        <FormSection title="Academic Details" icon={GraduationCap}>
+        <FormSection title="B.Tech / Qualifying Degree Details" icon={GraduationCap}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {renderSelectField({
-              name: "highestEducation",
-              label: required("Education Type"),
-              placeholder: "Select your highest education",
-              options: ["BTech", "BE", "Diploma", "BSc", "DVoc"],
+              name: "btechDegree",
+              label: required("B.Tech Degree Branch"),
+              placeholder: "Select your degree branch",
+              options: ["Electrical Engineering", "Mechanical Engineering", "Civil Engineering"],
             })}
             {renderInputField({
-              name: "mark",
-              label: required("Highest Education Marks %"),
+              name: "btechMark",
+              label: required("B.Tech Marks %"),
               type: "number",
               step: "0.01",
               icon: Percent,
               placeholder: "e.g. 72.5",
             })}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {renderInputField({ name: "letRegNo", label: required("LET Registration No. (enter 0 if N/A)"), icon: FileText, placeholder: "e.g. LET2025001" })}
-            {renderInputField({ name: "letRank", label: required("LET Rank (enter 0 if N/A)"), type: "number", icon: Trophy, placeholder: "e.g. 150" })}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {renderInputField({ name: "btechCollege", label: required("College Name"), icon: Building, placeholder: "e.g. College of Engineering Trivandrum" })}
+            {renderInputField({ name: "btechUniversity", label: required("University"), icon: BookOpen, placeholder: "e.g. APJ Abdul Kalam University" })}
+            {renderInputField({ name: "btechYear", label: required("Year of Passing"), type: "number", icon: Calendar, placeholder: "e.g. 2020" })}
           </div>
+        </FormSection>
+
+        {/* Specialization */}
+        <FormSection title="M.Tech Specialization Preference" icon={BookOpen}>
+          <p className="text-sm text-muted-foreground -mt-2">
+            Select your preferred specialization based on your B.Tech degree.
+          </p>
+          {renderSelectField({
+            name: "specialization",
+            label: required("Preferred Specialization"),
+            placeholder: "Select specialization",
+            options: [
+              "Control Systems (Electrical Engineering)",
+              "Thermal Science (Mechanical Engineering)",
+              "Traffic & Transportation Engineering (Civil Engineering)",
+            ],
+          })}
         </FormSection>
 
         {/* Demographic Details */}
@@ -630,70 +634,101 @@ export const ApplicationForm = ({ onSuccess }) => {
           </div>
         </FormSection>
 
-        {/* Branch Preferences */}
-        <FormSection title="Branch Preferences" icon={BookOpen}>
-          <p className="text-sm text-muted-foreground -mt-2">
-            Select your branch preferences in order of priority. Each option must be unique.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {["1", "2", "3"].map((key) => {
-              const otherSelected = Object.entries(selectedBranches)
-                .filter(([k]) => k !== key)
-                .map(([, v]) => v);
-              const availableOptions = allBranches.filter(
-                (branch) => !otherSelected.includes(branch)
-              );
-              const icons = { "1": Star, "2": Star, "3": Star };
-              const labels = { "1": "1st", "2": "2nd", "3": "3rd" };
-              const Icon = icons[key];
-
-              return (
-                <FormField
-                  key={key}
-                  name={`priorityChoices.${key}`}
-                  render={({ fieldId, fieldState }) => (
-                    <FormItem>
-                      <FormLabel htmlFor={fieldId}>{required(`${labels[key]} Preference`)}</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Select
-                            value={selectedBranches[key]}
-                            onValueChange={(value) => handleBranchChange(key, value)}
-                          >
-                            <SelectTrigger className="pl-10" id={fieldId}>
-                              <SelectValue placeholder={`Select branch...`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {availableOptions.map((branch) => (
-                                <SelectItem key={branch} value={branch}>
-                                  {branch}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                      <FormMessage fieldState={fieldState} />
-                    </FormItem>
-                  )}
-                />
-              );
-            })}
-          </div>
-        </FormSection>
-
         {/* Professional Details */}
         <FormSection title="Professional Details" icon={Briefcase}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {renderInputField({ name: "company", label: "Current Company", icon: Building, placeholder: "e.g. Infosys Ltd." })}
-            {renderInputField({ name: "experience", label: "Work Experience (years)", type: "number", icon: Calendar, placeholder: "e.g. 3" })}
+            {renderInputField({ name: "company", label: "Current Company / Organization", icon: Building, placeholder: "e.g. Infosys Ltd." })}
+            {renderInputField({ name: "experience", label: required("Work Experience (years)"), type: "number", icon: Calendar, placeholder: "e.g. 3" })}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {renderInputField({ name: "distance", label: required("Distance in KM (workplace to CET)"), type: "number", icon: MapPin, placeholder: "e.g. 25" })}
             {renderInputField({ name: "age", label: "Age", type: "number", icon: Calendar, placeholder: "e.g. 28" })}
           </div>
           {renderInputField({ name: "address", label: "Address", icon: Building, placeholder: "e.g. House No, Street, City, PIN" })}
+        </FormSection>
+
+        {/* Registration Fee & Payment */}
+        <FormSection title="Registration Fee Payment" icon={Banknote}>
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 mb-4">
+            <h4 className="font-semibold text-blue-800 mb-2">Application Fee</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>General / Others: <strong>₹1,000</strong></li>
+              <li>SC / ST: <strong>₹500</strong></li>
+            </ul>
+            <p className="text-xs text-blue-600 mt-2">
+              Fee is non-refundable. Pay via UPI and enter the transaction ID below.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-white border border-border/50">
+              <QrCode className="h-8 w-8 text-primary mb-3" />
+              <p className="text-sm font-medium text-center mb-3">Scan to Pay (Demo)</p>
+              <div className="w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                <div className="text-center">
+                  <div className="inline-block p-3 bg-white rounded-lg shadow-sm border">
+                    <svg width="140" height="140" viewBox="0 0 140 140" className="mx-auto">
+                      <rect x="10" y="10" width="50" height="50" fill="#1a1a1a" rx="4" />
+                      <rect x="16" y="16" width="18" height="18" fill="white" rx="1" />
+                      <rect x="38" y="16" width="16" height="16" fill="white" rx="1" />
+                      <rect x="16" y="38" width="16" height="16" fill="white" rx="1" />
+                      <rect x="80" y="10" width="50" height="50" fill="#1a1a1a" rx="4" />
+                      <rect x="86" y="16" width="18" height="18" fill="white" rx="1" />
+                      <rect x="108" y="16" width="16" height="16" fill="white" rx="1" />
+                      <rect x="86" y="38" width="16" height="16" fill="white" rx="1" />
+                      <rect x="10" y="80" width="50" height="50" fill="#1a1a1a" rx="4" />
+                      <rect x="16" y="86" width="18" height="18" fill="white" rx="1" />
+                      <rect x="38" y="86" width="16" height="16" fill="white" rx="1" />
+                      <rect x="16" y="108" width="16" height="16" fill="white" rx="1" />
+                      <rect x="80" y="80" width="50" height="50" fill="#1a1a1a" rx="4" />
+                      <rect x="86" y="86" width="18" height="18" fill="white" rx="1" />
+                      <rect x="108" y="86" width="16" height="16" fill="white" rx="1" />
+                      <rect x="86" y="108" width="16" height="16" fill="white" rx="1" />
+                      <rect x="56" y="56" width="28" height="28" fill="#1a1a1a" rx="4" />
+                      <rect x="62" y="62" width="16" height="16" fill="white" rx="1" />
+                    </svg>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Demo QR Code</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted/30 p-4 border border-border/50">
+                <p className="text-sm font-medium mb-2">UPI Payment Details (Demo)</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">UPI ID:</span>
+                    <span className="font-mono font-medium">cetwpadmission@upi</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Account Name:</span>
+                    <span className="font-medium">CET WP Admission</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Bank:</span>
+                    <span className="font-medium">State Bank of India</span>
+                  </div>
+                  <div className="border-t border-border/30 my-2" />
+                  <div className="flex justify-between text-base">
+                    <span className="font-semibold">Amount:</span>
+                    <span className="font-bold text-primary">₹1,000 / ₹500</span>
+                  </div>
+                </div>
+              </div>
+
+              {renderInputField({
+                name: "transactionId",
+                label: required("Transaction / UTR ID"),
+                maxLength: 12,
+                icon: FileText,
+                placeholder: "e.g. 123456789012",
+              })}
+              <p className="text-xs text-muted-foreground">
+                Enter the UPI transaction ID or UTR number after making the payment.
+              </p>
+            </div>
+          </div>
         </FormSection>
 
         {/* Submit */}
@@ -720,7 +755,7 @@ export const ApplicationForm = ({ onSuccess }) => {
                 Submitting...
               </span>
             ) : (
-              "Submit Application"
+              "Submit M.Tech Application"
             )}
           </Button>
         </motion.div>

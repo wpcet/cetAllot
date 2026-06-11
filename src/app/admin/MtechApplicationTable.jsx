@@ -32,14 +32,11 @@ import {
   PlusCircle,
   Search,
 } from "lucide-react";
-import ApplicationModal from "./ApplicationModal";
+import MtechApplicationModal from "./MtechApplicationModal";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
-export const ApplicationTable = ({
-  departments,
-  statusFilter,
-  departmentFilter,
+export const MtechApplicationTable = ({
   searchTerm,
   setSearchTerm,
   isLoading,
@@ -50,12 +47,12 @@ export const ApplicationTable = ({
   const [applications, setApplications] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [localYearFilter, setLocalYearFilter] = useState("2025");
-  
+
   const activeYearFilter = yearFilter !== undefined ? yearFilter : localYearFilter;
   const activeSetYearFilter = setYearFilter !== undefined ? setYearFilter : setLocalYearFilter;
 
   useEffect(() => {
-    const q = query(collection(db, "applications"), orderBy("submittedAt", "asc"));
+    const q = query(collection(db, "mtech_applications"), orderBy("submittedAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const apps = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setApplications(apps);
@@ -66,7 +63,7 @@ export const ApplicationTable = ({
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this application?")) return;
     try {
-      await deleteDoc(doc(db, "applications", id));
+      await deleteDoc(doc(db, "mtech_applications", id));
       toast.success("Application deleted successfully");
     } catch (error) {
       console.error("Error deleting application:", error);
@@ -75,11 +72,11 @@ export const ApplicationTable = ({
   };
 
   const handleClearAll = async () => {
-    if (!window.confirm("Are you sure you want to delete ALL applications? This cannot be undone.")) return;
+    if (!window.confirm("Are you sure you want to delete ALL M.Tech applications? This cannot be undone.")) return;
     try {
-      const batch = applications.map((app) => deleteDoc(doc(db, "applications", app.id)));
+      const batch = applications.map((app) => deleteDoc(doc(db, "mtech_applications", app.id)));
       await Promise.all(batch);
-      toast.success("All applications deleted successfully");
+      toast.success("All M.Tech applications deleted successfully");
     } catch (error) {
       console.error("Error deleting all applications:", error);
       toast.error("Failed to delete all applications");
@@ -92,7 +89,7 @@ export const ApplicationTable = ({
   };
 
   const getAppYear = (app) => {
-    if (!app.submittedAt) return 2025; // Default legacy to 2025
+    if (!app.submittedAt) return 2025;
     try {
       const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
       return date.getFullYear();
@@ -104,49 +101,44 @@ export const ApplicationTable = ({
   const filteredApps = applications.filter((app) => {
     const matchesSearch =
       app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    const matchesDepartment = departmentFilter === "all" || app.department === departmentFilter;
-    
+      app.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.transactionId?.toLowerCase().includes(searchTerm.toLowerCase());
+
     const appYear = getAppYear(app);
     const matchesYear = activeYearFilter === "all" || String(appYear) === activeYearFilter;
-    
-    return matchesSearch && matchesStatus && matchesDepartment && matchesYear;
+
+    return matchesSearch && matchesYear;
   });
 
   const onExport = () => {
     const exportData = filteredApps.map((app) => ({
       Name: app.name,
       Email: app.email,
+      Phone: app.phone,
+      "B.Tech Degree": app.btechDegree,
+      "B.Tech Mark": app.btechMark,
+      Specialization: app.specialization,
+      Experience: app.experience,
+      Distance: app.distance,
       Caste: app.caste,
       Religion: app.religion,
       Category: app.reservationCategory,
-      Distance: app.distance,
-      Mark: app.mark,
-      Phone: app.phone,
-      "Priority 1": app.priorityChoices?.[1],
-      "Priority 2": app.priorityChoices?.[2],
-      "Priority 3": app.priorityChoices?.[3],
-      "LET Reg No": app.letRegNo,
-      "LET Rank": app.letRank,
-      Experience: app.experience,
-      Education: app.highestEducation,
+      "Transaction ID": app.transactionId,
     }));
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Applications");
-    XLSX.writeFile(workbook, "Applications.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "M.Tech Applications");
+    XLSX.writeFile(workbook, "Mtech_Applications.xlsx");
   };
 
   return (
     <>
-      {/* Header & Filters */}
       <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-xl">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search applications..."
+              placeholder="Search M.Tech applications..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full"
@@ -184,15 +176,13 @@ export const ApplicationTable = ({
         </div>
       </div>
 
-      {/* Table */}
       <div className="table-container">
         <Table>
           <TableHeader className="bg-primary">
             <TableRow>
               {[
-                "No.", "Name", "Caste", "Religion", "Category", "Distance", "Mark",
-                "Phone", "Priority 1", "Priority 2", "Priority 3",
-                "LET Reg", "LET Rank", "Actions",
+                "No.", "Name", "B.Tech Degree", "Mark %", "Specialization", "Experience",
+                "Distance", "Phone", "Category", "Transaction ID", "Actions",
               ].map((title, i) => (
                 <TableHead
                   key={i}
@@ -206,8 +196,8 @@ export const ApplicationTable = ({
           <TableBody className="divide-y divide-border/40 bg-card">
             {filteredApps.length === 0 && (
               <TableRow>
-                <TableCell colSpan={16} className="text-center py-10 text-muted-foreground">
-                  No applications found.
+                <TableCell colSpan={11} className="text-center py-10 text-muted-foreground">
+                  No M.Tech applications found.
                 </TableCell>
               </TableRow>
             )}
@@ -218,17 +208,16 @@ export const ApplicationTable = ({
               >
                 <TableCell className="px-4 py-3 font-medium text-sm whitespace-nowrap">{index + 1}</TableCell>
                 <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.name}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.caste}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.religion}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.reservationCategory}</TableCell>
+                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.btechDegree}</TableCell>
+                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.btechMark}</TableCell>
+                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.specialization}</TableCell>
+                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.experience}</TableCell>
                 <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.distance}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.mark}</TableCell>
                 <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.phone}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.priorityChoices?.[1]}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.priorityChoices?.[2]}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.priorityChoices?.[3]}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.letRegNo}</TableCell>
-                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.letRank}</TableCell>
+                <TableCell className="px-4 py-3 text-sm whitespace-nowrap">{app.reservationCategory}</TableCell>
+                <TableCell className="px-4 py-3 text-sm whitespace-nowrap font-mono text-xs">
+                  {app.transactionId}
+                </TableCell>
                 <TableCell className="px-4 py-3">
                   <div className="flex justify-center gap-1">
                     <Button size="sm" variant="destructive" onClick={() => handleDelete(app.id)}>
@@ -242,11 +231,10 @@ export const ApplicationTable = ({
         </Table>
       </div>
 
-      <ApplicationModal
+      <MtechApplicationModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleNewApplication}
-        departments={departments}
       />
     </>
   );

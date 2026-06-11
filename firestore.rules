@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is authenticated (Admin)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // B.Tech Applications
+    match /applications/{applicationId} {
+      // Anyone can submit (create) a B.Tech application
+      allow create: if true;
+      // Only authenticated admin users can read, update, or delete them
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // M.Tech Applications
+    match /mtech_applications/{applicationId} {
+      // Anyone can submit (create) an M.Tech application
+      allow create: if true;
+      // Only authenticated admin users can read, update, or delete them
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // Public Notices & Announcements
+    match /notices/{noticeId} {
+      // Anyone can view notices
+      allow read: if true;
+      // Only authenticated admin users can add, edit, or delete notices
+      allow write: if isAuthenticated();
+    }
+
+    // B.Tech Allotment results and publish status
+    match /allotment/{document=**} {
+      // Anyone can read the results
+      allow read: if true;
+      // Only authenticated admin users can run and publish allotments
+      allow write: if isAuthenticated();
+    }
+
+    // Non-LET Allotment results and publish status
+    match /no_exam_allotment/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // M.Tech Allotment results and publish status
+    match /mtech_allotment/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Info, Users } from "lucide-react";
+import { Info, Users, GraduationCap, Zap, Thermometer, TrafficCone } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Card,
@@ -96,7 +96,7 @@ export default function HelpCenter() {
         >
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-3">Help Center</h1>
           <p className="text-lg text-muted-foreground">
-            College of Engineering Trivandrum (CET) — BTech Working Professionals Program
+            College of Engineering Trivandrum (CET) — B.Tech & M.Tech Working Professionals Programs
           </p>
         </motion.div>
 
@@ -111,9 +111,9 @@ export default function HelpCenter() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl text-primary">
                 <Users className="h-5 w-5" />
-                Departments Offering BTech for Working Professionals
+                Departments Offering B.Tech for Working Professionals
               </CardTitle>
-              <CardDescription>All departments follow the same seat structure</CardDescription>
+              <CardDescription>All departments follow the same seat structure (30 seats per branch)</CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
@@ -124,6 +124,57 @@ export default function HelpCenter() {
                   </li>
                 ))}
               </ul>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* M.Tech Departments */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+          className="max-w-4xl mx-auto mb-10"
+        >
+          <Card className="border-violet-200/50 dark:border-violet-800/30 shadow-sm card-hover">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl text-violet-600 dark:text-violet-400">
+                <GraduationCap className="h-5 w-5" />
+                Departments Offering M.Tech for Working Professionals
+              </CardTitle>
+              <CardDescription>Each specialization has 15 seats</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  {
+                    title: "Control Systems",
+                    branch: "Electrical Engineering",
+                    icon: <Zap className="h-5 w-5 text-violet-600 dark:text-violet-400" />,
+                    seats: "15 Seats",
+                  },
+                  {
+                    title: "Thermal Science",
+                    branch: "Mechanical Engineering",
+                    icon: <Thermometer className="h-5 w-5 text-violet-600 dark:text-violet-400" />,
+                    seats: "15 Seats",
+                  },
+                  {
+                    title: "Traffic & Transportation Engineering",
+                    branch: "Civil Engineering",
+                    icon: <TrafficCone className="h-5 w-5 text-violet-600 dark:text-violet-400" />,
+                    seats: "15 Seats",
+                  },
+                ].map((spec, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-violet-500/5 border border-violet-200/30 dark:border-violet-800/20">
+                    <div className="flex items-center gap-2 mb-1">
+                      {spec.icon}
+                      <h4 className="font-semibold text-sm">{spec.title}</h4>
+                    </div>
+                    <p className="text-xs text-violet-600 dark:text-violet-400 font-medium">{spec.branch}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{spec.seats}</p>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -141,7 +192,7 @@ export default function HelpCenter() {
                 <Users className="h-5 w-5" />
                 Reservation-Based Seat Distribution
               </CardTitle>
-              <CardDescription>Total Intake per Branch: 30 Seats</CardDescription>
+              <CardDescription>B.Tech: Total Intake per Branch — 30 Seats | M.Tech: Total Intake per Specialization — 15 Seats</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
@@ -177,6 +228,68 @@ export default function HelpCenter() {
                 transition={{ delay: 0.5 + index * 0.08, duration: 0.4 }}
               >
                 <Card className="border-border/40 shadow-sm card-hover">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base font-medium">
+                      {faq.question}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* M.Tech FAQ Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="max-w-4xl mx-auto mt-14"
+        >
+          <h2 className="text-2xl font-semibold text-violet-600 dark:text-violet-400 flex items-center gap-2 mb-8">
+            <GraduationCap className="h-5 w-5" />
+            M.Tech Working Professionals — FAQs
+          </h2>
+
+          <div className="space-y-5">
+            {[
+              {
+                question: "What is the duration of the M.Tech Working Professionals programme?",
+                answer: "The M.Tech Working Professionals programme is 2 years (4 semesters). Classes are conducted on weekends and weekday evenings to accommodate working professionals.",
+              },
+              {
+                question: "What are the eligible B.Tech degrees for each M.Tech specialization?",
+                answer: "Control Systems requires B.Tech/BE in Electrical Engineering or Electrical & Electronics Engineering. Thermal Science accepts Mechanical, Automobile, Production, Industrial Engineering, or Mechatronics. Traffic & Transportation Engineering requires B.Tech/BE in Civil Engineering.",
+              },
+              {
+                question: "Is work experience mandatory for M.Tech admission?",
+                answer: "Yes, a minimum of 1 year of professional experience after passing the qualifying examination is required.",
+              },
+              {
+                question: "Can I apply if my workplace is outside Kerala?",
+                answer: "Your place of employment must be within a 75 km radial distance from CET. AMIE/AMIETE candidates need a minimum of 2 years professional experience after acquiring the qualification.",
+              },
+              {
+                question: "How many seats are available for each M.Tech specialization?",
+                answer: "Each M.Tech specialization (Control Systems, Thermal Science, Traffic & Transportation Engineering) has 15 seats.",
+              },
+              {
+                question: "Do M.Tech candidates need an employer NOC?",
+                answer: "Yes, an Employment & No Objection Certificate from your current Head of Department/Organization is mandatory. Eligible employment includes government service, semi-government, public/private limited companies, and aided/unaided engineering or polytechnic colleges.",
+              },
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + index * 0.08, duration: 0.4 }}
+              >
+                <Card className="border-violet-200/40 dark:border-violet-800/20 shadow-sm card-hover">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base font-medium">
                       {faq.question}
