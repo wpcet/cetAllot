@@ -28,12 +28,6 @@ export default function HelpCenter() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
   };
 
-  const branches = [
-    "Computer Science and Engineering (CSE)",
-    "Electronics and Communication Engineering (ECE)",
-    "Mechanical Engineering (ME)",
-  ];
-
   const commonReservation = {
     "State Merit": "50%",
     "EWS": "10%",
@@ -96,87 +90,8 @@ export default function HelpCenter() {
         >
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-3">Help Center</h1>
           <p className="text-lg text-muted-foreground">
-            College of Engineering Trivandrum (CET) — B.Tech & M.Tech Working Professionals Programs
+            College of Engineering Trivandrum (CET) — Office of the Programs for Working Professionals
           </p>
-        </motion.div>
-
-        {/* Branch List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="max-w-4xl mx-auto mb-10"
-        >
-          <Card className="border-border/50 shadow-sm card-hover">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                <Users className="h-5 w-5" />
-                Departments Offering B.Tech for Working Professionals
-              </CardTitle>
-              <CardDescription>All departments follow the same seat structure (30 seats per branch)</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {branches.map((branch, idx) => (
-                  <li key={idx} className="flex items-center gap-3 text-sm">
-                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
-                    <span>{branch}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* M.Tech Departments */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.5 }}
-          className="max-w-4xl mx-auto mb-10"
-        >
-          <Card className="border-violet-200/50 dark:border-violet-800/30 shadow-sm card-hover">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-violet-600 dark:text-violet-400">
-                <GraduationCap className="h-5 w-5" />
-                Departments Offering M.Tech for Working Professionals
-              </CardTitle>
-              <CardDescription>Each specialization has 15 seats</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  {
-                    title: "Control Systems",
-                    branch: "Electrical Engineering",
-                    icon: <Zap className="h-5 w-5 text-violet-600 dark:text-violet-400" />,
-                    seats: "15 Seats",
-                  },
-                  {
-                    title: "Thermal Science",
-                    branch: "Mechanical Engineering",
-                    icon: <Thermometer className="h-5 w-5 text-violet-600 dark:text-violet-400" />,
-                    seats: "15 Seats",
-                  },
-                  {
-                    title: "Traffic & Transportation Engineering",
-                    branch: "Civil Engineering",
-                    icon: <TrafficCone className="h-5 w-5 text-violet-600 dark:text-violet-400" />,
-                    seats: "15 Seats",
-                  },
-                ].map((spec, idx) => (
-                  <div key={idx} className="p-3 rounded-lg bg-violet-500/5 border border-violet-200/30 dark:border-violet-800/20">
-                    <div className="flex items-center gap-2 mb-1">
-                      {spec.icon}
-                      <h4 className="font-semibold text-sm">{spec.title}</h4>
-                    </div>
-                    <p className="text-xs text-violet-600 dark:text-violet-400 font-medium">{spec.branch}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{spec.seats}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </motion.div>
 
         {/* Reservation Table */}

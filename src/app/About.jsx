@@ -71,11 +71,11 @@ export default function About() {
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           className="max-w-4xl mx-auto text-center mb-20"
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6">
-            About Our Programs
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary leading-tight mb-6 whitespace-nowrap">
+            About Our Programs for Working Professionals
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Industry-aligned B.Tech and M.Tech engineering education with cutting-edge curriculum and hands-on learning experiences.
+          <p className="text-sm md:text-base text-muted-foreground max-w-none mx-auto whitespace-nowrap">
+            B.Tech and M.Tech engineering education with cutting-edge curriculum and hands-on learning experiences
           </p>
         </motion.div>
 
@@ -104,8 +104,8 @@ export default function About() {
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { label: "Established", value: "1939" },
-                  { label: "NIRF Ranking", value: "Top 50" },
-                  { label: "Programs", value: "20+ UG & PG" },
+                  { label: "NIRF Ranking", value: "101 - 115 band" },
+                  { label: "Programs", value: "30+ UG & PG" },
                   { label: "Alumni", value: "50,000+" },
                 ].map((item, i) => (
                   <motion.div
@@ -278,14 +278,14 @@ export default function About() {
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                Why Choose Our Programs?
+                Why Choose Our Programs? for Working Professionals
               </h2>
               <p className="text-muted-foreground max-w-3xl mx-auto">
                 We prepare engineers for the future with an unparalleled B.Tech and M.Tech learning experience
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
               {[
                 {
                   title: "Industry-Aligned Curriculum",
@@ -296,26 +296,6 @@ export default function About() {
                   title: "Hands-on Learning",
                   description: "Extensive lab work and project-based learning",
                   icon: <BookOpen className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Internship Opportunities",
-                  description: "Mandatory industry internships from 3rd year",
-                  icon: <GraduationCap className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Global Exposure",
-                  description: "Student exchange programs with international universities",
-                  icon: <Globe className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Placement Support",
-                  description: "Dedicated placement cell with 90% placement rate",
-                  icon: <Award className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Startup Incubation",
-                  description: "Support for student entrepreneurs with funding opportunities",
-                  icon: <Rocket className="h-5 w-5 text-primary" />,
                 },
               ].map((feature, index) => (
                 <motion.div
@@ -368,7 +348,7 @@ export default function About() {
             Start Your Engineering Journey
           </h2>
           <p className="text-lg text-primary-foreground/80 mb-8 max-w-3xl mx-auto relative z-10">
-            Applications for 2026-27 admissions are now open. Secure your seat in our prestigious B.Tech or M.Tech program.
+            Applications for 2026-27 admissions are now open. Secure your seat in our prestigious B.Tech or M.Tech working professionals program.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
             <Link to="/apply">

@@ -176,7 +176,7 @@ export default function PartTimeBtech() {
             Admission Results
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            View your admission status for the Working Professionals program at CET Trivandrum.
+            View your admission status for the Working Professionals program at College of Engineering Trivandrum.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
@@ -306,49 +306,63 @@ export default function PartTimeBtech() {
           <div className="relative z-10">
             <h2 className="text-3xl font-bold mb-10 text-center">Program Highlights</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {[
                 {
                   title: "Working Professionals",
                   description: "Designed for employed graduates seeking advanced specialization",
-                  icon: <Briefcase className="h-10 w-10 text-primary" />,
-                  span: "md:col-span-1 lg:col-span-2",
+                  icon: <Briefcase className="h-8 w-8 text-primary" />,
                 },
                 {
                   title: "Evening Classes",
                   description: "5:45 PM to 9:15 PM on weekdays",
-                  icon: <Clock className="h-10 w-10 text-primary" />,
-                  span: "md:col-span-1 lg:col-span-2",
+                  icon: <Clock className="h-8 w-8 text-primary" />,
                 },
                 {
                   title: "Duration",
                   description: degreeType === "mtech"
                     ? "2-year program (4 semesters) following KTU syllabus"
                     : "3-year program (6 semesters) following KTU syllabus",
-                  icon: <Calendar className="h-10 w-10 text-primary" />,
-                  span: "md:col-span-1 lg:col-span-2",
+                  icon: <Calendar className="h-8 w-8 text-primary" />,
                 },
                 {
                   title: "Eligibility",
                   description: (
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-2 text-xs">
                       {degreeType === "mtech" ? (
                         <>
-                          <p><strong>B.Tech:</strong> B.Tech/BE/AMIE/AMIETE in relevant discipline with minimum 60% marks (55% for SEBC, Pass for SC/ST).</p>
-                          <p><strong>Experience:</strong> Minimum 1 year of professional experience after qualifying examination.</p>
-                          <p><strong>Distance:</strong> Workplace within 75 km from CET.</p>
+                          <div>
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold mr-1">B.Tech</span>
+                            <span>B.Tech/BE/AMIE/AMIETE with min 60% marks (55% for SEBC, Pass for SC/ST).</span>
+                          </div>
+                          <div>
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold mr-1">Experience</span>
+                            <span>Min 1 year of professional experience after qualifying exam.</span>
+                          </div>
+                          <div>
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold mr-1">Distance</span>
+                            <span>Workplace must be within 75 km from CET.</span>
+                          </div>
                         </>
                       ) : (
                         <>
-                          <p><strong>Diploma:</strong> Diploma in any branch of Engineering/Technology with at least 45% marks (40% for reserved categories).</p>
-                          <p><strong>B.Sc. Degree:</strong> B.Sc. from a recognized University with at least 45% marks (40% for reserved categories) and passed 10+2 with Mathematics.</p>
-                          <p><strong>D.Voc. Stream:</strong> D.Voc. in the same or allied sector.</p>
+                          <div>
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold mr-1">Diploma</span>
+                            <span>Diploma in Engineering/Technology with at least 45% marks (40% for reserved).</span>
+                          </div>
+                          <div>
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold mr-1">B.Sc. Degree</span>
+                            <span>B.Sc. with min 45% marks (40% for reserved) and 10+2 Mathematics.</span>
+                          </div>
+                          <div>
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold mr-1">D.Voc. Stream</span>
+                            <span>D.Voc. in the same or allied sector.</span>
+                          </div>
                         </>
                       )}
                     </div>
                   ),
-                  icon: <BookOpen className="h-10 w-10 text-primary" />,
-                  span: "md:col-span-2 lg:col-span-3",
+                  icon: <BookOpen className="h-8 w-8 text-primary" />,
                 },
                 {
                   title: "Specializations",
@@ -357,36 +371,32 @@ export default function PartTimeBtech() {
                     : selectedYear === "2025"
                       ? "Electrical and Electronics, Mechanical, and Civil Engineering"
                       : "Computer Science, Electronics & Communication, and Mechanical Engineering",
-                  icon: <Aperture className="h-10 w-10 text-primary" />,
-                  span: "md:col-span-1 lg:col-span-2",
+                  icon: <Aperture className="h-8 w-8 text-primary" />,
                 },
                 {
                   title: "Approval",
                   description: "Approved by AICTE and Affiliated to KTU",
-                  icon: <Building className="h-10 w-10 text-primary" />,
-                  span: "md:col-span-1 lg:col-span-1",
+                  icon: <Building className="h-8 w-8 text-primary" />,
                 },
               ].map((item, index) => (
                 <motion.div
                   key={index}
-                  initial={{ y: 50 }}
-                  whileInView={{ y: 0 }}
+                  initial={{ y: 30, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.4 }}
-                  className={item.span}
+                  transition={{ delay: index * 0.05, duration: 0.5 }}
+                  className="group"
                 >
-                  <Card className="h-full card-hover">
-                    <CardHeader>
-                      <motion.div
-                        className="mb-3"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        {item.icon}
-                      </motion.div>
-                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <Card className="h-full border border-border/80 hover:border-primary/30 transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_24px_rgba(99,102,241,0.06)] bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm flex flex-col justify-between">
+                    <CardHeader className="pb-4">
+                      <div className="mb-4 p-2.5 w-fit rounded-xl bg-primary/5 text-primary group-hover:bg-primary/10 transition-colors duration-300">
+                        <div className="group-hover:scale-105 transition-transform duration-300">
+                          {item.icon}
+                        </div>
+                      </div>
+                      <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors">{item.title}</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <div className="text-sm text-muted-foreground leading-relaxed">
                         {item.description}
                       </div>

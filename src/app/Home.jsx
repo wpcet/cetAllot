@@ -145,8 +145,8 @@ export default function Home() {
                   <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-muted-foreground/90 tracking-tight">
                     Working Professionals Programs
                   </span>
-                  <span className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-primary via-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                    CET Trivandrum
+                  <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                    College of Engineering Trivandrum
                   </span>
                 </motion.h1>
 
