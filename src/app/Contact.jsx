@@ -29,7 +29,7 @@ const CONTACT_INFO = {
     { label: "General Inquiries", address: "hod.wp@cet.ac.in" },
     { label: "Admissions", address: "cetwp@cet.ac.in" },
   ],
-  hours: [{ day: "Monday - Saturday", time: "2:00 PM - 5:00 PM" }],
+  hours: [{ day: "Monday - Saturday", time: "2:00 PM - 8:00 PM" }],
 };
 
 export default function Contact() {
@@ -73,8 +73,8 @@ export default function Contact() {
           <h1 className="text-4xl md:text-5xl font-bold mb-3">
             Contact Us
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Office of Programs for Working Professionals — College of Engineering Trivandrum
+          <p className="text-sm md:text-base text-muted-foreground whitespace-nowrap max-w-none mx-auto">
+            Office of the Programs for Working Professionals — College of Engineering Trivandrum
           </p>
         </motion.div>
 
@@ -101,7 +101,7 @@ export default function Contact() {
                   <div>
                     <h3 className="font-medium text-sm text-foreground mb-1">Address</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Office of Programs for Working Professionals
+                      Office of the Programs for Working Professionals
                       <br />
                       {CONTACT_INFO.address.name}
                       <br />
@@ -181,7 +181,7 @@ export default function Contact() {
                         </p>
                       ))}
                       <p className="text-xs mt-1">
-                        Closed on all holidays allowed by Govt. of Kerala
+                        Closed on all holidays published by Govt. of Kerala
                       </p>
                     </div>
                   </div>
