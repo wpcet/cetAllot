@@ -387,7 +387,7 @@ export default function PartTimeBtech() {
                   transition={{ delay: index * 0.05, duration: 0.5 }}
                   className="group"
                 >
-                  <Card className="h-full border border-border/80 hover:border-primary/30 transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_24px_rgba(99,102,241,0.06)] bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm flex flex-col justify-between">
+                  <Card className="h-full border border-border/80 hover:border-primary/30 transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_24px_rgba(99,102,241,0.06)] bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm flex flex-col justify-start">
                     <CardHeader className="pb-4">
                       <div className="mb-4 p-2.5 w-fit rounded-xl bg-primary/5 text-primary group-hover:bg-primary/10 transition-colors duration-300">
                         <div className="group-hover:scale-105 transition-transform duration-300">

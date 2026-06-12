@@ -109,7 +109,7 @@ export default function Eligibility() {
                     {
                       title: "Work Experience",
                       description:
-                        "Minimum 2 years of professional experience in relevant field after qualifying examination",
+                        "Minimum 1 years of professional experience in relevant field after qualifying examination",
                     },
                     {
                       title: "LBS Entrance Examination",
