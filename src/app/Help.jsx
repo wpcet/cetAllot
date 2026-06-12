@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Info, Users } from "lucide-react";
+import { Info, Users, GraduationCap, Zap, Thermometer, TrafficCone } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Card,
@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/Accordion";
 
 export default function HelpCenter() {
   const containerRef = useRef(null);
@@ -28,33 +29,57 @@ export default function HelpCenter() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
   };
 
-  const branches = [
-    "Computer Science and Engineering (CSE)",
-    "Electronics and Communication Engineering (ECE)",
-    "Mechanical Engineering (ME)",
+  const reservationGroups = [
+    {
+      id: "state-merit",
+      title: "State Merit",
+      percentage: "50%",
+      subcategories: []
+    },
+    {
+      id: "sebc",
+      title: "SEBC",
+      percentage: "30%",
+      subcategories: [
+        { name: "Ezhava", quota: "9%" },
+        { name: "Muslim", quota: "8%" },
+        { name: "Other Backward Hindu", quota: "3%" },
+        { name: "Latin Catholic and Anglo Indian", quota: "3%" },
+        { name: "Dheevara", quota: "2%" },
+        { name: "Viswakarma", quota: "2%" },
+        { name: "Kusavan", quota: "1%" },
+        { name: "OBC Christian", quota: "1%" },
+        { name: "Kudumbi", quota: "1%" }
+      ]
+    },
+    {
+      id: "ews",
+      title: "EWS",
+      percentage: "10%",
+      subcategories: []
+    },
+    {
+      id: "sc-st",
+      title: "SC / ST",
+      percentage: "10%",
+      subcategories: [
+        { name: "Scheduled Caste", quota: "8%" },
+        { name: "Scheduled Tribe", quota: "2%" }
+      ]
+    },
+    {
+      id: "others",
+      title: "Others / Special Reservation",
+      percentage: "Supernumerary & Quotas",
+      subcategories: [
+        { name: "PD (Physically Disabled)", quota: "5% (min. 40% disability)" },
+        { name: "Transgender", quota: "1 seat" },
+        { name: "Sports Quota", quota: "1 seat" },
+        { name: "DTE Staff", quota: "1 seat" },
+        { name: "Central Govt. Employee", quota: "1 seat" }
+      ]
+    }
   ];
-
-  const commonReservation = {
-    "State Merit": "50%",
-    "EWS": "10%",
-    "SEBC": "30%",
-    "Ezhava": "9%",
-    "Muslim": "8%",
-    "Other Backward Hindu": "3%",
-    "Latin Catholic and Anglo Indian": "3%",
-    "Dheevara": "2%",
-    "Viswakarma": "2%",
-    "Kusavan": "1%",
-    "OBC Christian": "1%",
-    "Kudumbi": "1%",
-    "Scheduled Caste": "8%",
-    "Scheduled Tribe": "2%",
-    "PD (Physically Disabled)": "5% (min. 40% disability)",
-    "Transgender": "1 seat",
-    "Sports Quota": "1 seat",
-    "DTE Staff": "1 seat",
-    "Central Govt. Employee": "1 seat",
-  };
 
   const faqs = [
     {
@@ -95,37 +120,9 @@ export default function HelpCenter() {
           className="text-center max-w-3xl mx-auto mb-14"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-3">Help Center</h1>
-          <p className="text-lg text-muted-foreground">
-            College of Engineering Trivandrum (CET) — BTech Working Professionals Program
+          <p className="text-sm md:text-base text-muted-foreground whitespace-nowrap">
+            College of Engineering Trivandrum (CET) — Office of the Programs for Working Professionals
           </p>
-        </motion.div>
-
-        {/* Branch List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="max-w-4xl mx-auto mb-10"
-        >
-          <Card className="border-border/50 shadow-sm card-hover">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                <Users className="h-5 w-5" />
-                Departments Offering BTech for Working Professionals
-              </CardTitle>
-              <CardDescription>All departments follow the same seat structure</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {branches.map((branch, idx) => (
-                  <li key={idx} className="flex items-center gap-3 text-sm">
-                    <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
-                    <span>{branch}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
         </motion.div>
 
         {/* Reservation Table */}
@@ -141,16 +138,46 @@ export default function HelpCenter() {
                 <Users className="h-5 w-5" />
                 Reservation-Based Seat Distribution
               </CardTitle>
-              <CardDescription>Total Intake per Branch: 30 Seats</CardDescription>
+              <CardDescription>B.Tech: Total Intake per Branch — 30 Seats | M.Tech: Total Intake per Specialization — 15 Seats</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
-                {Object.entries(commonReservation).map(([category, seats]) => (
-                  <div key={category} className="flex justify-between border-b border-border/50 py-2 hover:bg-muted/20 px-2 rounded transition-colors">
-                    <span className="text-sm text-foreground">{category}</span>
-                    <span className="text-sm font-semibold text-right text-primary">{seats}</span>
-                  </div>
-                ))}
+              <div className="w-full space-y-2">
+                {reservationGroups.map((group) => {
+                  const hasSub = group.subcategories.length > 0;
+                  if (!hasSub) {
+                    return (
+                      <div key={group.id} className="border border-border/60 rounded-xl overflow-hidden px-5 py-4 flex justify-between items-center bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:border-primary/20 transition-all duration-300">
+                        <span className="font-semibold text-sm text-foreground">{group.title}</span>
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm font-bold text-primary">{group.percentage}</span>
+                          <div className="w-4 h-4 flex-shrink-0" /> {/* Spacer matching chevron size */}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <Accordion type="single" collapsible className="w-full" key={group.id}>
+                      <AccordionItem value={group.id} className="border border-border/60 rounded-xl overflow-hidden px-5 hover:bg-muted/10 hover:border-primary/20 transition-all duration-300">
+                        <AccordionTrigger className="hover:no-underline py-4">
+                          <div className="flex justify-between w-full pr-4 items-center">
+                            <span className="font-semibold text-sm text-foreground">{group.title}</span>
+                            <span className="text-sm font-bold text-primary">{group.percentage}</span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pb-4 pt-1">
+                          <div className="space-y-1.5 pl-2">
+                            {group.subcategories.map((sub, sIdx) => (
+                              <div key={sIdx} className="flex justify-between border-b border-border/30 py-1.5 text-xs">
+                                <span className="text-muted-foreground">{sub.name}</span>
+                                <span className="font-semibold text-foreground">{sub.quota}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -165,7 +192,7 @@ export default function HelpCenter() {
         >
           <h2 className="text-2xl font-semibold text-primary flex items-center gap-2 mb-8">
             <Info className="h-5 w-5" />
-            Frequently Asked Questions
+            B.Tech Working Professionals — FAQs
           </h2>
 
           <div className="space-y-5">
@@ -177,6 +204,68 @@ export default function HelpCenter() {
                 transition={{ delay: 0.5 + index * 0.08, duration: 0.4 }}
               >
                 <Card className="border-border/40 shadow-sm card-hover">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base font-medium">
+                      {faq.question}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* M.Tech FAQ Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="max-w-4xl mx-auto mt-14"
+        >
+          <h2 className="text-2xl font-semibold text-violet-600 dark:text-violet-400 flex items-center gap-2 mb-8">
+            <GraduationCap className="h-5 w-5" />
+            M.Tech Working Professionals — FAQs
+          </h2>
+
+          <div className="space-y-5">
+            {[
+              {
+                question: "What is the duration of the M.Tech Working Professionals programme?",
+                answer: "The M.Tech Working Professionals programme is 2 years (4 semesters). Classes are conducted on weekends and weekday evenings to accommodate working professionals.",
+              },
+              {
+                question: "What are the eligible B.Tech degrees for each M.Tech specialization?",
+                answer: "Control Systems requires B.Tech/BE in Electrical Engineering or Electrical & Electronics Engineering. Thermal Science accepts Mechanical, Automobile, Production, Industrial Engineering, or Mechatronics. Traffic & Transportation Engineering requires B.Tech/BE in Civil Engineering.",
+              },
+              {
+                question: "Is work experience mandatory for M.Tech admission?",
+                answer: "Yes, a minimum of 1 year of professional experience after passing the qualifying examination is required.",
+              },
+              {
+                question: "Can I apply if my workplace is outside Kerala?",
+                answer: "Your place of employment must be within a 75 km radial distance from CET. AMIE/AMIETE candidates need a minimum of 2 years professional experience after acquiring the qualification.",
+              },
+              {
+                question: "How many seats are available for each M.Tech specialization?",
+                answer: "Each M.Tech specialization (Control Systems, Thermal Science, Traffic & Transportation Engineering) has 15 seats.",
+              },
+              {
+                question: "Do M.Tech candidates need an employer NOC?",
+                answer: "Yes, an Employment & No Objection Certificate from your current Head of Department/Organization is mandatory. Eligible employment includes government service, semi-government, public/private limited companies, and aided/unaided engineering or polytechnic colleges.",
+              },
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + index * 0.08, duration: 0.4 }}
+              >
+                <Card className="border-violet-200/40 dark:border-violet-800/20 shadow-sm card-hover">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base font-medium">
                       {faq.question}

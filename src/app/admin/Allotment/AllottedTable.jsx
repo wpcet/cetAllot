@@ -11,7 +11,19 @@ const AllottedTable = ({ students, deptName }) => {
     BVoc: 4,
   };
 
+  const isMtech = students.some(
+    (s) => s.indexMark !== undefined || s.degreeType === "mtech" || s.btechDegree !== undefined
+  );
+
   const sortedStudents = [...students].sort((a, b) => {
+    if (isMtech) {
+      const indexA = parseFloat(a.indexMark ?? 0);
+      const indexB = parseFloat(b.indexMark ?? 0);
+      if (indexB !== indexA) return indexB - indexA;
+      const markA = parseFloat(a.btechMark ?? a.mark ?? 0);
+      const markB = parseFloat(b.btechMark ?? b.mark ?? 0);
+      return markB - markA;
+    }
     const eduPriorityA = educationOrder[a.education] || 999;
     const eduPriorityB = educationOrder[b.education] || 999;
     if (eduPriorityA !== eduPriorityB) return eduPriorityA - eduPriorityB;
@@ -36,8 +48,12 @@ const AllottedTable = ({ students, deptName }) => {
             <tr className="bg-primary text-white text-xs uppercase tracking-wider">
               <th className="px-4 py-3 text-left font-medium">No.</th>
               <th className="px-4 py-3 text-left font-medium">Name</th>
-              <th className="px-4 py-3 text-left font-medium">Education</th>
-              <th className="px-4 py-3 text-left font-medium">Rank</th>
+              <th className="px-4 py-3 text-left font-medium">
+                {isMtech ? "B.Tech Degree" : "Education"}
+              </th>
+              <th className="px-4 py-3 text-left font-medium">
+                {isMtech ? "Index Mark" : "Rank"}
+              </th>
               <th className="px-4 py-3 text-left font-medium">Category</th>
             </tr>
           </thead>
@@ -49,8 +65,12 @@ const AllottedTable = ({ students, deptName }) => {
               >
                 <td className="px-4 py-3 font-medium whitespace-nowrap">{index + 1}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{student.name}</td>
-                <td className="px-4 py-3 whitespace-nowrap">{student.education || "-"}</td>
-                <td className="px-4 py-3 whitespace-nowrap">{student.letRank || "-"}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {isMtech ? (student.btechDegree || "-") : (student.education || "-")}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {isMtech ? (student.indexMark ?? "-") : (student.letRank || "-")}
+                </td>
                 <td className="px-4 py-3 whitespace-nowrap">{student.allottedCategory}</td>
               </tr>
             ))}

@@ -5,103 +5,182 @@ import { auth } from "@/firebase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { DashboardHeader } from "./DashboardHeader";
 import { ApplicationTable } from "./ApplicationTable";
+import { MtechApplicationTable } from "./MtechApplicationTable";
 import { NoticeCards } from "./Notices/NoticeCards";
 import { NoticeDialog } from "./Notices/NoticeDialog";
 import { AllotmentResults } from "./Allotment/AllotmentResults";
+import { MtechAllotmentResults } from "./Allotment/MtechAllotmentResults";
 import { DashboardStats, DashboardStatsSkeleton } from "./DashboardStats";
 import { Skeleton, SkeletonTable, SkeletonNoticeCard } from "@/components/ui/Skeleton";
 import { db } from "@/firebase";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
 import { saveNoticeToFirestore, deleteNoticeFromFirestore } from "../utils/saveNotice";
+import { runAllotmentHandler } from "../utils/runAllotmentHandler";
+import { runMtechAllotmentHandler } from "../utils/runMtechAllotmentHandler";
+import uploadRealData from "../utils/uploadRealData";
+import { Button } from "@/components/ui/Button";
+import { UploadCloud, Check, Settings } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
+  const [mtechApplications, setMtechApplications] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [notices, setNotices] = useState([]);
   const [allottedCount, setAllottedCount] = useState(0);
+  const [mtechAllottedCount, setMtechAllottedCount] = useState(0);
   const [isPublished, setIsPublished] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [mtechSearchTerm, setMtechSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [isNoticeDialogOpen, setNoticeDialogOpen] = useState(false);
   const [editNoticeData, setEditNoticeData] = useState(null);
+  const [selectedYear, setSelectedYear] = useState("2026");
+  const [loadingAllotment, setLoadingAllotment] = useState(false);
+  const [loadingMtechAllotment, setLoadingMtechAllotment] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  // Fetch data from Firestore
+  const handleRunAllotment = async () => {
+    if (!window.confirm(`Are you sure you want to run the B.Tech allotment for ${selectedYear}?`)) return;
+    setLoadingAllotment(true);
+    const result = await runAllotmentHandler(selectedYear);
+    setLoadingAllotment(false);
+
+    if (result.success) {
+      alert(`B.Tech allotment completed successfully for ${selectedYear}!`);
+    } else {
+      alert("B.Tech allotment failed. Check console for errors.");
+    }
+  };
+
+  const handleRunMtechAllotment = async () => {
+    if (!window.confirm(`Are you sure you want to run the M.Tech allotment for ${selectedYear}?`)) return;
+    setLoadingMtechAllotment(true);
+    const result = await runMtechAllotmentHandler(selectedYear);
+    setLoadingMtechAllotment(false);
+
+    if (result.success) {
+      alert(`M.Tech allotment completed successfully for ${selectedYear}!`);
+    } else {
+      alert("M.Tech allotment failed. Check console for errors.");
+    }
+  };
+
+  const handleUploadRealData = async () => {
+    if (!window.confirm("Are you sure you want to upload real data? This will clear all existing B.Tech applications and replace them with the mock/real dataset!")) return;
+    setUploading(true);
+    try {
+      await uploadRealData();
+      alert("Real data uploaded successfully.");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Uploading real data failed. Check console.");
+    }
+    setUploading(false);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    setIsLoading(true);
+
+    const unsubscribeApps = onSnapshot(collection(db, "applications"), (snapshot) => {
+      const apps = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setApplications(apps);
+      setIsLoading(false);
+      setInitialLoading(false);
+    }, (error) => {
+      console.error("Error listening to applications:", error);
+    });
+
+    const unsubscribeMtechApps = onSnapshot(collection(db, "mtech_applications"), (snapshot) => {
+      const apps = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setMtechApplications(apps);
+    }, (error) => {
+      console.error("Error listening to M.Tech applications:", error);
+    });
+
+    const unsubscribeNotices = onSnapshot(collection(db, "notices"), (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setNotices(data);
+    }, (error) => {
+      console.error("Error listening to notices:", error);
+    });
+
+    return () => {
+      unsubscribeApps();
+      unsubscribeMtechApps();
+      unsubscribeNotices();
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchAllotmentsAndAllottedCounts = async () => {
       try {
-        setIsLoading(true);
-
-        const [applicationsSnapshot, noticesSnapshot, allotmentSnapshot] = await Promise.all([
-          getDocs(collection(db, "applications")),
-          getDocs(collection(db, "notices")),
-          getDocs(collection(db, "allotment")),
-        ]);
-
-        const applicationsData = applicationsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        const noticesData = noticesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
+        const allotmentSnapshot = await getDocs(collection(db, "allotment"));
         const allotmentData = allotmentSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-
-        setApplications(applicationsData);
-        setNotices(noticesData);
         setDepartments(allotmentData);
 
-        const currentYear = new Date().getFullYear();
+        const yearNum = Number(selectedYear);
 
-        // Calculate allotted count across all departments for current year
-        const deptNames = currentYear === 2025
+        const deptNames = yearNum === 2025
           ? ["Civil Engineering", "Electrical and Electronics Engineering", "Mechanical Engineering", "Waiting List"]
           : ["Computer Science and Engineering", "Electronics and Communication Engineering", "Mechanical Engineering", "Waiting List"];
         let totalAllotted = 0;
         for (const dept of deptNames) {
           try {
-            const snap = await getDocs(collection(db, `allotment/${dept}_${currentYear}/students`));
+            const snap = await getDocs(collection(db, `allotment/${dept}_${yearNum}/students`));
             totalAllotted += snap.size;
-            const snap2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${currentYear}/students`));
+            const snap2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${yearNum}/students`));
             totalAllotted += snap2.size;
-          } catch {
-            // Skip if subcollection doesn't exist yet
-          }
+          } catch {}
         }
         setAllottedCount(totalAllotted);
 
-        // Check publish status for current year
+        const mtechSpecs = [
+          "Control Systems (Electrical Engineering)",
+          "Thermal Science (Mechanical Engineering)",
+          "Traffic & Transportation Engineering (Civil Engineering)",
+        ];
+        let totalMtechAllotted = 0;
+        for (const spec of mtechSpecs) {
+          try {
+            const snap = await getDocs(collection(db, `mtech_allotment/${spec}_${yearNum}/students`));
+            totalMtechAllotted += snap.size;
+          } catch {}
+        }
+        setMtechAllottedCount(totalMtechAllotted);
+
         try {
-          const publishDoc = await getDoc(doc(db, "allotment", `publishStatus_${currentYear}`));
+          const publishDoc = await getDoc(doc(db, "allotment", `publishStatus_${yearNum}`));
           if (publishDoc.exists()) {
             setIsPublished(!!publishDoc.data().published);
+          } else {
+            setIsPublished(false);
           }
         } catch {
-          // ignore if not set up yet
+          setIsPublished(false);
         }
       } catch (error) {
-        console.error("Error fetching dashboard data: ", error);
-      } finally {
-        setIsLoading(false);
-        setInitialLoading(false);
+        console.error("Error fetching allotments: ", error);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchAllotmentsAndAllottedCounts();
+  }, [selectedYear]);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/admin");
+  const getAppYear = (app) => {
+    if (!app.submittedAt) return 2025;
+    try {
+      const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
+      return date.getFullYear();
+    } catch {
+      return 2025;
+    }
   };
 
   const filteredApplications = applications.filter((app) => {
@@ -113,7 +192,9 @@ export default function Dashboard() {
     return matchesSearch && matchesStatus;
   });
 
-  // Handling Save Notices
+  const statsBtechApps = applications.filter((app) => String(getAppYear(app)) === selectedYear);
+  const statsMtechApps = mtechApplications.filter((app) => String(getAppYear(app)) === selectedYear);
+
   const handleSaveNotice = async () => {
     if (!editNoticeData) return;
     setIsLoading(true);
@@ -150,6 +231,11 @@ export default function Dashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/admin");
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <DashboardHeader
@@ -163,73 +249,146 @@ export default function Dashboard() {
           setNoticeDialogOpen(true);
         }}
         onLogout={handleLogout}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
       />
 
-      {/* Stats Overview */}
       {initialLoading ? (
         <DashboardStatsSkeleton />
       ) : (
         <div className="mb-8">
           <DashboardStats
-            applications={applications}
+            applications={statsBtechApps}
+            mtechApplications={statsMtechApps}
             notices={notices}
             allottedCount={allottedCount}
+            mtechAllottedCount={mtechAllottedCount}
             isPublished={isPublished}
           />
         </div>
       )}
 
-      <Tabs defaultValue="applications" className="space-y-6">
+      <Tabs defaultValue="btech" className="space-y-6">
         <TabsList className="bg-muted/50 p-1">
-          <TabsTrigger value="applications">Applications</TabsTrigger>
-          <TabsTrigger value="allotment">Allotment</TabsTrigger>
+          <TabsTrigger value="btech" className="data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-800">
+            B.Tech
+          </TabsTrigger>
+          <TabsTrigger value="mtech" className="data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-800">
+            M.Tech
+          </TabsTrigger>
           <TabsTrigger value="notices">Notices & Updates</TabsTrigger>
+          <TabsTrigger value="system">System & Testing</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="applications" className="space-y-4">
-          {initialLoading ? (
-            <div className="space-y-4 animate-fade-in">
-              <div className="flex justify-between mb-6">
-                <Skeleton className="h-10 w-72 rounded-lg" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-9 w-24 rounded-md" />
-                  <Skeleton className="h-9 w-28 rounded-md" />
-                  <Skeleton className="h-9 w-36 rounded-md" />
+        <TabsContent value="btech">
+          <Tabs defaultValue="applications" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1">
+              <TabsTrigger value="applications">Applications</TabsTrigger>
+              <TabsTrigger value="allotment">Allotment</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="applications" className="space-y-4">
+              {initialLoading ? (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex justify-between mb-6">
+                    <Skeleton className="h-10 w-72 rounded-lg" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-9 w-24 rounded-md" />
+                      <Skeleton className="h-9 w-28 rounded-md" />
+                      <Skeleton className="h-9 w-36 rounded-md" />
+                    </div>
+                  </div>
+                  <SkeletonTable rows={8} columns={14} />
                 </div>
-              </div>
-              <SkeletonTable rows={8} columns={14} />
-            </div>
-          ) : (
-            <ApplicationTable
-              applications={filteredApplications}
-              departments={departments}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              departmentFilter={departmentFilter}
-              setDepartmentFilter={setDepartmentFilter}
-              isLoading={isLoading}
-              onEdit={() => {}}
-              onNewApplication={() => {}}
-            />
-          )}
+              ) : (
+                <ApplicationTable
+                  applications={filteredApplications}
+                  departments={departments}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  statusFilter={statusFilter}
+                  setStatusFilter={setStatusFilter}
+                  departmentFilter={departmentFilter}
+                  setDepartmentFilter={setDepartmentFilter}
+                  isLoading={isLoading}
+                  onEdit={() => {}}
+                  onNewApplication={() => {}}
+                  yearFilter={selectedYear}
+                  setYearFilter={setSelectedYear}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="allotment">
+              {initialLoading ? (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex justify-between">
+                    <Skeleton className="h-10 w-36 rounded-lg" />
+                    <Skeleton className="h-10 w-40 rounded-lg" />
+                  </div>
+                  <SkeletonTable rows={5} columns={5} />
+                  <SkeletonTable rows={3} columns={5} />
+                  <SkeletonTable rows={4} columns={5} />
+                </div>
+              ) : (
+                <AllotmentResults
+                  selectedYear={selectedYear}
+                  setSelectedYear={setSelectedYear}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
-        <TabsContent value="allotment">
-          {initialLoading ? (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex justify-between">
-                <Skeleton className="h-10 w-36 rounded-lg" />
-                <Skeleton className="h-10 w-40 rounded-lg" />
-              </div>
-              <SkeletonTable rows={5} columns={5} />
-              <SkeletonTable rows={3} columns={5} />
-              <SkeletonTable rows={4} columns={5} />
-            </div>
-          ) : (
-            <AllotmentResults />
-          )}
+        <TabsContent value="mtech">
+          <Tabs defaultValue="applications" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1">
+              <TabsTrigger value="applications">Applications</TabsTrigger>
+              <TabsTrigger value="allotment">Allotment</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="applications" className="space-y-4">
+              {initialLoading ? (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex justify-between mb-6">
+                    <Skeleton className="h-10 w-72 rounded-lg" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-9 w-24 rounded-md" />
+                      <Skeleton className="h-9 w-28 rounded-md" />
+                      <Skeleton className="h-9 w-36 rounded-md" />
+                    </div>
+                  </div>
+                  <SkeletonTable rows={8} columns={11} />
+                </div>
+              ) : (
+                <MtechApplicationTable
+                  searchTerm={mtechSearchTerm}
+                  setSearchTerm={setMtechSearchTerm}
+                  isLoading={isLoading}
+                  onNewApplication={() => {}}
+                  yearFilter={selectedYear}
+                  setYearFilter={setSelectedYear}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="allotment">
+              {initialLoading ? (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex justify-between">
+                    <Skeleton className="h-10 w-36 rounded-lg" />
+                    <Skeleton className="h-10 w-40 rounded-lg" />
+                  </div>
+                  <SkeletonTable rows={5} columns={5} />
+                </div>
+              ) : (
+                <MtechAllotmentResults
+                  selectedYear={selectedYear}
+                  setSelectedYear={setSelectedYear}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         <TabsContent value="notices">
@@ -262,6 +421,67 @@ export default function Dashboard() {
               }}
             />
           )}
+        </TabsContent>
+
+        <TabsContent value="system">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {/* Database Card */}
+            <div className="rounded-xl border border-border/50 bg-card p-6 shadow-sm space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                  <UploadCloud className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Database Seeding</h3>
+                  <p className="text-xs text-muted-foreground">Reset or populate the database with mock records</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Clears out all existing B.Tech application documents in the Firestore database and uploads a pre-configured, clean dataset of 84 applicants for testing.
+              </p>
+              <Button
+                onClick={handleUploadRealData}
+                disabled={uploading}
+                className="w-full shadow-sm"
+              >
+                {uploading ? "Uploading..." : "Upload Real Data"}
+              </Button>
+            </div>
+
+            {/* Processing Card */}
+            <div className="rounded-xl border border-border/50 bg-card p-6 shadow-sm space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-violet-100 p-2 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
+                  <Check className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Allotment Calculations</h3>
+                  <p className="text-xs text-muted-foreground">Run algorithms to allot students to branches</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Process registrations for the selected year and calculate seat assignments based on priorities, marks, experience, and reservations.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleRunAllotment}
+                  disabled={loadingAllotment}
+                  className="flex-1 shadow-sm"
+                >
+                  {loadingAllotment ? "Running B.Tech..." : "Run B.Tech Allotment"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleRunMtechAllotment}
+                  disabled={loadingMtechAllotment}
+                  className="flex-1 shadow-sm border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-950"
+                >
+                  {loadingMtechAllotment ? "Running M.Tech..." : "Run M.Tech Allotment"}
+                </Button>
+              </div>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 

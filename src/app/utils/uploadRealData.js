@@ -56,7 +56,7 @@ const uploadRealData = async () => {
           "2": entry.priorityChoices?.["2"] || "",
           "3": entry.priorityChoices?.["3"] || "",
         },
-        submittedAt: Timestamp.now(),
+        submittedAt: Timestamp.fromDate(new Date("2025-06-15T10:00:00")),
       };
 
       await addDoc(applicationsRef, formatted);

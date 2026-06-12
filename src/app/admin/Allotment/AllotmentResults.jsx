@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 
-export const AllotmentResults = () => {
+export const AllotmentResults = ({ selectedYear: selectedYearProp, setSelectedYear: setSelectedYearProp }) => {
   const [allottedData, setAllottedData] = useState({});
   const [allottedData2, setAllottedData2] = useState({});
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,10 @@ export const AllotmentResults = () => {
   const [publishing, setPublishing] = useState(false);
 
   const currentYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState(String(currentYear));
+  const [localSelectedYear, setLocalSelectedYear] = useState("2025");
+
+  const selectedYear = selectedYearProp !== undefined ? selectedYearProp : localSelectedYear;
+  const setSelectedYear = setSelectedYearProp !== undefined ? setSelectedYearProp : setLocalSelectedYear;
 
   const getDepartmentsForYear = (year) => {
     return year === "2025"

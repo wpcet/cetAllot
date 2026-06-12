@@ -19,7 +19,7 @@ const clearPreviousAllotment2 = async (department, year) => {
   await Promise.all(deletions);
 };
 
-export const runAllotmentHandler = async () => {
+export const runAllotmentHandler = async (year) => {
   try {
     // console.log("📥 Fetching applications from Firestore...");
     const applicationsSnapshot = await getDocs(collection(db, "applications"));
@@ -31,7 +31,7 @@ export const runAllotmentHandler = async () => {
     // console.log("📘 Sample Application:", applications[0]);
 
     // console.log("⚙️ Running calculateAllotment...");
-    const currentYear = new Date().getFullYear();
+    const currentYear = year ? Number(year) : new Date().getFullYear();
     const departments = currentYear === 2025 ? [
       {
         "name": "Electrical and Electronics Engineering",

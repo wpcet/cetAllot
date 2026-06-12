@@ -13,6 +13,8 @@ import {
   Zap,
   Cpu,
   Settings,
+  Thermometer,
+  TrafficCone,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -69,11 +71,11 @@ export default function About() {
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           className="max-w-4xl mx-auto text-center mb-20"
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6">
-            About Our BTech Program
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary leading-tight mb-6 whitespace-nowrap">
+            About Our Programs for Working Professionals
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Industry-aligned engineering education with cutting-edge curriculum and hands-on learning experiences.
+          <p className="text-sm md:text-base text-muted-foreground max-w-none mx-auto whitespace-nowrap">
+            B.Tech and M.Tech engineering education with cutting-edge curriculum and hands-on learning experiences
           </p>
         </motion.div>
 
@@ -102,8 +104,8 @@ export default function About() {
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { label: "Established", value: "1939" },
-                  { label: "NIRF Ranking", value: "Top 50" },
-                  { label: "Programs", value: "20+ UG & PG" },
+                  { label: "NIRF Ranking", value: "101 - 115 band" },
+                  { label: "Programs", value: "30+ UG & PG" },
                   { label: "Alumni", value: "50,000+" },
                 ].map((item, i) => (
                   <motion.div
@@ -146,7 +148,7 @@ export default function About() {
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">Our BTech Programs</h2>
             <p className="text-muted-foreground max-w-3xl mx-auto">
-              Choose from our accredited engineering specializations
+              Choose from our accredited undergraduate engineering specializations
             </p>
           </div>
 
@@ -196,6 +198,73 @@ export default function About() {
           </div>
         </motion.section>
 
+        {/* M.Tech Programs */}
+        <motion.section
+          className="mb-24 relative z-10"
+        >
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 text-sm font-medium mb-4">
+              <GraduationCap className="h-4 w-4" />
+              Postgraduate
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Our M.Tech Programs</h2>
+            <p className="text-muted-foreground max-w-3xl mx-auto">
+              Advanced postgraduate specializations for employed engineers seeking career growth
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Control Systems",
+                branch: "Electrical Engineering",
+                icon: <Zap className="h-10 w-10 text-violet-600 dark:text-violet-400" />,
+                duration: "2 Years",
+                seats: "15 Seats",
+              },
+              {
+                title: "Thermal Science",
+                branch: "Mechanical Engineering",
+                icon: <Thermometer className="h-10 w-10 text-violet-600 dark:text-violet-400" />,
+                duration: "2 Years",
+                seats: "15 Seats",
+              },
+              {
+                title: "Traffic & Transportation Engineering",
+                branch: "Civil Engineering",
+                icon: <TrafficCone className="h-10 w-10 text-violet-600 dark:text-violet-400" />,
+                duration: "2 Years",
+                seats: "15 Seats",
+              },
+            ].map((program, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              >
+                <Card className="h-full card-hover text-center border-violet-200/50 dark:border-violet-800/30">
+                  <CardHeader className="flex flex-col items-center">
+                    <div className="flex items-center justify-center p-4 rounded-2xl bg-violet-500/5 mb-4 transition-colors duration-300 group-hover:bg-violet-500/10">
+                      {program.icon}
+                    </div>
+                    <CardTitle className="text-xl font-semibold">{program.title}</CardTitle>
+                    <p className="text-xs font-medium text-violet-600 dark:text-violet-400 uppercase tracking-wider">
+                      {program.branch}
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground font-medium">{program.duration}</p>
+                    <p className="text-sm text-muted-foreground">{program.seats}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
         {/* Why Choose Us */}
         <motion.section
           className="mb-24 bg-gradient-to-r from-primary/[0.03] to-blue-500/[0.03] py-16 px-8 rounded-2xl relative overflow-hidden"
@@ -209,14 +278,14 @@ export default function About() {
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                Why Choose Our BTech Program?
+                Why Choose Our Programs? for Working Professionals
               </h2>
               <p className="text-muted-foreground max-w-3xl mx-auto">
-                We prepare engineers for the future with an unparalleled learning experience
+                We prepare engineers for the future with an unparalleled B.Tech and M.Tech learning experience
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
               {[
                 {
                   title: "Industry-Aligned Curriculum",
@@ -227,26 +296,6 @@ export default function About() {
                   title: "Hands-on Learning",
                   description: "Extensive lab work and project-based learning",
                   icon: <BookOpen className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Internship Opportunities",
-                  description: "Mandatory industry internships from 3rd year",
-                  icon: <GraduationCap className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Global Exposure",
-                  description: "Student exchange programs with international universities",
-                  icon: <Globe className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Placement Support",
-                  description: "Dedicated placement cell with 90% placement rate",
-                  icon: <Award className="h-5 w-5 text-primary" />,
-                },
-                {
-                  title: "Startup Incubation",
-                  description: "Support for student entrepreneurs with funding opportunities",
-                  icon: <Rocket className="h-5 w-5 text-primary" />,
                 },
               ].map((feature, index) => (
                 <motion.div
@@ -299,7 +348,7 @@ export default function About() {
             Start Your Engineering Journey
           </h2>
           <p className="text-lg text-primary-foreground/80 mb-8 max-w-3xl mx-auto relative z-10">
-            Applications for 2026-27 admissions are now open. Secure your seat in our prestigious BTech program.
+            Applications for 2026-27 admissions are now open. Secure your seat in our prestigious B.Tech or M.Tech working professionals program.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
             <Link to="/apply">

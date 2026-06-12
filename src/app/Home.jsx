@@ -12,6 +12,9 @@ import {
   GraduationCap,
   Users,
   Bell,
+  Zap,
+  Thermometer,
+  TrafficCone,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -131,13 +134,20 @@ export default function Home() {
                 </motion.div>
 
                 <motion.h1
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance leading-[1.1]"
+                  className="tracking-tight text-balance leading-none flex flex-col gap-3"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
                 >
-                  BTech Working Professionals Program{" "}
-                  <span className="text-primary">CET Trivandrum</span>
+                  <span className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground">
+                    BTech & MTech
+                  </span>
+                  <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-muted-foreground/90 tracking-tight">
+                    Working Professionals Programs
+                  </span>
+                  <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                    College of Engineering Trivandrum
+                  </span>
                 </motion.h1>
 
                 <motion.p
@@ -231,9 +241,8 @@ export default function Home() {
                       className="group cursor-pointer"
                     >
                       <Card
-                        className={`h-full transition-all duration-300 card-hover ${
-                          notice.important ? "border-red-200/70 bg-red-50/30" : ""
-                        }`}
+                        className={`h-full transition-all duration-300 card-hover ${notice.important ? "border-red-200/70 bg-red-50/30" : ""
+                          }`}
                       >
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between gap-3">
@@ -336,6 +345,91 @@ export default function Home() {
         </div>
       </SectionWrapper>
 
+      {/* M.Tech Programs Section */}
+      <SectionWrapper id="mtech-programs">
+        <div className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div className="text-center mb-14" variants={fadeIn}>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 text-sm font-medium mb-4">
+                <GraduationCap className="h-4 w-4" />
+                Postgraduate
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">M.Tech for Working Professionals</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Advanced postgraduate specializations in high-demand engineering areas for employed graduates.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  title: "Control Systems",
+                  branch: "Electrical Engineering",
+                  description:
+                    "Advanced study of control theory, robotics, EV design, smart power grids, and industrial automation systems.",
+                  seats: "15 Seats",
+                  icon: <Zap className="h-10 w-10 text-violet-600 dark:text-violet-400" />,
+                },
+                {
+                  title: "Thermal Science",
+                  branch: "Mechanical Engineering",
+                  description:
+                    "In-depth exploration of renewable energy systems, aerospace propulsion, heat transfer, and advanced thermodynamics.",
+                  seats: "15 Seats",
+                  icon: <Thermometer className="h-10 w-10 text-violet-600 dark:text-violet-400" />,
+                },
+                {
+                  title: "Traffic & Transportation Engineering",
+                  branch: "Civil Engineering",
+                  description:
+                    "Specialization in logistics, smart city infrastructure, transportation planning, and sustainable mobility systems.",
+                  seats: "15 Seats",
+                  icon: <TrafficCone className="h-10 w-10 text-violet-600 dark:text-violet-400" />,
+                },
+              ].map((program, index) => (
+                <AnimatedCard key={index} delay={index * 0.1}>
+                  <Card className="h-full transition-all duration-300 card-hover group border-violet-200/50 dark:border-violet-800/30">
+                    <CardHeader>
+                      <div className="mb-4 p-3 w-fit rounded-xl bg-violet-500/5 group-hover:bg-violet-500/10 transition-colors duration-300">
+                        <div className="group-hover:scale-110 transition-transform duration-300">
+                          {program.icon}
+                        </div>
+                      </div>
+                      <CardTitle className="text-xl">{program.title}</CardTitle>
+                      <p className="text-xs font-medium text-violet-600 dark:text-violet-400 uppercase tracking-wider">
+                        {program.branch}
+                      </p>
+                      <CardDescription className="text-sm leading-relaxed">
+                        {program.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-semibold text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-full">
+                          {program.seats}
+                        </span>
+                        <span className="text-xs font-semibold text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-full">
+                          2 Years
+                        </span>
+                      </div>
+                      <Link to="/apply">
+                        <Button
+                          variant="outline"
+                          className="w-full border-violet-300 text-violet-700 hover:bg-violet-600 hover:text-white hover:border-violet-600 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-600 dark:hover:text-white dark:hover:border-violet-600 transition-all duration-300"
+                        >
+                          Apply Now
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </AnimatedCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      </SectionWrapper>
+
       {/* Fee Structure */}
       <SectionWrapper className="bg-muted/30">
         <div className="py-20">
@@ -343,7 +437,7 @@ export default function Home() {
             <motion.div className="text-center mb-14" variants={fadeIn}>
               <h2 className="text-3xl md:text-4xl font-bold mb-3">Fee Structure</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Transparent and affordable fee structure for the BTech Working Professionals program.
+                Transparent and affordable fee structure for the Working Professionals programs.
               </p>
             </motion.div>
 
@@ -497,10 +591,10 @@ export default function Home() {
 
               <div className="relative z-10 max-w-3xl mx-auto">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  Ready to Begin Your BTech Journey?
+                  Ready to Begin Your Engineering Journey?
                 </h2>
                 <p className="text-primary-foreground/80 text-lg mb-10 max-w-2xl mx-auto">
-                  Join CET's prestigious BTech Working Professionals program and take your engineering career to the next level.
+                  Join CET's prestigious Working Professionals programs — B.Tech or M.Tech — and take your engineering career to the next level.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link to="/apply">
