@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quotation & Project Proposal — CET WP Admission Portal</title>
+  <title>Quotation & Project Proposal — Working Professionals Admission Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #1e3a8a; /* Deep Navy Blue */
-      --primary-light: #eff6ff;
-      --accent-color: #2563eb; /* Vivid Blue */
-      --text-dark: #1f2937;
-      --text-muted: #4b5563;
-      --border-color: #e5e7eb;
-      --bg-light: #f9fafb;
+      --primary-color: #111827; /* Dark Gray / Black */
+      --primary-light: #ffffff;
+      --accent-color: #111827; /* Dark Gray / Black */
+      --text-dark: #111827;
+      --text-muted: #374151;
+      --border-color: #d1d5db;
+      --bg-light: #ffffff;
     }
 
     * {
@@ -27,39 +27,28 @@
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-dark);
-      background-color: #f3f4f6;
-      line-height: 1.6;
-      padding: 40px 20px;
+      background-color: #ffffff;
+      line-height: 1.45;
+      padding: 20px 10px;
     }
 
     .quotation-container {
-      max-width: 850px;
+      max-width: 800px;
       margin: 0 auto;
       background: #ffffff;
-      padding: 50px 60px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      padding: 30px 40px;
+      border-radius: 0;
+      box-shadow: none;
       position: relative;
       overflow: hidden;
-    }
-
-    /* Top accent bar */
-    .quotation-container::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 8px;
-      background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 40px;
-      padding-bottom: 30px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
       border-bottom: 2px solid var(--border-color);
     }
 
@@ -306,9 +295,13 @@
     }
 
     @media print {
+      @page {
+        margin: 0;
+      }
       body {
         background-color: #ffffff;
         padding: 0;
+        margin: 1.6cm;
       }
       .quotation-container {
         box-shadow: none;
@@ -326,109 +319,75 @@
   <div class="quotation-container">
     <header>
       <div class="brand-section">
-        <h1>WP Admission Portal</h1>
+        <h1>Working Professionals Admission Portal</h1>
         <p>College of Engineering Trivandrum (CET)</p>
-      </div>
-      <div class="quote-meta">
-        <h2>Quotation</h2>
-        <div class="meta-details">
-          <span><strong>Quote No:</strong> CET-WP-2026-001</span>
-          <span><strong>Date:</strong> June 15, 2026</span>
-          <span><strong>Validity:</strong> 30 Days</span>
-        </div>
       </div>
     </header>
 
-    <div class="parties-section">
-      <div class="party-card">
-        <h3>Prepared For</h3>
-        <p><strong>The Coordinator / Admission Cell</strong></p>
-        <p>Working Professionals (WP)</p>
-        <p>College of Engineering Trivandrum (CET)</p>
-        <p>Trivandrum, Kerala, India</p>
-        <p>Website: <a href="https://wpadmission.cet.ac.in" style="color: var(--accent-color); text-decoration: none;">wpadmission.cet.ac.in</a></p>
-      </div>
-      <div class="party-card">
-        <h3>Prepared By</h3>
-        <p><strong>Muhammed Ajmal U.K.</strong></p>
-        <p>Collaborating Developer & Maintainer</p>
-        <p>WP Admission Portal Technical Team</p>
-        <p>College of Engineering Trivandrum</p>
-        <p>Email: dev-support@cet.ac.in</p>
+    <div class="parties-section" style="border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 25px;">
+      <div>
+        <h3 style="font-size: 13px; text-transform: uppercase; color: var(--primary-color); margin-bottom: 6px; letter-spacing: 0.5px;">Service Provider Details</h3>
+        <p style="font-size: 15px; font-weight: 700; color: var(--text-dark);">Muhammed Ajmal U K</p>
+        <p style="font-size: 13.5px; color: var(--text-muted);">Collaborating Developer & Maintainer (MCA Student)</p>
+        <p style="font-size: 13.5px; color: var(--text-muted);">Working Professionals Admission Portal Technical Team, CET</p>
+        <p style="font-size: 13.5px; color: var(--text-muted);">College of Engineering Trivandrum</p>
+        <p style="margin-top: 4px; font-size: 12.5px;">Email: <a href="mailto:ajmaluk.data@gmail.com" style="color: var(--accent-color); text-decoration: none; font-weight: 500;">ajmaluk.data@gmail.com</a></p>
       </div>
     </div>
 
-    <div class="project-about">
-      <h3>Project Context & Collaboration</h3>
-      <p>
-        The <strong>Working Professionals (WP) Admission Portal</strong> is a specialized online platform designed to streamline applications, eligibility checks, and allocation lists for the Working Professionals degree programs at the College of Engineering Trivandrum (CET).
+    <div class="project-about" style="margin-bottom: 35px;">
+      <h3 style="font-size: 15px; text-transform: uppercase; color: var(--primary-color); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; letter-spacing: 0.5px;">Project Context</h3>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 8px; text-align: justify; line-height: 1.5;">
+        This document outlines finalization, deployment, and ongoing technical support for the <strong>Working Professionals (WP) Admission Portal</strong> at the College of Engineering Trivandrum (CET).
       </p>
-      <p>
-        <strong>Development Background:</strong> The portal's initial core development was initiated by three previous developers who have successfully graduated (passed out) from the institution. To ensure project completion, integration, and operational readiness, the current collaborating developer, Muhammed Ajmal U.K., took over the development lifecycle, resolving outstanding issues, and integrating the current system frontend/backend components.
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 8px; text-align: justify; line-height: 1.5;">
+        The portal's initial code base was developed by three graduated MCA students. The system has been integrated, updated with the newly added M.Tech admission module, and prepared for final deployment by Muhammed Ajmal U K. The portal is managed by the MCA Department at CET. Technical support and operational maintenance are committed for a duration of <strong>10 months</strong>.
       </p>
-      <div class="highlight-box">
-        <strong>Operation & Support Commitment:</strong> In addition to final deployment and handover, Muhammed Ajmal U.K. commits to providing comprehensive technical support and operational maintenance for a duration of <strong>10 months</strong> from the launch date.
-      </div>
     </div>
 
-    <div class="pricing-table-container">
-      <table class="pricing-table">
+    <div class="pricing-table-container" style="margin-bottom: 35px;">
+      <table class="pricing-table" style="width: 100%; border-collapse: collapse;">
         <thead>
-          <tr>
-            <th style="width: 70%;">Description of Deliverable & Service</th>
-            <th style="width: 30%;">Amount (INR)</th>
+          <tr style="border-bottom: 2px solid var(--primary-color);">
+            <th style="padding: 10px 0; background: none; color: var(--primary-color); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; width: 75%;">Service / Deliverable Description</th>
+            <th style="padding: 10px 0; background: none; color: var(--primary-color); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; width: 25%;">Amount (INR)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>
-              <strong>Web Portal Development, Finalization & Handover</strong><br>
-              <span style="font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px;">
-                - Finalization of portal code, deployment of frontend application.<br>
-                - Database setup and integration (Firebase).<br>
-                - Collaboration & transition management from the 3 graduated developers.
-              </span>
+            <td style="padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13.5px; color: var(--text-muted); line-height: 1.45;">
+              Deployment of portal frontend, database integration (Firebase), integration of the newly added M.Tech admission module, transition handoff management, and 10 months of technical support and maintenance.
             </td>
-            <td>₹5,000.00</td>
-          </tr>
-          <tr>
-            <td>
-              <strong>10-Month Technical Support & Operations Maintenance</strong><br>
-              <span style="font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px;">
-                - Regular bug fixing, system monitoring, and database health checks.<br>
-                - Technical assistance for administrators during admission cycles.<br>
-                - Minor configuration changes and security updates as required.
-              </span>
-            </td>
-            <td>Included</td>
-          </tr>
-          <tr class="total-row">
-            <td>Total Quotation Value</td>
-            <td>₹5,000.00</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 14px; font-weight: 600; text-align: right; color: var(--text-dark);">₹5,000.00</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="terms-section">
-      <h3>Terms & Service Agreement</h3>
-      <ul>
-        <li><strong>Support Period:</strong> The 10-month support cycle starts immediately upon official deployment and handover of the system to the CET admission team.</li>
-        <li><strong>Scope of Support:</strong> Support includes fixing technical glitches, system downtime resolutions, database connection issues, and clarifying queries regarding portal operations. It does not include major feature changes or redesigns.</li>
-        <li><strong>Payment Terms:</strong> 100% payment (₹5,000.00) to be processed upon completion of handover and verification of portal functionality.</li>
+    <div class="terms-section" style="margin-bottom: 25px;">
+      <h3 style="font-size: 15px; text-transform: uppercase; color: var(--primary-color); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; letter-spacing: 0.5px;">Terms of Agreement</h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; position: relative; padding-left: 15px;">
+          <span style="position: absolute; left: 0; color: var(--accent-color);">•</span> Technical support is active for 10 months post-launch. After the 10 months, there will be support from the MCA department with the incoming new junior batch.
+        </li>
       </ul>
     </div>
 
-    <div class="signatures">
-      <div class="signature-line">
-        <hr>
-        <p><strong>Muhammed Ajmal U.K.</strong></p>
-        <p>Collaborating Developer & Maintainer</p>
-      </div>
-      <div class="signature-line">
-        <hr>
-        <p><strong>Authorized Signatory (CET)</strong></p>
-        <p>Admission Coordinator, WP</p>
+    <div class="portal-details-section" style="margin-bottom: 25px; font-size: 13px; color: var(--text-muted);">
+      <strong style="color: var(--primary-color); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Portal Links</strong>
+      Official Portal: <a href="https://wpadmission.cet.ac.in" style="color: var(--accent-color); text-decoration: none; margin-right: 20px; font-weight: 600;">wpadmission.cet.ac.in</a>
+      Dev Portal: <a href="https://wpadmission.pages.dev/" style="color: var(--accent-color); text-decoration: none; font-weight: 600;">wpadmission.pages.dev</a>
+    </div>
+
+    <div class="signatures" style="margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); max-width: 350px;">
+      <div class="signature-line" style="text-align: left;">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Prepared By:</p>
+        <div style="height: 50px; margin-bottom: 6px; text-align: left;">
+          <img src="sig.jpg" alt="Signature" style="height: 100%; max-height: 50px; object-fit: contain; mix-blend-mode: multiply;" />
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 8px;">
+        <p style="font-size: 14px; font-weight: 700; color: var(--text-dark); white-space: nowrap;">Muhammed Ajmal U K</p>
+        <p style="font-size: 12.5px; color: var(--text-muted); white-space: nowrap;">Collaborating Developer & Maintainer</p>
       </div>
     </div>
   </div>

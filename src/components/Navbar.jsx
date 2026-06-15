@@ -106,15 +106,13 @@ export default function Navbar() {
     <>
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-500 ease-out
-          ${
-            isVisible
-              ? "translate-y-0"
-              : "-translate-y-full"
+          ${isVisible
+            ? "translate-y-0"
+            : "-translate-y-full"
           }
-          ${
-            scrolled
-              ? "glass-strong shadow-sm"
-              : "bg-transparent"
+          ${scrolled
+            ? "glass-strong shadow-sm"
+            : "bg-transparent"
           }`}
       >
         <nav
@@ -160,10 +158,9 @@ export default function Navbar() {
                 key={item.name}
                 to={item.href}
                 className={`relative px-3 py-2 text-sm font-medium leading-6 rounded-lg transition-all duration-200
-                  ${
-                    isActive(item.href)
-                      ? "text-primary bg-primary/5"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ${isActive(item.href)
+                    ? "text-primary bg-primary/5"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   }`}
               >
                 {item.name}
@@ -240,11 +237,10 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`block px-4 py-3 rounded-xl text-base font-medium leading-7 transition-all ${
-                      isActive(item.href)
+                    className={`block px-4 py-3 rounded-xl text-base font-medium leading-7 transition-all ${isActive(item.href)
                         ? "text-primary bg-primary/5 font-semibold"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    }`}
+                      }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.name}
