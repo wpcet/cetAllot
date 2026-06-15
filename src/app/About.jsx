@@ -285,7 +285,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {[
                 {
                   title: "Industry-Aligned Curriculum",
@@ -296,6 +296,16 @@ export default function About() {
                   title: "Hands-on Learning",
                   description: "Extensive lab work and project-based learning",
                   icon: <BookOpen className="h-5 w-5 text-primary" />,
+                },
+                {
+                  title: "State of the Art Facilities",
+                  description: "Use the facilities in Kerala's No. 1 engg college",
+                  icon: <Award className="h-5 w-5 text-primary" />,
+                },
+                {
+                  title: "No Career Break",
+                  description: "Continue studies without taking a break from career",
+                  icon: <GraduationCap className="h-5 w-5 text-primary" />,
                 },
               ].map((feature, index) => (
                 <motion.div

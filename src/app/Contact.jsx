@@ -21,8 +21,8 @@ const CONTACT_INFO = {
   },
   phone: [
     { label: "Main Office", number: "+91 471 299 8391" },
-    { label: "Prathibha P G", number: "+91 94472 47959" },
     { label: "Shaiju M", number: "+91 94974 35750" },
+    { label: "Prathibha P G", number: "+91 94472 47959" },
     { label: "Jishnu Vijo J V", number: "+91 95677 60989" },
   ],
   email: [
