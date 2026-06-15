@@ -120,7 +120,7 @@ export default function HelpCenter() {
           className="text-center max-w-3xl mx-auto mb-14"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-3">Help Center</h1>
-          <p className="text-sm md:text-base text-muted-foreground whitespace-nowrap">
+          <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             College of Engineering Trivandrum (CET) — Office of the Programs for Working Professionals
           </p>
         </motion.div>
@@ -183,56 +183,59 @@ export default function HelpCenter() {
           </Card>
         </motion.div>
 
-        {/* FAQ Section */}
+        {/* Common FAQ Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto mb-12 text-center"
         >
-          <h2 className="text-2xl font-semibold text-primary flex items-center gap-2 mb-8">
-            <Info className="h-5 w-5" />
-            B.Tech Working Professionals — FAQs
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center gap-2">
+            <Info className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            Frequently Asked Questions
           </h2>
-
-          <div className="space-y-5">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.08, duration: 0.4 }}
-              >
-                <Card className="border-border/40 shadow-sm card-hover">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base font-medium">
-                      {faq.question}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          <p className="text-muted-foreground mt-2 text-xs sm:text-sm md:text-base">
+            Find answers to common questions about our B.Tech and M.Tech programs for working professionals.
+          </p>
         </motion.div>
 
-        {/* M.Tech FAQ Section */}
+        {/* B.Tech FAQs Accordion */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.5 }}
+          className="max-w-4xl mx-auto mb-10"
+        >
+          <h3 className="text-lg sm:text-xl font-semibold text-primary mb-4 flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            B.Tech Working Professionals Program
+          </h3>
+          <Accordion type="single" collapsible className="w-full space-y-3">
+            {faqs.map((faq, index) => (
+              <AccordionItem key={index} value={`btech-faq-${index}`} className="border border-border/60 rounded-xl px-5 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:border-primary/20 transition-all duration-300">
+                <AccordionTrigger className="hover:no-underline py-4 text-left text-base font-medium text-foreground">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="pb-4 pt-1 text-sm text-muted-foreground leading-relaxed">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.div>
+
+        {/* M.Tech FAQs Accordion */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="max-w-4xl mx-auto mt-14"
+          className="max-w-4xl mx-auto"
         >
-          <h2 className="text-2xl font-semibold text-violet-600 dark:text-violet-400 flex items-center gap-2 mb-8">
+          <h3 className="text-lg sm:text-xl font-semibold text-violet-600 dark:text-violet-400 mb-4 flex items-center gap-2">
             <GraduationCap className="h-5 w-5" />
-            M.Tech Working Professionals — FAQs
-          </h2>
-
-          <div className="space-y-5">
+            M.Tech Working Professionals Program
+          </h3>
+          <Accordion type="single" collapsible className="w-full space-y-3">
             {[
               {
                 question: "What is the duration of the M.Tech Working Professionals programme?",
@@ -259,27 +262,16 @@ export default function HelpCenter() {
                 answer: "Yes, an Employment & No Objection Certificate from your current Head of Department/Organization is mandatory. Eligible employment includes government service, semi-government, public/private limited companies, and aided/unaided engineering or polytechnic colleges.",
               },
             ].map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + index * 0.08, duration: 0.4 }}
-              >
-                <Card className="border-violet-200/40 dark:border-violet-800/20 shadow-sm card-hover">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base font-medium">
-                      {faq.question}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
+              <AccordionItem key={index} value={`mtech-faq-${index}`} className="border border-border/60 rounded-xl px-5 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:border-violet-500/20 transition-all duration-300">
+                <AccordionTrigger className="hover:no-underline py-4 text-left text-base font-medium text-foreground">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="pb-4 pt-1 text-sm text-muted-foreground leading-relaxed">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </motion.div>
       </div>
     </div>

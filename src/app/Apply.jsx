@@ -41,13 +41,13 @@ export default function Apply() {
                   value="btech"
                   className="px-6 py-2 text-sm font-medium rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-800"
                 >
-                  B.Tech (Working Professionals)
+                  B.Tech<span className="hidden sm:inline"> (Working Professionals)</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="mtech"
                   className="px-6 py-2 text-sm font-medium rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-800"
                 >
-                  M.Tech (Working Professionals)
+                  M.Tech<span className="hidden sm:inline"> (Working Professionals)</span>
                 </TabsTrigger>
               </TabsList>
             </div>
