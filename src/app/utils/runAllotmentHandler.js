@@ -32,6 +32,19 @@ export const runAllotmentHandler = async (year) => {
 
     // console.log("⚙️ Running calculateAllotment...");
     const currentYear = year ? Number(year) : new Date().getFullYear();
+    
+    const getAppYear = (app) => {
+      if (!app.submittedAt) return 2025;
+      try {
+        const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
+        return date.getFullYear();
+      } catch {
+        return 2025;
+      }
+    };
+
+    const filteredApplications = applications.filter(app => getAppYear(app) === currentYear);
+
     const departments = currentYear === 2025 ? [
       {
         "name": "Electrical and Electronics Engineering",
@@ -68,7 +81,7 @@ export const runAllotmentHandler = async (year) => {
       }
     ];
 
-    const { updatedApplications, updatedDepartments, noExamApplications } = calculateAllotment(applications, departments);
+    const { updatedApplications, updatedDepartments, noExamApplications } = calculateAllotment(filteredApplications, departments);
     
     // console.log("🧮 Allotment completed. Departments:", updatedDepartments);
 

@@ -202,7 +202,6 @@ export function DashboardStats({
   notices = [],
   allottedCount = 0,
   mtechAllottedCount = 0,
-  isPublished = false,
 }) {
   const branchCounts = {};
   applications.forEach((app) => {

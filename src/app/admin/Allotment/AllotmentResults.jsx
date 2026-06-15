@@ -21,8 +21,7 @@ export const AllotmentResults = ({ selectedYear: selectedYearProp, setSelectedYe
   const [isPublished, setIsPublished] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
-  const currentYear = new Date().getFullYear();
-  const [localSelectedYear, setLocalSelectedYear] = useState("2025");
+  const [localSelectedYear, setLocalSelectedYear] = useState("2026");
 
   const selectedYear = selectedYearProp !== undefined ? selectedYearProp : localSelectedYear;
   const setSelectedYear = setSelectedYearProp !== undefined ? setSelectedYearProp : setLocalSelectedYear;
@@ -67,11 +66,26 @@ export const AllotmentResults = ({ selectedYear: selectedYearProp, setSelectedYe
           snapshot2.forEach((doc) => students2.push({ id: doc.id, ...doc.data() }));
 
           const sortFn = (a, b) => {
-            const rankA = Number(a.letRank);
-            const rankB = Number(b.letRank);
-            if (isNaN(rankA)) return 1;
-            if (isNaN(rankB)) return -1;
-            return rankA - rankB;
+            const rankA = parseFloat(a.letRank);
+            const rankB = parseFloat(b.letRank);
+            const hasRankA = !isNaN(rankA) && rankA > 0;
+            const hasRankB = !isNaN(rankB) && rankB > 0;
+
+            if (hasRankA && !hasRankB) return -1;
+            if (!hasRankA && hasRankB) return 1;
+
+            if (hasRankA && hasRankB) {
+              if (rankA !== rankB) return rankA - rankB;
+            }
+
+            // Tie-breaker: Distance (descending), then Marks (descending)
+            const distA = parseFloat(a.distance) || 0;
+            const distB = parseFloat(b.distance) || 0;
+            if (distB !== distA) return distB - distA;
+
+            const markA = parseFloat(a.mark) || 0;
+            const markB = parseFloat(b.mark) || 0;
+            return markB - markA;
           };
           students.sort(sortFn);
           students2.sort(sortFn);

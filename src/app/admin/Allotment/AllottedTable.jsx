@@ -1,14 +1,13 @@
 import React from "react";
+import { toast } from "sonner";
 
 const AllottedTable = ({ students, deptName }) => {
   if (!students || students.length === 0) return null;
 
-  const educationOrder = {
-    BE: 1,
-    BTech: 1,
-    Diploma: 2,
-    BSc: 3,
-    BVoc: 4,
+  const handleCopy = (phone) => {
+    if (!phone || phone === "-") return;
+    navigator.clipboard.writeText(phone);
+    toast.success(`Copied phone number: ${phone}`);
   };
 
   const isMtech = students.some(
@@ -24,12 +23,26 @@ const AllottedTable = ({ students, deptName }) => {
       const markB = parseFloat(b.btechMark ?? b.mark ?? 0);
       return markB - markA;
     }
-    const eduPriorityA = educationOrder[a.education] || 999;
-    const eduPriorityB = educationOrder[b.education] || 999;
-    if (eduPriorityA !== eduPriorityB) return eduPriorityA - eduPriorityB;
-    const rankA = parseFloat(a.letRank ?? Infinity);
-    const rankB = parseFloat(b.letRank ?? Infinity);
-    return rankA - rankB;
+    const rankA = parseFloat(a.letRank);
+    const rankB = parseFloat(b.letRank);
+    const hasRankA = !isNaN(rankA) && rankA > 0;
+    const hasRankB = !isNaN(rankB) && rankB > 0;
+
+    if (hasRankA && !hasRankB) return -1;
+    if (!hasRankA && hasRankB) return 1;
+
+    if (hasRankA && hasRankB) {
+      if (rankA !== rankB) return rankA - rankB;
+    }
+
+    // Tie-breaker: Distance (descending), then Marks (descending)
+    const distA = parseFloat(a.distance) || 0;
+    const distB = parseFloat(b.distance) || 0;
+    if (distB !== distA) return distB - distA;
+
+    const markA = parseFloat(a.mark) || 0;
+    const markB = parseFloat(b.mark) || 0;
+    return markB - markA;
   });
 
   return (
@@ -48,6 +61,7 @@ const AllottedTable = ({ students, deptName }) => {
             <tr className="bg-primary text-white text-xs uppercase tracking-wider">
               <th className="px-4 py-3 text-left font-medium">No.</th>
               <th className="px-4 py-3 text-left font-medium">Name</th>
+              <th className="px-4 py-3 text-left font-medium">Mobile</th>
               <th className="px-4 py-3 text-left font-medium">
                 {isMtech ? "B.Tech Degree" : "Education"}
               </th>
@@ -65,6 +79,13 @@ const AllottedTable = ({ students, deptName }) => {
               >
                 <td className="px-4 py-3 font-medium whitespace-nowrap">{index + 1}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{student.name}</td>
+                <td 
+                  onClick={() => handleCopy(student.phone)}
+                  className="px-4 py-3 whitespace-nowrap cursor-pointer hover:text-primary hover:underline font-mono"
+                  title="Click to copy phone number"
+                >
+                  {student.phone || "-"}
+                </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   {isMtech ? (student.btechDegree || "-") : (student.education || "-")}
                 </td>

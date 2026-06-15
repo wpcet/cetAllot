@@ -13,7 +13,7 @@ import { MtechAllotmentResults } from "./Allotment/MtechAllotmentResults";
 import { DashboardStats, DashboardStatsSkeleton } from "./DashboardStats";
 import { Skeleton, SkeletonTable, SkeletonNoticeCard } from "@/components/ui/Skeleton";
 import { db } from "@/firebase";
-import { collection, getDocs, getDoc, doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
 import { saveNoticeToFirestore, deleteNoticeFromFirestore } from "../utils/saveNotice";
 import { runAllotmentHandler } from "../utils/runAllotmentHandler";
 import { runMtechAllotmentHandler } from "../utils/runMtechAllotmentHandler";
@@ -137,7 +137,9 @@ export default function Dashboard() {
             totalAllotted += snap.size;
             const snap2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${yearNum}/students`));
             totalAllotted += snap2.size;
-          } catch {}
+          } catch (err) {
+            console.error(err);
+          }
         }
         setAllottedCount(totalAllotted);
 
@@ -151,7 +153,9 @@ export default function Dashboard() {
           try {
             const snap = await getDocs(collection(db, `mtech_allotment/${spec}_${yearNum}/students`));
             totalMtechAllotted += snap.size;
-          } catch {}
+          } catch (err) {
+            console.error(err);
+          }
         }
         setMtechAllottedCount(totalMtechAllotted);
 
