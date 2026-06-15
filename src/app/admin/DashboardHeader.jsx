@@ -1,9 +1,4 @@
 import { Button } from "@/components/ui/Button";
-import { Check, UploadCloud, GraduationCap } from "lucide-react";
-import { runAllotmentHandler } from "../utils/runAllotmentHandler";
-import { runMtechAllotmentHandler } from "../utils/runMtechAllotmentHandler";
-import uploadRealData from "../utils/uploadRealData";
-import { useState } from "react";
 import {
   Select,
   SelectContent,

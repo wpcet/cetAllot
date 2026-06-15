@@ -23,7 +23,20 @@ export const runMtechAllotmentHandler = async (year) => {
     }));
 
     const currentYear = year ? Number(year) : new Date().getFullYear();
-    const { updatedApplications, updatedDepartments } = calculateMtechAllotment(applications);
+
+    const getAppYear = (app) => {
+      if (!app.submittedAt) return 2025;
+      try {
+        const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
+        return date.getFullYear();
+      } catch {
+        return 2025;
+      }
+    };
+
+    const filteredApplications = applications.filter(app => getAppYear(app) === currentYear);
+
+    const { updatedApplications, updatedDepartments } = calculateMtechAllotment(filteredApplications);
 
     for (const dept of updatedDepartments) {
       await clearPreviousAllotment(dept.name, currentYear);

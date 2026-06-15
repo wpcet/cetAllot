@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotation & Project Proposal — Working Professionals Admission Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #111827; /* Dark Gray / Black */
+      --primary-light: #ffffff;
+      --accent-color: #111827; /* Dark Gray / Black */
+      --text-dark: #111827;
+      --text-muted: #374151;
+      --border-color: #d1d5db;
+      --bg-light: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-dark);
+      background-color: #ffffff;
+      line-height: 1.45;
+      padding: 20px 10px;
+    }
+
+    .quotation-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 0;
+      box-shadow: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .brand-section h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-color);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-section p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .quote-meta {
+      text-align: right;
+    }
+
+    .quote-meta h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .meta-details {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .meta-details span {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .meta-details strong {
+      color: var(--text-dark);
+    }
+
+    .parties-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .party-card {
+      background-color: var(--bg-light);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .party-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .party-card p {
+      font-size: 14px;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .party-card p strong {
+      font-weight: 600;
+    }
+
+    .project-about {
+      margin-bottom: 40px;
+    }
+
+    .project-about h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+    }
+
+    .project-about p {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: justify;
+      margin-bottom: 12px;
+    }
+
+    .highlight-box {
+      background-color: var(--primary-light);
+      border-left: 4px solid var(--accent-color);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .pricing-table-container {
+      margin-bottom: 40px;
+    }
+
+    .pricing-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .pricing-table th {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .pricing-table th:first-child {
+      border-top-left-radius: 8px;
+    }
+
+    .pricing-table th:last-child {
+      border-top-right-radius: 8px;
+      text-align: right;
+    }
+
+    .pricing-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .pricing-table td:last-child {
+      text-align: right;
+    }
+
+    .pricing-table tr:hover {
+      background-color: #fdfdfd;
+    }
+
+    .total-row {
+      font-weight: 700;
+      background-color: var(--bg-light);
+    }
+
+    .total-row td {
+      border-bottom: 2px solid var(--primary-color);
+      font-size: 16px;
+      color: var(--primary-color);
+    }
+
+    .terms-section {
+      margin-bottom: 40px;
+    }
+
+    .terms-section h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+    }
+
+    .terms-section ul {
+      list-style-type: none;
+    }
+
+    .terms-section li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    .terms-section li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .signature-line {
+      text-align: center;
+    }
+
+    .signature-line hr {
+      border: 0;
+      border-top: 1px solid var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .signature-line p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .signature-line strong {
+      color: var(--text-dark);
+      font-size: 14px;
+    }
+
+    /* Print utility button */
+    .print-btn {
+      display: block;
+      width: fit-content;
+      margin: 25px auto 0 auto;
+      padding: 12px 24px;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .print-btn:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    @media print {
+      @page {
+        margin: 0;
+      }
+      body {
+        background-color: #ffffff;
+        padding: 0;
+        margin: 1.6cm;
+      }
+      .quotation-container {
+        box-shadow: none;
+        padding: 0;
+        border-radius: 0;
+      }
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quotation-container">
+    <header>
+      <div class="brand-section">
+        <h1>Working Professionals Admission Portal</h1>
+        <p>College of Engineering Trivandrum (CET)</p>
+      </div>
+    </header>
+
+    <div class="parties-section" style="border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 25px;">
+      <div>
+        <h3 style="font-size: 13px; text-transform: uppercase; color: var(--primary-color); margin-bottom: 6px; letter-spacing: 0.5px;">Service Provider Details</h3>
+        <p style="font-size: 15px; font-weight: 700; color: var(--text-dark);">Muhammed Ajmal U K</p>
+        <p style="font-size: 13.5px; color: var(--text-muted);">Collaborating Developer & Maintainer (MCA Student)</p>
+        <p style="font-size: 13.5px; color: var(--text-muted);">Working Professionals Admission Portal Technical Team, CET</p>
+        <p style="font-size: 13.5px; color: var(--text-muted);">College of Engineering Trivandrum</p>
+        <p style="margin-top: 4px; font-size: 12.5px;">Email: <a href="mailto:ajmaluk.data@gmail.com" style="color: var(--accent-color); text-decoration: none; font-weight: 500;">ajmaluk.data@gmail.com</a></p>
+      </div>
+    </div>
+
+    <div class="project-about" style="margin-bottom: 35px;">
+      <h3 style="font-size: 15px; text-transform: uppercase; color: var(--primary-color); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; letter-spacing: 0.5px;">Project Context</h3>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 8px; text-align: justify; line-height: 1.5;">
+        This document outlines finalization, deployment, and ongoing technical support for the <strong>Working Professionals (WP) Admission Portal</strong> at the College of Engineering Trivandrum (CET).
+      </p>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 8px; text-align: justify; line-height: 1.5;">
+        The portal's initial code base was developed by three graduated MCA students. The system has been integrated, updated with the newly added M.Tech admission module, and prepared for final deployment by Muhammed Ajmal U K. The portal is managed by the MCA Department at CET. Technical support and operational maintenance are committed for a duration of <strong>10 months</strong>.
+      </p>
+    </div>
+
+    <div class="pricing-table-container" style="margin-bottom: 35px;">
+      <table class="pricing-table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--primary-color);">
+            <th style="padding: 10px 0; background: none; color: var(--primary-color); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; width: 75%;">Service / Deliverable Description</th>
+            <th style="padding: 10px 0; background: none; color: var(--primary-color); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; width: 25%;">Amount (INR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13.5px; color: var(--text-muted); line-height: 1.45;">
+              Deployment of portal frontend, database integration (Firebase), integration of the newly added M.Tech admission module, transition handoff management, and 10 months of technical support and maintenance.
+            </td>
+            <td style="padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 14px; font-weight: 600; text-align: right; color: var(--text-dark);">₹5,000.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="terms-section" style="margin-bottom: 25px;">
+      <h3 style="font-size: 15px; text-transform: uppercase; color: var(--primary-color); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; letter-spacing: 0.5px;">Terms of Agreement</h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; position: relative; padding-left: 15px;">
+          <span style="position: absolute; left: 0; color: var(--accent-color);">•</span> Technical support is active for 10 months post-launch. After the 10 months, there will be support from the MCA department with the incoming new junior batch.
+        </li>
+      </ul>
+    </div>
+
+    <div class="portal-details-section" style="margin-bottom: 25px; font-size: 13px; color: var(--text-muted);">
+      <strong style="color: var(--primary-color); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Portal Links</strong>
+      Official Portal: <a href="https://wpadmission.cet.ac.in" style="color: var(--accent-color); text-decoration: none; margin-right: 20px; font-weight: 600;">wpadmission.cet.ac.in</a>
+      Dev Portal: <a href="https://wpadmission.pages.dev/" style="color: var(--accent-color); text-decoration: none; font-weight: 600;">wpadmission.pages.dev</a>
+    </div>
+
+    <div class="signatures" style="margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); max-width: 350px;">
+      <div class="signature-line" style="text-align: left;">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Prepared By:</p>
+        <div style="height: 50px; margin-bottom: 6px; text-align: left;">
+          <img src="sig.jpg" alt="Signature" style="height: 100%; max-height: 50px; object-fit: contain; mix-blend-mode: multiply;" />
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 8px;">
+        <p style="font-size: 14px; font-weight: 700; color: var(--text-dark); white-space: nowrap;">Muhammed Ajmal U K</p>
+        <p style="font-size: 12.5px; color: var(--text-muted); white-space: nowrap;">Collaborating Developer & Maintainer</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+
+</body>
+</html>

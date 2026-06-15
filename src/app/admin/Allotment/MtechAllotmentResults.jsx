@@ -25,8 +25,7 @@ export const MtechAllotmentResults = ({ selectedYear: selectedYearProp, setSelec
   const [isPublished, setIsPublished] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
-  const currentYear = new Date().getFullYear();
-  const [localSelectedYear, setLocalSelectedYear] = useState("2025");
+  const [localSelectedYear, setLocalSelectedYear] = useState("2026");
 
   const selectedYear = selectedYearProp !== undefined ? selectedYearProp : localSelectedYear;
   const setSelectedYear = setSelectedYearProp !== undefined ? setSelectedYearProp : setLocalSelectedYear;

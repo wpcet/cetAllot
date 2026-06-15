@@ -73,7 +73,7 @@ export default function Contact() {
           <h1 className="text-4xl md:text-5xl font-bold mb-3">
             Contact Us
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground whitespace-nowrap max-w-none mx-auto">
+          <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             Office of the Programs for Working Professionals — College of Engineering Trivandrum
           </p>
         </motion.div>

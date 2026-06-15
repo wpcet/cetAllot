@@ -55,7 +55,7 @@ const FormSchema = z.object({
   religion: z.string().min(1, "Religion is required"),
   reservationCategory: z.string().min(1, "Reservation Category is required"),
   btechDegree: z.string().min(1, "B.Tech degree is required"),
-  btechMark: z.string().min(1, "B.Tech marks are required").refine(val => /^\d+(\.\d+)?$/.test(val), "Marks must be a valid number").refine(val => parseFloat(val) >= 45, "B.Tech marks must be 45 or greater"),
+  btechMark: z.string().min(1, "B.Tech marks are required").refine(val => /^\d+(\.\d+)?$/.test(val), "Marks must be a valid number"),
   btechCollege: z.string().min(1, "College name is required"),
   btechUniversity: z.string().min(1, "University is required"),
   btechYear: z.string().min(1, "Year of passing is required"),
@@ -66,6 +66,30 @@ const FormSchema = z.object({
   address: z.string().optional(),
   age: z.string().optional(),
   transactionId: z.string().min(1, "Transaction ID is required").regex(/^\d{12}$/, "Transaction ID must be exactly 12 digits and only numbers"),
+}).superRefine((data, ctx) => {
+  const parsedMark = parseFloat(data.btechMark);
+  const category = data.reservationCategory;
+  const isSCST = category === "SC" || category === "ST";
+  const sebcCategories = [
+    "Ezhava", "Muslim", "Other Backward Hindu", "Latin Catholic and Anglo Indian", 
+    "Dheevara", "Viswakarma", "Kusavan", "OBC Christian", "Kudumbi"
+  ];
+  const isSEBC = sebcCategories.includes(category);
+  
+  let minMark = 60;
+  if (isSCST) {
+    minMark = 0;
+  } else if (isSEBC) {
+    minMark = 55;
+  }
+
+  if (!isNaN(parsedMark) && parsedMark < minMark) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `B.Tech marks must be ${minMark}% or greater for ${category} category`,
+      path: ["btechMark"],
+    });
+  }
 });
 
 const initialFormData = {

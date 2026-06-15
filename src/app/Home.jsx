@@ -106,7 +106,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/[0.07] via-primary/[0.03] to-background py-24 md:py-36 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary/[0.07] via-primary/[0.03] to-background pt-14 pb-12 sm:py-24 md:py-36 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-30" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent" />
@@ -115,43 +115,43 @@ export default function Home() {
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16 items-center">
             <motion.div
               ref={heroRef}
               initial={{ opacity: 0, y: 40 }}
               animate={heroControls}
-              className="space-y-8 order-2 lg:order-1"
+              className="space-y-5 sm:space-y-8 order-2 lg:order-1"
             >
-              <div className="space-y-4">
+              <div className="space-y-2.5 sm:space-y-4">
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1, duration: 0.5 }}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-medium"
                 >
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   Admissions Open for 2026-27
                 </motion.div>
 
                 <motion.h1
-                  className="tracking-tight text-balance leading-none flex flex-col gap-3"
+                  className="tracking-tight text-balance leading-none flex flex-col gap-2 sm:gap-3"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
                 >
-                  <span className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground">
+                  <span className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground whitespace-nowrap">
                     BTech & MTech
                   </span>
-                  <span className="text-2xl md:text-3xl lg:text-4xl font-semibold text-muted-foreground/90 tracking-tight">
+                  <span className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-muted-foreground/90 tracking-tight whitespace-nowrap">
                     Working Professionals Programs
                   </span>
-                  <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-violet-600 to-indigo-600 bg-clip-text text-transparent whitespace-nowrap">
                     College of Engineering Trivandrum
                   </span>
                 </motion.h1>
 
                 <motion.p
-                  className="text-lg md:text-xl text-muted-foreground text-pretty max-w-xl"
+                  className="text-sm sm:text-lg md:text-xl text-muted-foreground text-pretty max-w-xl"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.35, duration: 0.6 }}
@@ -161,18 +161,28 @@ export default function Home() {
               </div>
 
               <motion.div
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-row gap-3 sm:gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               >
-                <Link to="/apply">
-                  <Button size="lg" className="w-full sm:w-auto shadow-md hover:shadow-lg">
+                <Link to="/apply" className="flex-1 sm:flex-none">
+                  <Button size="lg" className="w-full shadow-md hover:shadow-lg text-sm sm:text-base px-4 sm:px-6">
                     Apply Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Button>
                 </Link>
 
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="flex-1 sm:flex-none text-sm sm:text-base px-4 sm:px-6 cursor-pointer"
+                  onClick={() => {
+                    document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  Details
+                </Button>
               </motion.div>
             </motion.div>
 

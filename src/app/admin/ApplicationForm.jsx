@@ -67,13 +67,23 @@ const FormSchema = z.object({
       (data) => new Set([data["1"], data["2"], data["3"]]).size === 3,
       { message: "Branch options must be unique", path: ["priorityChoices"] }
     ),
-  mark: z.string().min(1, "% marks is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Marks must be a valid number").refine(val => parseFloat(val) >= 45, "Percentage marks must be 45 or greater"),
+  mark: z.string().min(1, "% marks is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Marks must be a valid number"),
   age: z.string().optional(),
   company: z.string().optional(),
   experience: z.string().optional(),
   address: z.string().optional(),
   highestEducation: z.string().min(1, "Highest Education is required"),
-  distance: z.string().min(1, "Distance is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Distance must be a valid number").refine(val => parseFloat(val) <= 75, "Distance must be 75 km or less (not eligible if greater)"),
+  distance: z.string().min(1, "Distance is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Distance must be a valid number").refine(val => parseFloat(val) <= 70, "Distance must be 70 km or less (not eligible if greater)"),
+}).superRefine((data, ctx) => {
+  const parsedMark = parseFloat(data.mark);
+  const minMark = data.reservationCategory === "General" ? 45 : 40;
+  if (!isNaN(parsedMark) && parsedMark < minMark) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Percentage marks must be ${minMark}% or greater for ${data.reservationCategory} category`,
+      path: ["mark"],
+    });
+  }
 });
 
 const initialFormData = {

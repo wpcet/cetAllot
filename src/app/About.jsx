@@ -71,10 +71,10 @@ export default function About() {
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           className="max-w-4xl mx-auto text-center mb-20"
         >
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary leading-tight mb-6 whitespace-nowrap">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary leading-tight mb-4 sm:mb-6">
             About Our Programs for Working Professionals
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground max-w-none mx-auto whitespace-nowrap">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             B.Tech and M.Tech engineering education with cutting-edge curriculum and hands-on learning experiences
           </p>
         </motion.div>
@@ -92,7 +92,7 @@ export default function About() {
             className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-primary/5 blur-3xl pointer-events-none"
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-14 items-center relative z-10">
             <motion.div variants={fadeIn} className="order-2 lg:order-1">
               <h2 className="text-3xl font-bold mb-6">College of Engineering Trivandrum</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
@@ -122,7 +122,7 @@ export default function About() {
 
             <motion.div
               variants={fadeIn}
-              className="order-1 lg:order-2 relative h-[400px] rounded-2xl overflow-hidden shadow-xl"
+              className="order-1 lg:order-2 relative h-[180px] sm:h-[260px] md:h-[350px] lg:h-[400px] rounded-2xl overflow-hidden shadow-xl"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >

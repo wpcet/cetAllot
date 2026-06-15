@@ -49,7 +49,7 @@ export const ApplicationTable = ({
 }) => {
   const [applications, setApplications] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [localYearFilter, setLocalYearFilter] = useState("2025");
+  const [localYearFilter, setLocalYearFilter] = useState("2026");
   
   const activeYearFilter = yearFilter !== undefined ? yearFilter : localYearFilter;
   const activeSetYearFilter = setYearFilter !== undefined ? setYearFilter : setLocalYearFilter;
