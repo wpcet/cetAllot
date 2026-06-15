@@ -144,16 +144,16 @@ const generateMtechPDF = (data) => {
   doc.setDrawColor(0, 0, 0);
   doc.line(15, 33, 195, 33);
   
-  let y = 45;
+  let y = 35;
   
   const drawSectionHeader = (title) => {
     doc.setFillColor(240, 240, 240);
-    doc.rect(15, y - 5, 180, 8, "F");
+    doc.rect(15, y - 4, 180, 7, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    doc.text(title.toUpperCase(), 18, y);
-    y += 10;
+    doc.text(title.toUpperCase(), 18, y + 1);
+    y += 8;
   };
   
   const drawRow = (label1, value1, label2, value2) => {
@@ -176,32 +176,32 @@ const generateMtechPDF = (data) => {
       doc.text(String(value2 || "N/A"), 145, y);
     }
     
-    y += 8;
+    y += 6.5;
   };
   
   // Personal Info
   drawSectionHeader("Personal Information");
   drawRow("Full Name", data.name, "Email Address", data.email);
   drawRow("Phone Number", data.phone, "Aadhaar Number", data.adharNumber);
-  y += 4;
+  y += 1;
   
   // Qualifying Degree Details
   drawSectionHeader("B.Tech / Qualifying Degree Details");
   drawRow("B.Tech Degree Branch", data.btechDegree, "B.Tech Marks %", `${data.btechMark}%`);
   drawRow("College Name", data.btechCollege, "University", data.btechUniversity);
   drawRow("Year of Passing", data.btechYear);
-  y += 4;
+  y += 1;
   
   // Specialization Choice
   drawSectionHeader("M.Tech Preference");
   drawRow("Preferred Specialization", data.specialization);
-  y += 4;
+  y += 1;
   
   // Demographic Details
   drawSectionHeader("Demographic Details");
   drawRow("Religion", data.religion, "Caste", data.caste);
   drawRow("Reservation Category", data.reservationCategory || data.category);
-  y += 4;
+  y += 1;
   
   // Professional Details
   drawSectionHeader("Professional Details");
@@ -218,22 +218,22 @@ const generateMtechPDF = (data) => {
   const addressLines = doc.splitTextToSize(String(data.address || "N/A"), 135);
   doc.text(addressLines, 55, y);
   
-  y += addressLines.length * 5 + 6;
+  y += addressLines.length * 4.5 + 3;
   
   // Registration Fee Details
   drawSectionHeader("Registration Fee Details");
   drawRow("Transaction / UTR ID", data.transactionId);
-  y += 4;
+  y += 1;
   
   // Signature/Declaration
-  if (y > 245) {
+  if (y > 255) {
     doc.addPage();
     y = 30;
   }
   
   doc.setDrawColor(220, 220, 220);
   doc.line(15, y, 195, y);
-  y += 8;
+  y += 6;
   
   doc.setFont("helvetica", "italic");
   doc.setFontSize(8);
@@ -242,7 +242,7 @@ const generateMtechPDF = (data) => {
   const declLines = doc.splitTextToSize(decl, 175);
   doc.text(declLines, 18, y);
   
-  y += 20;
+  y += 15;
   
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
@@ -251,6 +251,14 @@ const generateMtechPDF = (data) => {
   
   doc.text("Signature of the Applicant", 145, y);
   doc.line(145, y - 4, 190, y - 4);
+
+  y += 10;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(0, 0, 0);
+  const noteText = "A hard copy of the signed application generated through the portal must be submitted at the time of admission.";
+  const noteLines = doc.splitTextToSize(noteText, 175);
+  doc.text(noteLines, 15, y);
   
   doc.save(`Application_MTech_${data.name.replace(/\s+/g, "_")}.pdf`);
 };

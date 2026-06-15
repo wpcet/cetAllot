@@ -176,7 +176,7 @@ export default function PartTimeBtech() {
             Admission Results
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            View your admission status for the Working Professionals program at College of Engineering Trivandrum.
+            View your admission status for the Working Professionals program at <span className="whitespace-nowrap">College of Engineering Trivandrum.</span>
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">

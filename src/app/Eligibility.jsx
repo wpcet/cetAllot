@@ -326,7 +326,7 @@ export default function Eligibility() {
             Ready to Join CET's Working Professionals Programs?
           </h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Applications are accepted annually through the Kerala Technical University portal for both B.Tech and M.Tech
+            Applications are accepted annually through the CET website for both B.Tech and M.Tech
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/apply">
