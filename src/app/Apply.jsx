@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Calendar } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { ApplicationForm } from "./admin/ApplicationForm";
 import { MtechApplicationForm } from "./admin/MtechApplicationForm";
 
 export default function Apply() {
   const [degreeType, setDegreeType] = useState("btech");
+  const disableMtech = import.meta.env.VITE_DISABLE_MTECH_APPLICATION === "true";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/30 via-background to-background py-12 px-4">
@@ -71,7 +73,49 @@ export default function Apply() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="bg-card border border-border/50 rounded-2xl shadow-sm p-6 md:p-10">
-                  <MtechApplicationForm />
+                  {disableMtech ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                      className="flex flex-col items-center justify-center text-center py-16 px-4"
+                    >
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.05, 1],
+                          rotate: [0, 3, -3, 0],
+                        }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 5,
+                          ease: "easeInOut",
+                        }}
+                        className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6 shadow-inner"
+                      >
+                        <Calendar className="w-10 h-10" />
+                      </motion.div>
+
+                      <h2 className="text-3xl font-extrabold tracking-tight mb-3 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                        Admissions Opening Soon
+                      </h2>
+
+                      <p className="text-muted-foreground text-base md:text-lg max-w-md mb-8 leading-relaxed">
+                        Registration for the M.Tech (Working Professionals) program is currently closed. We are preparing to launch the applications soon.
+                      </p>
+
+                      <div className="flex flex-wrap gap-4 justify-center items-center">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                          <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                          Stay Tuned
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
+                          M.Tech 2026
+                        </span>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <MtechApplicationForm />
+                  )}
                 </div>
               </motion.div>
             </TabsContent>
