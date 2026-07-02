@@ -526,18 +526,30 @@ export default function Home() {
                         Candidates must appear physically at CET with all original documents. Admission is confirmed
                         only on payment of full fees via digipay (no cash).
                       </p>
-                      <div className="mt-2 space-x-4">
+                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                         <Link
                           to="https://drive.google.com/file/d/1KNvGF_31V_tL_hl0X3VbDy1QnPttbAju/view?usp=sharing"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-primary text-sm underline-offset-2 hover:underline"
                         >
                           Documents required →
                         </Link>
                         <Link
                           to="https://drive.google.com/file/d/1WLgFCCfhTuiGxBcKL0uLFjzzd1K3CrUz/view?usp=sharing"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-primary text-sm underline-offset-2 hover:underline"
                         >
                           Instructions →
+                        </Link>
+                        <Link
+                          to="https://drive.google.com/file/d/1kjssf1NXXGXr_anfc3GCVH2eKols7H1p/view?usp=sharing"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-sm underline-offset-2 hover:underline font-medium"
+                        >
+                          ഭരണഭാഷ-മാഭാഷ (G.O) →
                         </Link>
                       </div>
                     </>
