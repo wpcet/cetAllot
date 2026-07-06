@@ -127,7 +127,7 @@ export const ApplicationTable = ({
       "Priority 1": app.priorityChoices?.[1],
       "Priority 2": app.priorityChoices?.[2],
       "Priority 3": app.priorityChoices?.[3],
-      "LET Reg No": app.letRegNo,
+      "LET Roll No": app.letRegNo,
       "LET Rank": app.letRank,
       Experience: app.experience,
       Education: app.highestEducation,
@@ -192,7 +192,7 @@ export const ApplicationTable = ({
               {[
                 "No.", "Name", "Caste", "Religion", "Category", "Distance", "Mark",
                 "Phone", "Priority 1", "Priority 2", "Priority 3",
-                "LET Reg", "LET Rank", "Actions",
+                "LET Roll No", "LET Rank", "Actions",
               ].map((title, i) => (
                 <TableHead
                   key={i}
