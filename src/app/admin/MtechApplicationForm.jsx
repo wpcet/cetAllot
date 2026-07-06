@@ -47,7 +47,7 @@ import { db } from "@/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
 const FormSchema = z.object({
-  adharNumber: z.string().optional().refine(val => !val || /^\d{12}$/.test(val), "Aadhaar number must be exactly 12 digits and only numbers"),
+  adharNumber: z.string().min(1, "Aadhaar number is required").regex(/^\d{12}$/, "Aadhaar number must be exactly 12 digits and only numbers"),
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required").regex(/^\d{10}$/, "Phone number must be exactly 10 digits and only numbers"),
@@ -60,11 +60,11 @@ const FormSchema = z.object({
   btechUniversity: z.string().min(1, "University is required"),
   btechYear: z.string().min(1, "Year of passing is required"),
   specialization: z.string().min(1, "Specialization is required"),
-  company: z.string().optional(),
-  experience: z.string().min(1, "Work experience is required"),
+  company: z.string().min(1, "Current Company is required"),
+  experience: z.string().min(1, "Work experience is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Experience must be a valid number"),
   distance: z.string().min(1, "Distance is required").refine(val => /^\d+(\.\d+)?$/.test(val), "Distance must be a valid number").refine(val => parseFloat(val) <= 75, "Distance must be 75 km or less (not eligible if greater)"),
-  address: z.string().optional(),
-  age: z.string().optional(),
+  address: z.string().min(1, "Address is required"),
+  age: z.string().min(1, "Age is required").refine(val => /^\d+$/.test(val), "Age must be a valid number"),
   transactionId: z.string().min(1, "Transaction ID is required").regex(/^\d{12}$/, "Transaction ID must be exactly 12 digits and only numbers"),
 }).superRefine((data, ctx) => {
   const parsedMark = parseFloat(data.btechMark);
@@ -583,7 +583,7 @@ export const MtechApplicationForm = ({ onSuccess }) => {
             {renderInputField({ name: "name", label: required("Full Name"), icon: User, placeholder: "e.g. AJMAL UK" })}
             {renderInputField({ name: "email", label: required("Email Address"), type: "email", icon: Mail, placeholder: "e.g. ajmal@example.com" })}
             {renderInputField({ name: "phone", label: required("Phone Number (with WhatsApp)"), type: "tel", maxLength: 10, icon: Phone, placeholder: "e.g. 9876543210" })}
-            {renderInputField({ name: "adharNumber", label: "Aadhaar Number", maxLength: 12, icon: Hash, placeholder: "e.g. 123456789012" })}
+            {renderInputField({ name: "adharNumber", label: required("Aadhaar Number"), maxLength: 12, icon: Hash, placeholder: "e.g. 123456789012" })}
           </div>
         </FormSection>
 
@@ -669,14 +669,14 @@ export const MtechApplicationForm = ({ onSuccess }) => {
         {/* Professional Details */}
         <FormSection title="Professional Details" icon={Briefcase}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {renderInputField({ name: "company", label: "Current Company / Organization", icon: Building, placeholder: "e.g. Infosys Ltd." })}
+            {renderInputField({ name: "company", label: required("Current Company / Organization"), icon: Building, placeholder: "e.g. Infosys Ltd." })}
             {renderInputField({ name: "experience", label: required("Work Experience (years)"), type: "number", icon: Calendar, placeholder: "e.g. 3" })}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {renderInputField({ name: "distance", label: required("Distance in KM (workplace to CET)"), type: "number", icon: MapPin, placeholder: "e.g. 25" })}
-            {renderInputField({ name: "age", label: "Age", type: "number", icon: Calendar, placeholder: "e.g. 28" })}
+            {renderInputField({ name: "age", label: required("Age"), type: "number", icon: Calendar, placeholder: "e.g. 28" })}
           </div>
-          {renderInputField({ name: "address", label: "Address", icon: Building, placeholder: "e.g. House No, Street, City, PIN" })}
+          {renderInputField({ name: "address", label: required("Address"), icon: Building, placeholder: "e.g. House No, Street, City, PIN" })}
         </FormSection>
 
         {/* Registration Fee & Payment */}
