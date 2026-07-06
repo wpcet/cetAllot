@@ -52,7 +52,7 @@ const FormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required").regex(/^\d{10}$/, "Phone number must be exactly 10 digits and only numbers"),
-  letRegNo: z.string().min(1, "LET registration number is required"),
+  letRegNo: z.string().min(1, "LET roll number is required"),
   letRank: z.string().min(1, "LET Rank is required"),
   caste: z.string().min(1, "Caste is required"),
   religion: z.string().min(1, "Religion is required"),
@@ -206,7 +206,7 @@ const generateBtechPDF = (data) => {
   // Academic Details
   drawSectionHeader("Academic Details");
   drawRow("Highest Education", data.highestEducation, "Marks Percentage", `${data.mark}%`);
-  drawRow("LET Registration No", data.letRegNo, "LET Rank", data.letRank);
+  drawRow("LET Roll No", data.letRegNo, "LET Rank", data.letRank);
   y += 1;
   
   // Demographic Details
@@ -455,7 +455,7 @@ export const ApplicationForm = ({ onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {renderReviewItem("Education Type", submittedData.highestEducation)}
               {renderReviewItem("Highest Education Marks %", `${submittedData.mark}%`)}
-              {renderReviewItem("LET Registration No", submittedData.letRegNo)}
+              {renderReviewItem("LET Roll No", submittedData.letRegNo)}
               {renderReviewItem("LET Rank", submittedData.letRank)}
             </div>
           </div>
@@ -606,7 +606,7 @@ export const ApplicationForm = ({ onSuccess }) => {
             })}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {renderInputField({ name: "letRegNo", label: required("LET Registration No. (enter 0 if N/A)"), icon: FileText, placeholder: "e.g. LET2025001" })}
+            {renderInputField({ name: "letRegNo", label: required("LET Roll No. (enter 0 if N/A)"), icon: FileText, placeholder: "e.g. LET2025001" })}
             {renderInputField({ name: "letRank", label: required("LET Rank (enter 0 if N/A)"), type: "number", icon: Trophy, placeholder: "e.g. 150" })}
           </div>
         </FormSection>
