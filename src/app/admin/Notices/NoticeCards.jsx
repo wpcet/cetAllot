@@ -60,6 +60,18 @@ export const NoticeCards = ({ notices, onEdit, onDelete, onNewNotice }) => {
                 <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
                   {notice.message}
                 </p>
+                {notice.link && (
+                  <div className="mt-2 text-xs">
+                    <a
+                      href={notice.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline break-all"
+                    >
+                      Link: {notice.link}
+                    </a>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))

@@ -50,6 +50,15 @@ export const NoticeDialog = ({
               rows={4}
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="notice-link">Link (Optional)</Label>
+            <Input
+              id="notice-link"
+              placeholder="e.g. https://drive.google.com/..."
+              value={notice?.link || ""}
+              onChange={(e) => onChange({ ...notice, link: e.target.value })}
+            />
+          </div>
           <div className="flex items-center gap-3">
             <input
               type="checkbox"

@@ -15,6 +15,7 @@ import {
   Zap,
   Thermometer,
   TrafficCone,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -247,12 +248,18 @@ export default function Home() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 * index, duration: 0.4 }}
-                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                      className="group cursor-pointer"
+                      whileHover={notice.link ? { y: -4, transition: { duration: 0.2 } } : {}}
+                      className={`group ${notice.link ? "cursor-pointer" : "cursor-default"}`}
+                      onClick={() => {
+                        if (notice.link) {
+                          window.open(notice.link, "_blank", "noopener,noreferrer");
+                        }
+                      }}
                     >
                       <Card
-                        className={`h-full transition-all duration-300 card-hover ${notice.important ? "border-red-200/70 bg-red-50/30" : ""
-                          }`}
+                        className={`h-full transition-all duration-300 ${
+                          notice.link ? "card-hover" : ""
+                        } ${notice.important ? "border-red-200/70 bg-red-50/30" : ""}`}
                       >
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between gap-3">
@@ -273,8 +280,13 @@ export default function Home() {
                               </span>
                             )}
                           </div>
-                          <CardTitle className="text-base font-semibold leading-snug group-hover:text-primary transition-colors">
-                            {notice.title}
+                          <CardTitle className={`text-base font-semibold leading-snug transition-colors flex items-center justify-between gap-2 ${
+                            notice.link ? "group-hover:text-primary" : ""
+                          }`}>
+                            <span>{notice.title}</span>
+                            {notice.link && (
+                              <ExternalLink className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
+                            )}
                           </CardTitle>
                         </CardHeader>
                         <CardContent>

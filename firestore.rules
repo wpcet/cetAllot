@@ -50,5 +50,13 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAuthenticated();
     }
+
+    // App Settings (B.Tech open/close status etc.)
+    match /settings/{settingId} {
+      // Anyone can read settings (needed for checking if applications are open)
+      allow read: if true;
+      // Only authenticated admin users can change settings
+      allow write: if isAuthenticated();
+    }
   }
 }

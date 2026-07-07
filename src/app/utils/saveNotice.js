@@ -16,6 +16,7 @@ export const saveNoticeToFirestore = async (notice) => {
       title: notice.title,
       message: notice.message,
       important: notice.important,
+      link: notice.link || "",
       updatedAt: Timestamp.now(),
     });
   } else {
@@ -23,6 +24,7 @@ export const saveNoticeToFirestore = async (notice) => {
       title: notice.title,
       message: notice.message,
       important: notice.important,
+      link: notice.link || "",
       createdAt: Timestamp.now(),
     });
   }

@@ -38,6 +38,7 @@ export default function Navbar() {
     return () => unsub();
   }, []);
 
+
   // Hide navbar on scroll down, show on scroll up + track scrolled state
   useEffect(() => {
     const handleScroll = () => {
