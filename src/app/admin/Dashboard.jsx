@@ -13,7 +13,7 @@ import { MtechAllotmentResults } from "./Allotment/MtechAllotmentResults";
 import { DashboardStats, DashboardStatsSkeleton } from "./DashboardStats";
 import { Skeleton, SkeletonTable, SkeletonNoticeCard } from "@/components/ui/Skeleton";
 import { db } from "@/firebase";
-import { collection, getDocs, getDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { saveNoticeToFirestore, deleteNoticeFromFirestore } from "../utils/saveNotice";
 import { runAllotmentHandler } from "../utils/runAllotmentHandler";
 import { runMtechAllotmentHandler } from "../utils/runMtechAllotmentHandler";
@@ -42,6 +42,8 @@ export default function Dashboard() {
   const [loadingAllotment, setLoadingAllotment] = useState(false);
   const [loadingMtechAllotment, setLoadingMtechAllotment] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [btechStatus, setBtechStatus] = useState("open");
+  const [mtechStatus, setMtechStatus] = useState("coming");
 
   const handleRunAllotment = async () => {
     if (!window.confirm(`Are you sure you want to run the B.Tech allotment for ${selectedYear}?`)) return;
@@ -82,6 +84,16 @@ export default function Dashboard() {
     setUploading(false);
   };
 
+  const updateProgramStatus = async (program, newStatus) => {
+    try {
+      await setDoc(doc(db, "settings", `${program}_status`), {
+        status: newStatus
+      });
+    } catch (error) {
+      console.error(`Error updating ${program} status:`, error);
+    }
+  };
+
   useEffect(() => {
     setIsLoading(true);
 
@@ -108,10 +120,32 @@ export default function Dashboard() {
       console.error("Error listening to notices:", error);
     });
 
+    const unsubscribeBtechStatus = onSnapshot(doc(db, "settings", "btech_status"), (docSnap) => {
+      if (docSnap.exists()) {
+        setBtechStatus(docSnap.data().status || "open");
+      } else {
+        setBtechStatus("open");
+      }
+    }, (error) => {
+      console.error("Error listening to B.Tech status:", error);
+    });
+
+    const unsubscribeMtechStatus = onSnapshot(doc(db, "settings", "mtech_status"), (docSnap) => {
+      if (docSnap.exists()) {
+        setMtechStatus(docSnap.data().status || "coming");
+      } else {
+        setMtechStatus("coming");
+      }
+    }, (error) => {
+      console.error("Error listening to M.Tech status:", error);
+    });
+
     return () => {
       unsubscribeApps();
       unsubscribeMtechApps();
       unsubscribeNotices();
+      unsubscribeBtechStatus();
+      unsubscribeMtechStatus();
     };
   }, []);
 
@@ -249,6 +283,7 @@ export default function Dashboard() {
             message: "",
             date: new Date().toISOString().split("T")[0],
             important: false,
+            link: "",
           });
           setNoticeDialogOpen(true);
         }}
@@ -420,6 +455,7 @@ export default function Dashboard() {
                   message: "",
                   date: new Date().toISOString().split("T")[0],
                   important: false,
+                  link: "",
                 });
                 setNoticeDialogOpen(true);
               }}
@@ -483,6 +519,87 @@ export default function Dashboard() {
                 >
                   {loadingMtechAllotment ? "Running M.Tech..." : "Run M.Tech Allotment"}
                 </Button>
+              </div>
+            </div>
+
+            {/* Application Control Card */}
+            <div className="rounded-xl border border-border/50 bg-card p-6 shadow-sm space-y-4 col-span-full">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-amber-100 p-2 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                  <Settings className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Application Control</h3>
+                  <p className="text-xs text-muted-foreground">Manage availability of program application forms</p>
+                </div>
+              </div>
+
+              {/* B.Tech Status */}
+              <div className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-muted/20">
+                <div>
+                  <h4 className="font-medium text-sm">B.Tech Application Form</h4>
+                  <p className="text-xs text-muted-foreground">Status: <span className={`font-semibold ${btechStatus === "open" ? "text-emerald-500" : btechStatus === "closed" ? "text-red-500" : "text-amber-500"}`}>{btechStatus === "open" ? "Open" : btechStatus === "closed" ? "Closed" : "Coming Soon"}</span></p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={btechStatus === "coming" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("btech", "coming")}
+                    className={`shadow-sm text-xs ${btechStatus === "coming" ? "bg-amber-500 hover:bg-amber-600" : ""}`}
+                  >
+                    Coming
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={btechStatus === "open" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("btech", "open")}
+                    className={`shadow-sm text-xs ${btechStatus === "open" ? "bg-emerald-500 hover:bg-emerald-600" : ""}`}
+                  >
+                    Open
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={btechStatus === "closed" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("btech", "closed")}
+                    className={`shadow-sm text-xs ${btechStatus === "closed" ? "bg-red-500 hover:bg-red-600" : ""}`}
+                  >
+                    Closed
+                  </Button>
+                </div>
+              </div>
+
+              {/* M.Tech Status */}
+              <div className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-muted/20">
+                <div>
+                  <h4 className="font-medium text-sm">M.Tech Application Form</h4>
+                  <p className="text-xs text-muted-foreground">Status: <span className={`font-semibold ${mtechStatus === "open" ? "text-emerald-500" : mtechStatus === "closed" ? "text-red-500" : "text-amber-500"}`}>{mtechStatus === "open" ? "Open" : mtechStatus === "closed" ? "Closed" : "Coming Soon"}</span></p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={mtechStatus === "coming" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("mtech", "coming")}
+                    className={`shadow-sm text-xs ${mtechStatus === "coming" ? "bg-amber-500 hover:bg-amber-600" : ""}`}
+                  >
+                    Coming
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={mtechStatus === "open" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("mtech", "open")}
+                    className={`shadow-sm text-xs ${mtechStatus === "open" ? "bg-emerald-500 hover:bg-emerald-600" : ""}`}
+                  >
+                    Open
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={mtechStatus === "closed" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("mtech", "closed")}
+                    className={`shadow-sm text-xs ${mtechStatus === "closed" ? "bg-red-500 hover:bg-red-600" : ""}`}
+                  >
+                    Closed
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
