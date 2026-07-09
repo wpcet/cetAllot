@@ -188,7 +188,9 @@ export default function PartTimeBtech() {
           className="max-w-4xl mx-auto text-center mb-10"
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6">
-            Admission Results
+            {degreeType === "btech" 
+              ? `B.Tech Working Professionals Provisional Allotment List (${selectedYear})`
+              : `M.Tech Admission Results (${selectedYear})`}
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
             View your admission status for the Working Professionals program at <span className="whitespace-nowrap">College of Engineering Trivandrum.</span>
