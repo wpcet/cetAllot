@@ -250,7 +250,7 @@ export default function PartTimeBtech() {
               <div>
                 <p className="font-semibold">Important Note</p>
                 <p className="mt-1">
-                  This is a <strong>trial allotment</strong> only. Inclusion in this list does not guarantee admission.
+                  This is a <strong>provisional allotment</strong> only. Inclusion in this list does not guarantee admission.
                   Candidates with higher marks appearing physically during admission will be given preference.
                   Admission is confirmed only on payment of full fees and successful document verification.
                 </p>
@@ -264,6 +264,7 @@ export default function PartTimeBtech() {
                     key={spec}
                     students={allottedData[spec] || []}
                     deptName={spec}
+                    hideMobile={true}
                   />
                 ))}
               </>
@@ -274,6 +275,7 @@ export default function PartTimeBtech() {
                     key={dept}
                     students={allottedData[dept] || []}
                     deptName={formatDeptName(dept)}
+                    hideMobile={true}
                   />
                 ))}
 

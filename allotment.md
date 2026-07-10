@@ -34,69 +34,69 @@ Below is the list of all students who have been successfully allotted seats acro
 
 ### Computer Science and Engineering (17 / 30 seats filled)
 
-| Sl. No. | Name | LET Rank | Marks | Category | Allotted Category | Education | Distance | Experience |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | **Siva P S ** | 262 | 90.15% | EWS | **SM** | Diploma | 4.5 km | 1 yrs |
-| 2 | **Sana Mol P.A** | 353 | 89.5% | Muslim | **SM** | Diploma | 4.5 km | 3 yrs |
-| 3 | **Anas Shaikh Chenothuparambil** | 399 | 81.7% | Muslim | **SM** | Diploma | 6.6 km | 1 yrs |
-| 4 | **BINSHAD K B** | 444 | 87.495% | Muslim | **SM** | Diploma | 6.6 km | 1 yrs |
-| 5 | **SUMESH S R** | 447 | 87.685% | Viswakarma | **SM** | Diploma | 6.6 km | 1 yrs |
-| 6 | **Adin N S** | 506 | 90.2% | Ezhava | **SM** | Diploma | 20 km | 1.9 yrs |
-| 7 | **MUHAMMED AFSAL A** | 707 | 73.055% | Muslim | **SM** | Diploma | 6.6 km | 2 yrs |
-| 8 | **Nihal Noushad P** | 796 | 62.8% | Muslim | **SM** | Diploma | 9 km | 1 yrs |
-| 9 | **MOHAMMED HARIS A** | 848 | 77.42% | Muslim | **SM** | Diploma | 7 km | 2 yrs |
-| 10 | **Anandhu Krishnan S** | 855 | 79.42% | Ezhava | **SM** | Diploma | 6.6 km | 1 yrs |
-| 11 | **AJAY C** | 877 | 84.74% | General | **SM** | Diploma | 6.6 km | 7 yrs |
-| 12 | **Shameer A N** | 931 | 75% | Muslim | **SM** | Diploma | 8 km | 9 yrs |
-| 13 | **Shifa thasneem T S ** | 1192 | 85.03% | Muslim | **SM** | Diploma | 6.5 km | 2 yrs |
-| 14 | **APARNA B S** | 1555 | 85.78% | OBC Christian | **SM** | Diploma | 6.6 km | 1 yrs |
-| 15 | **ANURAGE SS** | 1641 | 84% | SC | **SM** | Diploma | 4 km | 1.8 yrs |
-| 16 | **Arunesh M R** | 3101 | 71.92% | Ezhava | **EZ** | Diploma | 12 km | 6 yrs |
-| 17 | **SARASWATHY T** | 3281 | 63.36% | SC | **SC** | Diploma | 8 km | 27 yrs |
+| Serial No. | Name | LET Rank | Allotment Quota | Email | Phone No. | Signature |
+| :---: | :--- | :---: | :---: | :--- | :---: | :---: |
+| 1 | **Siva P S** | 262 | SM | sivasachu3751@gmail.com | 9037519033 | | 
+| 2 | **Sana Mol P.A** | 353 | SM | sanas.sana999@gmail.com | 9567959319 | | 
+| 3 | **Anas Shaikh Chenothuparambil** | 399 | SM | anassheik200@gmail.com | 6235103900 | | 
+| 4 | **BINSHAD K B** | 444 | SM | binshad360@gmail.com | 7306785984 | | 
+| 5 | **SUMESH S R** | 447 | SM | sumeshsr04@gmail.com | 7306907493 | | 
+| 6 | **Adin N S** | 506 | SM | adinkumar45@gmail.com | 7994213954 | | 
+| 7 | **MUHAMMED AFSAL A** | 707 | SM | muhd.afsxl@gmail.com | 6282254392 | | 
+| 8 | **Nihal Noushad P** | 796 | SM | nihalnazz0007@gmail.com | 8086657850 | | 
+| 9 | **MOHAMMED HARIS A** | 848 | SM | harisharipcd369@gmail.com | 8136903935 | | 
+| 10 | **Anandhu Krishnan S** | 855 | SM | anandhukrishz07@gmail.com | 7994488008 | | 
+| 11 | **AJAY C** | 877 | SM | ajayc9090@gmail.com | 8943706586 | | 
+| 12 | **Shameer A N** | 931 | SM | shameer.an@gmail.com | 9895543009 | | 
+| 13 | **Shifa thasneem T S** | 1192 | SM | shifathasneem96@gmail.com | 8606930466 | | 
+| 14 | **APARNA B S** | 1555 | SM | shaijuaparna037@gmail.com | 9656084511 | | 
+| 15 | **ANURAGE SS** | 1641 | SM | ssanurage@gmail.com | 9778320527 | | 
+| 16 | **Arunesh M R** | 3101 | EZ | aruneshmr@gmail.com | 8139889372 | | 
+| 17 | **SARASWATHY T** | 3281 | SC | saraswathykseb@gmail.com | 9446194108 | | 
 
 ### Electronics and Communication Engineering (16 / 30 seats filled)
 
-| Sl. No. | Name | LET Rank | Marks | Category | Allotted Category | Education | Distance | Experience |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | **ARJUN B RAJ** | 135 | 81.92% | Viswakarma | **SM** | Diploma | 4.5 km | 6 yrs |
-| 2 | **Midhun A Madhu** | 216 | 86.73% | General | **SM** | Diploma | 6.2 km | 3.11 yrs |
-| 3 | **REMYA LAZAR** | 620 | 72% | General | **SM** | Diploma | 20 km | 12 yrs |
-| 4 | **Anwar Sherief ** | 1183 | 69% | Muslim | **SM** | Diploma | 5.5 km | 4 yrs |
-| 5 | **Bineesh B** | 1650 | 78.47% | General | **SM** | Diploma | 5 km | 3.5 yrs |
-| 6 | **ADITHYAN S R ** | 1724 | 65.2% | Viswakarma | **SM** | Diploma | 10.3 km | 1.8 yrs |
-| 7 | **SHIJINA NIZAR** | 1894 | 86.1% | Muslim | **SM** | Diploma | 6 km | 1 yrs |
-| 8 | **ABHIJITH BS** | 1956 | 69.35% | Other Backward Hindu | **SM** | Diploma | 32 km | 2 yrs |
-| 9 | **RAIHANA RAHMAN** | 2371 | 74.29% | Muslim | **SM** | Diploma | 6.6 km | 1 yrs |
-| 10 | **Jishnu saseendran ** | 2415 | 74% | EWS | **SM** | Diploma | 15 km | 2.5 yrs |
-| 11 | **SUDHER BP** | 2434 | 68% | Ezhava | **SM** | Diploma | 20 km | 2 yrs |
-| 12 | **Arif muhammad F** | 2734 | 78.37% | Muslim | **SM** | Diploma | 12 km | 1.5 yrs |
-| 13 | **Kavya Sree B ** | 2893 | 82.04% | General | **SM** | Diploma | 70 km | 1 yrs |
-| 14 | **SHABANA SN** | 2975 | 80.7% | Muslim | **SM** | Diploma | 15 km | 3.7 yrs |
-| 15 | **Rohan Raynish** | 2986 | 74.58% | Latin Catholic and Anglo Indian | **SM** | Diploma | 6 km | 1.5 yrs |
-| 16 | ** APARNA A** | 3442 | 67.7% | SC | **SC** | Diploma | 70 km | 1 yrs |
+| Serial No. | Name | LET Rank | Allotment Quota | Email | Phone No. | Signature |
+| :---: | :--- | :---: | :---: | :--- | :---: | :---: |
+| 1 | **ARJUN B RAJ** | 135 | SM | arjunpattazhi97@gmail.com | 9847097743 | | 
+| 2 | **Midhun A Madhu** | 216 | SM | midhunareenamadhu@gmail.com | 8921983195 | | 
+| 3 | **REMYA LAZAR** | 620 | SM | remyalazar357@gmail.com | 9645439075 | | 
+| 4 | **Anwar Sherief** | 1183 | SM | anwarsherief08@gmail.com | 7558837880 | | 
+| 5 | **Bineesh B** | 1650 | SM | bineeshbabu0003@gmail.com | 7559837724 | | 
+| 6 | **ADITHYAN S R** | 1724 | SM | sr18adithyan@gmail.com | 9633309755 | | 
+| 7 | **SHIJINA NIZAR** | 1894 | SM | shijinanizar14@gmail.com | 9747030732 | | 
+| 8 | **ABHIJITH BS** | 1956 | SM | bsabhijith8@gmail.com | 6282072026 | | 
+| 9 | **RAIHANA RAHMAN** | 2371 | SM | raihanath.tech@gmail.com | 9778176204 | | 
+| 10 | **Jishnu saseendran** | 2415 | SM | jishnusaseendran82@gmail.com | 9633036381 | | 
+| 11 | **SUDHER BP** | 2434 | SM | sudheerbp341@gmail.com | 8281885113 | | 
+| 12 | **Arif muhammad F** | 2734 | SM | arifbussid123@gmail.com | 8943145516 | | 
+| 13 | **Kavya Sree B** | 2893 | SM | sreebkavya@gmail.com | 9400163906 | | 
+| 14 | **SHABANA SN** | 2975 | SM | akbarshabana1999@gmail.com | 7034397207 | | 
+| 15 | **Rohan Raynish** | 2986 | SM | rohanraynishh@gmail.com | 7907345036 | | 
+| 16 | **APARNA A** | 3442 | SC | aparanasamuvel@gmail.com | 8590895273 | | 
 
 ### Mechanical Engineering (18 / 30 seats filled)
 
-| Sl. No. | Name | LET Rank | Marks | Category | Allotted Category | Education | Distance | Experience |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | **Kanhaiya Kumar ** | 119 | 83.06% | Central govt. employee | **SM** | Diploma | 25 km | 6.5 yrs |
-| 2 | **SHIRISKAR SHLOK SHARAD ** | 285 | 75% | Central govt. employee | **SM** | Diploma | 9.5 km | 3.2 yrs |
-| 3 | **Lijo Varghese** | 547 | 72% | General | **SM** | Diploma | 10 km | 16 yrs |
-| 4 | **Mohammed Noorudeen N S** | 840 | 85% | Muslim | **SM** | Diploma | 27 km | 2 yrs |
-| 5 | **Arjun Binu** | 1044 | 76.57% | Other Backward Hindu | **SM** | Diploma | 5.4 km | 3 yrs |
-| 6 | **Adharsh Reji** | 1169 | 74.86% | Viswakarma | **SM** | Diploma | 10 km | 2 yrs |
-| 7 | **DEEPU V NAIR** | 1545 | 67% | General | **SM** | Diploma | 40 km | 1 yrs |
-| 8 | **Akshay Subhash** | 1665 | 64.79% | Ezhava | **SM** | Diploma | 23 km | 1 yrs |
-| 9 | **Ramesh Kumar K G ** | 2241 | 86.83% | Other Backward Hindu | **SM** | Diploma | 7 km | 14 yrs |
-| 10 | **ANANDAMOORTHY S** | 2329 | 63.27% | Other Backward Hindu | **SM** | Diploma | 11 km | 1 yrs |
-| 11 | **Sethumadhavan Sk** | 2358 | 72% | General | **SM** | Diploma | 9 km | 2.7 yrs |
-| 12 | **Vishnu.M** | 2419 | 82% | DTE Staff | **SM** | Diploma | 70 km | 2 yrs |
-| 13 | **MUNEER M** | 3006 | 76.38% | Muslim | **SM** | Diploma | 12 km | 1.5 yrs |
-| 14 | **Adhithya Krishna S L** | 3051 | 75.43% | Ezhava | **SM** | Diploma | 10 km | 1 yrs |
-| 15 | **ABHISHEK S** | 3064 | 69.45% | EWS | **SM** | Diploma | 13 km | 1.9 yrs |
-| 16 | **VIBIN VASANTH ** | 3158 | 68% | Ezhava | **EZ** | Diploma | 7 km | 7 yrs |
-| 17 | **VIPIN S R** | 4056 | 78.28% | Ezhava | **EZ** | Diploma | 10 km | 4 yrs |
-| 18 | **Albin Raj R** | 4382 | 70.68% | Latin Catholic and Anglo Indian | **LC** | Diploma | 4.8 km | 1 yrs |
+| Serial No. | Name | LET Rank | Allotment Quota | Email | Phone No. | Signature |
+| :---: | :--- | :---: | :---: | :--- | :---: | :---: |
+| 1 | **Kanhaiya Kumar** | 119 | SM | kanhaiya1197@gmail.com | 9110165202 | | 
+| 2 | **SHIRISKAR SHLOK SHARAD** | 285 | SM | shloks2014@gmail.com | 9970553946 | | 
+| 3 | **Lijo Varghese** | 547 | SM | lijovarghesevembilly@gmail.com | 9895381397 | | 
+| 4 | **Mohammed Noorudeen N S** | 840 | SM | mohammednoorudeen09@gmail.com | 9074595036 | | 
+| 5 | **Arjun Binu** | 1044 | SM | arjunbinucs00@gmail.com | 7902241606 | | 
+| 6 | **Adharsh Reji** | 1169 | SM | adarshreji08@gmail.com | 8590699763 | | 
+| 7 | **DEEPU V NAIR** | 1545 | SM | deepuvnair2002@gmail.com | 7356682559 | | 
+| 8 | **Akshay Subhash** | 1665 | SM | akshayabhi465@gmail.com | 7994904495 | | 
+| 9 | **Ramesh Kumar K G** | 2241 | SM | rameshveettoor@gmail.com | 9447821426 | | 
+| 10 | **ANANDAMOORTHY S** | 2329 | SM | anandamoorthy06@gmail.com | 7909295156 | | 
+| 11 | **Sethumadhavan Sk** | 2358 | SM | sksethumadhavan@gmail.com | 9496935402 | | 
+| 12 | **Vishnu.M** | 2419 | SM | vishnumukundan2021@gmail.com | 9400387476 | | 
+| 13 | **MUNEER M** | 3006 | SM | muneer.m@myyahoo.com | 7356630023 | | 
+| 14 | **Adhithya Krishna S L** | 3051 | SM | adhikrishna635@gmail.com | 9995334216 | | 
+| 15 | **ABHISHEK S** | 3064 | SM | abhishekabhishek4363@gmail.com | 6282597658 | | 
+| 16 | **VIBIN VASANTH** | 3158 | EZ | vibinvasanth2255@gmail.com | 8078071210 | | 
+| 17 | **VIPIN S R** | 4056 | EZ | vipinsroottara@gmail.com | 9447446331 | | 
+| 18 | **Albin Raj R** | 4382 | LC | albinrajr52@gmail.com | 7994723176 | | 
 
 ## Waiting List (8 students)
 
