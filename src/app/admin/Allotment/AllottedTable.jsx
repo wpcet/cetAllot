@@ -1,7 +1,7 @@
 import React from "react";
 import { toast } from "sonner";
 
-const AllottedTable = ({ students, deptName }) => {
+const AllottedTable = ({ students, deptName, hideMobile = false }) => {
   if (!students || students.length === 0) return null;
 
   const handleCopy = (phone) => {
@@ -61,7 +61,7 @@ const AllottedTable = ({ students, deptName }) => {
             <tr className="bg-primary text-white text-xs uppercase tracking-wider">
               <th className="px-4 py-3 text-left font-medium">No.</th>
               <th className="px-4 py-3 text-left font-medium">Name</th>
-              <th className="px-4 py-3 text-left font-medium">Mobile</th>
+              {!hideMobile && <th className="px-4 py-3 text-left font-medium">Mobile</th>}
               <th className="px-4 py-3 text-left font-medium">
                 {isMtech ? "B.Tech Degree" : "Education"}
               </th>
@@ -79,13 +79,15 @@ const AllottedTable = ({ students, deptName }) => {
               >
                 <td className="px-4 py-3 font-medium whitespace-nowrap">{index + 1}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{student.name}</td>
-                <td 
-                  onClick={() => handleCopy(student.phone)}
-                  className="px-4 py-3 whitespace-nowrap cursor-pointer hover:text-primary hover:underline font-mono"
-                  title="Click to copy phone number"
-                >
-                  {student.phone || "-"}
-                </td>
+                {!hideMobile && (
+                  <td 
+                    onClick={() => handleCopy(student.phone)}
+                    className="px-4 py-3 whitespace-nowrap cursor-pointer hover:text-primary hover:underline font-mono"
+                    title="Click to copy phone number"
+                  >
+                    {student.phone || "-"}
+                  </td>
+                )}
                 <td className="px-4 py-3 whitespace-nowrap">
                   {isMtech ? (student.btechDegree || "-") : (student.education || "-")}
                 </td>

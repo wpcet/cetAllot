@@ -124,55 +124,30 @@ export const calculateSMAllotment = (applications, departments) => {
   const updatedDepartments = departments.map((dept) => {
     const totalSeats = dept.totalSeats;
 
-    const specialReservation = {
-      PD: SPECIAL_PRESENT.PD ? 2 : 2,
-      TG: SPECIAL_PRESENT.TG ? 1 : 0,
-      SPORTS: SPECIAL_PRESENT.SPORTS ? 1 : 0,
-      STAFF: SPECIAL_PRESENT.STAFF ? 1 : 0,
-      CENTRAL: SPECIAL_PRESENT.CENTRAL ? 1 : 0,
-    };
-
-    const fixedSeats = Object.values(specialReservation).reduce((a, b) => a + b, 0);
-    const nonreservedSeats = totalSeats - fixedSeats;
-
+    // Define percentage-based seat quotas calculated directly on the branch's total intake (30 seats)
+    // using Math.round to prevent minor categories from receiving 0 seats.
     const seatDistribution = {
-      ...specialReservation,
-      SM: Math.min(SM_SEAT_LIMIT, Math.floor(nonreservedSeats * 0.5)), // Ensure SM doesn't exceed 15
-      EWS: Math.floor(nonreservedSeats * 0.1),
-    };
-
-    // SC & ST
-    const SCST = Math.floor(nonreservedSeats * 0.1);
-    seatDistribution["SC"] = Math.floor(SCST * 0.8);
-    seatDistribution["ST"] = SCST - seatDistribution["SC"];
-
-    // SEBC
-    const sebcTotal = Math.floor(nonreservedSeats * 0.3);
-    seatDistribution["EZ"] = Math.floor(sebcTotal * 0.3);    // 9%
-    seatDistribution["M"] = Math.floor(sebcTotal * 0.2667);  // 8%
-    seatDistribution["BH"] = Math.floor(sebcTotal * 0.1);    // 3%
-    seatDistribution["LC"] = Math.floor(sebcTotal * 0.1);    // 3%
-    seatDistribution["DV"] = Math.floor(sebcTotal * 0.0667); // 2%
-    seatDistribution["VK"] = Math.floor(sebcTotal * 0.0667); // 2%
-    seatDistribution["KN"] = Math.floor(sebcTotal * 0.0333); // 1%
-    seatDistribution["BX"] = Math.floor(sebcTotal * 0.0333); // 1%
-    seatDistribution["KU"] = Math.floor(sebcTotal * 0.0333); // 1%
-
-    // Adjust leftover to SM but respect the limit
-    const filledSeats = Object.values(seatDistribution).reduce((a, b) => a + b, 0);
-    const leftover = totalSeats - filledSeats;
-    if (leftover > 0) {
-      const currentSM = seatDistribution.SM;
-      const maxAdditionalSM = SM_SEAT_LIMIT - currentSM;
-      const smAddition = Math.min(leftover, maxAdditionalSM);
-      seatDistribution.SM += smAddition;
+      SM: Math.round(totalSeats * 0.5), // 50% = 15
+      EWS: Math.round(totalSeats * 0.1), // 10% = 3
+      SC: Math.round(totalSeats * 0.08), // 8% = 2
+      ST: Math.round(totalSeats * 0.02), // 2% = 1
+      EZ: Math.round(totalSeats * 0.09), // 9% = 3
+      M: Math.round(totalSeats * 0.08), // 8% = 2
+      BH: Math.round(totalSeats * 0.03), // 3% = 1
+      LC: Math.round(totalSeats * 0.03), // 3% = 1
+      DV: Math.round(totalSeats * 0.02), // 2% = 1
+      VK: Math.round(totalSeats * 0.02), // 2% = 1
+      KN: Math.round(totalSeats * 0.01), // 1% = 0
+      BX: Math.round(totalSeats * 0.01), // 1% = 0
+      KU: Math.round(totalSeats * 0.01), // 1% = 0
       
-      // If there's still leftover after SM limit, distribute to other categories
-      const remainingLeftover = leftover - smAddition;
-      if (remainingLeftover > 0) {
-        seatDistribution.EWS += remainingLeftover;
-      }
-    }
+      // Supernumerary seats (Supernumerary & Quotas are in addition to totalSeats)
+      PD: 2,
+      TG: 1,
+      SPORTS: 1,
+      STAFF: 1,
+      CENTRAL: 1
+    };
 
     return {
       ...dept,
@@ -271,6 +246,9 @@ export const calculateReservationAllotment = (unallocatedApplications, departmen
           dept.categorySeatsFilled[categoryKey] < dept.seatDistribution[categoryKey]) {
         dept.categorySeatsFilled[categoryKey]++;
         dept.filledSeats++;
+        if (categoryKey === "PD" || categoryKey === "TG" || categoryKey === "SPORTS" || categoryKey === "STAFF" || categoryKey === "CENTRAL") {
+          dept.totalSeats++;
+        }
         dept.allottedStudents.push(app.id);
         allotments.set(app.id, { 
           ...app, 
@@ -448,7 +426,7 @@ export const calculateAllotment = (applications, departments) => {
         ...app,
         letRank:99999,
         allotmentStatus: "not_eligible",
-        allottedDepartment: null,
+        allottedDepartment: app.priorityChoices?.["1"] || "Computer Science and Engineering",
         allottedCategory: "exam_not_attended"
       };
     }
@@ -465,7 +443,8 @@ export const calculateAllotment = (applications, departments) => {
     }
 
     // Check if application has insufficient experience
-    if (parseFloat(app.experience) < MIN_EXPERIENCE) {
+    const exp = parseFloat(app.experience);
+    if (isNaN(exp) || exp < MIN_EXPERIENCE) {
       return {
         ...app,
         allotmentStatus: "waiting_list",
@@ -491,7 +470,7 @@ export const calculateAllotment = (applications, departments) => {
     not_eligible: finalApplications.filter(app => app.allotmentStatus === "not_eligible").length,
     insufficient_experience: finalApplications.filter(app => app.allottedCategory === "experience_requirement").length,
     sm_allotted: finalApplications.filter(app => app.allottedCategory === "SM").length,
-    reservation_allotted: finalApplications.filter(app => app.allottedCategory && app.allottedCategory !== "SM" && app.allottedCategory !== "not_allotted" && app.allottedCategory !== "experience_requirement").length
+    reservation_allotted: finalApplications.filter(app => app.allotmentStatus === "allotted" && app.allottedCategory !== "SM").length
   };
 
 

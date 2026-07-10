@@ -94,7 +94,8 @@ export const runAllotmentHandler = async (year) => {
     // ✅ Write new allotment results
     for (const dept of updatedDepartments) {
       const studentsInDept = updatedApplications.filter(
-        (app) => app.allottedDepartment === dept.name
+        (app) => app.allottedDepartment === dept.name &&
+                 (app.allotmentStatus === "allotted" || app.allotmentStatus === "waiting_list")
       );
       // console.log(`📤 Uploading ${studentsInDept.length} students to dept: ${dept.name}`);
 
