@@ -19,6 +19,7 @@ import About from "./app/About";
 import Eligibility from "./app/Eligibility";
 
 import Apply from "./app/Apply";
+import DownloadApplication from "./app/DownloadApplication";
 import Login from "./app/admin/Login";
 import Dashboard from "./app/admin/Dashboard";
 import Contact from "./app/Contact";
@@ -97,6 +98,14 @@ const App = () => {
           element={
             <PageTransition>
               <Apply />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/download-application"
+          element={
+            <PageTransition>
+              <DownloadApplication />
             </PageTransition>
           }
         />

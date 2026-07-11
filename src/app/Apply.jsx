@@ -6,6 +6,7 @@ import { ApplicationForm } from "./admin/ApplicationForm";
 import { MtechApplicationForm } from "./admin/MtechApplicationForm";
 import { db } from "@/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 // Reusable status screen for "coming" and "closed" states
 const StatusScreen = ({ status, program }) => {
@@ -123,7 +124,7 @@ export default function Apply() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-3">
-            Application Form
+            {degreeType === "btech" && btechStatus === "spot" ? "B.Tech Spot Application Form" : "Application Form"}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-pretty">
             Please read the instructions carefully before filling out the form.{" "}
@@ -132,6 +133,12 @@ export default function Apply() {
             </span>{" "}
             Ensure all details are accurate and complete.
           </p>
+          <div className="mt-4 flex justify-center gap-1.5 text-sm">
+            <span className="text-muted-foreground">Forgot to download your submitted application?</span>
+            <Link to="/download-application" className="text-primary hover:underline font-semibold">
+              Click here to retrieve it
+            </Link>
+          </div>
         </motion.div>
 
         <motion.div
@@ -165,8 +172,8 @@ export default function Apply() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="bg-card border border-border/50 rounded-2xl shadow-sm p-6 md:p-10">
-                  {btechStatus === "open" ? (
-                    <ApplicationForm />
+                  {btechStatus === "open" || btechStatus === "spot" ? (
+                    <ApplicationForm isSpot={btechStatus === "spot"} />
                   ) : (
                     <StatusScreen status={btechStatus} program="B.Tech" />
                   )}

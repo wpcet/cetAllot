@@ -36,6 +36,8 @@ export default function PartTimeBtech() {
   const [selectedYear, setSelectedYear] = useState(String(currentYear));
   const [degreeType, setDegreeType] = useState("btech");
   const [isPublished, setIsPublished] = useState(false);
+  const [isSpotPublished, setIsSpotPublished] = useState(false);
+  const [allotmentSubTab, setAllotmentSubTab] = useState("regular"); // "regular" | "spot"
   const [allottedData, setAllottedData] = useState({});
   const [allottedData2, setAllottedData2] = useState({});
   const [loading, setLoading] = useState(true);
@@ -97,6 +99,15 @@ export default function PartTimeBtech() {
         }
 
         let published = false;
+        let spotPublished = false;
+
+        const spotPublishRef = doc(db, "spot_allotment", `publishStatus_${selectedYear}`);
+        const spotPublishSnap = await getDoc(spotPublishRef);
+        if (spotPublishSnap.exists()) {
+          spotPublished = !!spotPublishSnap.data().published;
+        }
+        setIsSpotPublished(spotPublished);
+
         const publishRef = doc(db, "allotment", `publishStatus_${selectedYear}`);
         const publishSnap = await getDoc(publishRef);
 
@@ -108,7 +119,22 @@ export default function PartTimeBtech() {
         }
 
         setIsPublished(published);
-        if (!published) {
+
+        // Adjust default sub-tab based on publication status
+        let activeSubTab = allotmentSubTab;
+        if (!published && spotPublished && allotmentSubTab === "regular") {
+          activeSubTab = "spot";
+          setAllotmentSubTab("spot");
+        } else if (published && !spotPublished && allotmentSubTab === "spot") {
+          activeSubTab = "regular";
+          setAllotmentSubTab("regular");
+        }
+
+        const isCurrentTabPublished = degreeType === "mtech" 
+          ? published 
+          : (activeSubTab === "spot" ? spotPublished : published);
+
+        if (!isCurrentTabPublished) {
           setAllottedData({});
           setAllottedData2({});
           return;
@@ -117,12 +143,14 @@ export default function PartTimeBtech() {
         const depts = getDepartmentsForYear(selectedYear);
         const data = {};
         const data2 = {};
+        const baseCollection = activeSubTab === "spot" ? "spot_allotment" : "allotment";
+        const baseNoExamCollection = activeSubTab === "spot" ? "spot_no_exam_allotment" : "no_exam_allotment";
 
         for (const dept of depts) {
-          let snapshot = await getDocs(collection(db, `allotment/${dept}_${selectedYear}/students`));
-          let snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}_${selectedYear}/students`));
+          let snapshot = await getDocs(collection(db, `${baseCollection}/${dept}_${selectedYear}/students`));
+          let snapshot2 = await getDocs(collection(db, `${baseNoExamCollection}/${dept}_${selectedYear}/students`));
 
-          if (selectedYear === "2025" && snapshot.empty && snapshot2.empty) {
+          if (selectedYear === "2025" && baseCollection === "allotment" && snapshot.empty && snapshot2.empty) {
             snapshot = await getDocs(collection(db, `allotment/${dept}/students`));
             snapshot2 = await getDocs(collection(db, `no_exam_allotment/${dept}/students`));
           }
@@ -146,7 +174,6 @@ export default function PartTimeBtech() {
               if (rankA !== rankB) return rankA - rankB;
             }
 
-            // Tie-breaker: Distance (descending), then Marks (descending)
             const distA = parseFloat(a.distance) || 0;
             const distB = parseFloat(b.distance) || 0;
             if (distB !== distA) return distB - distA;
@@ -170,7 +197,7 @@ export default function PartTimeBtech() {
       }
     };
     fetchData();
-  }, [selectedYear, degreeType]);
+  }, [selectedYear, degreeType, allotmentSubTab]);
 
   const formatDeptName = (name) => {
     if (name === "Electrical and Electronics Engineering") return "Electrical & Electronics Engineering";
@@ -242,65 +269,107 @@ export default function PartTimeBtech() {
               <SkeletonTable key={i} rows={4} columns={5} />
             ))}
           </div>
-        ) : isPublished ? (
+        ) : (isPublished || isSpotPublished) ? (
           <div className="space-y-8">
-            {/* Notice */}
-            <div className="flex items-start gap-3 p-5 rounded-xl border-l-4 border-amber-500 bg-amber-50 text-amber-800 text-sm">
-              <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Important Note</p>
-                <p className="mt-1">
-                  This is a <strong>provisional allotment</strong> only. Inclusion in this list does not guarantee admission.
-                  Candidates with higher marks appearing physically during admission will be given preference.
-                  Admission is confirmed only on payment of full fees and successful document verification.
+            {degreeType === "btech" && (isPublished || isSpotPublished) && (
+              <div className="flex justify-center mb-8">
+                <Tabs value={allotmentSubTab} onValueChange={setAllotmentSubTab} className="w-full max-w-xs mx-auto">
+                  <TabsList className="bg-muted/50 p-1 rounded-xl w-full">
+                    <TabsTrigger
+                      value="regular"
+                      className="flex-1 px-4 py-1.5 text-xs font-medium rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-800"
+                    >
+                      Regular Allotment
+                    </TabsTrigger>
+                    {isSpotPublished && (
+                      <TabsTrigger
+                        value="spot"
+                        className="flex-1 px-4 py-1.5 text-xs font-medium rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-800"
+                      >
+                        Spot Allotment
+                      </TabsTrigger>
+                    )}
+                  </TabsList>
+                </Tabs>
+              </div>
+            )}
+
+            {/* Check if currently selected sub-tab is published */}
+            {((degreeType === "btech" && allotmentSubTab === "regular" && !isPublished) ||
+              (degreeType === "btech" && allotmentSubTab === "spot" && !isSpotPublished) ||
+              (degreeType === "mtech" && !isPublished)) ? (
+              <div className="text-center py-20">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-muted mb-6">
+                  <Calendar className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-2">Results Not Yet Published</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  {allotmentSubTab === "spot"
+                    ? "Spot allotment results will be published here once the process is complete."
+                    : "Admission results will be published here once the allotment process is complete."}
                 </p>
               </div>
-            </div>
-
-            {degreeType === "mtech" ? (
-              <>
-                {getMtechSpecializations().map((spec) => (
-                  <AllottedTable
-                    key={spec}
-                    students={allottedData[spec] || []}
-                    deptName={spec}
-                    hideMobile={true}
-                  />
-                ))}
-              </>
             ) : (
-              <>
-                {getDepartmentsForYear(selectedYear).map((dept) => (
-                  <AllottedTable
-                    key={dept}
-                    students={allottedData[dept] || []}
-                    deptName={formatDeptName(dept)}
-                    hideMobile={true}
-                  />
-                ))}
-
-                <div className="pt-8 mt-8 border-t border-border">
-                  <h2 className="text-3xl font-bold text-center text-primary mb-4">
-                    Allotment Results: Non-LET Candidates
-                  </h2>
-                  <div className="flex items-start gap-3 p-5 rounded-xl border-l-4 border-blue-500 bg-blue-50 text-blue-800 text-sm mb-8">
-                    <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                    <p>
-                      <strong>Note:</strong> Allotment for non-LET candidates follows the official reservation policy.
-                      Students belonging to reservation categories are considered first in their respective quotas.
-                      General category candidates are considered only after reserved seats are filled.
-                      Inclusion in this list does not guarantee admission.
+              <div className="space-y-8">
+                {/* Notice */}
+                <div className="flex items-start gap-3 p-5 rounded-xl border-l-4 border-amber-500 bg-amber-50 text-amber-800 text-sm">
+                  <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">Important Note</p>
+                    <p className="mt-1">
+                      This is a <strong>provisional allotment</strong> only. Inclusion in this list does not guarantee admission.
+                      Candidates with higher marks appearing physically during admission will be given preference.
+                      Admission is confirmed only on payment of full fees and successful document verification.
                     </p>
                   </div>
-                  {getDepartmentsForYear(selectedYear).map((dept) => (
-                    <AllottedNoTable
-                      key={dept}
-                      students={allottedData2[dept] || []}
-                      deptName={formatDeptName(dept)}
-                    />
-                  ))}
                 </div>
-              </>
+
+                {degreeType === "mtech" ? (
+                  <>
+                    {getMtechSpecializations().map((spec) => (
+                      <AllottedTable
+                        key={spec}
+                        students={allottedData[spec] || []}
+                        deptName={spec}
+                        hideMobile={true}
+                      />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {getDepartmentsForYear(selectedYear).map((dept) => (
+                      <AllottedTable
+                        key={dept}
+                        students={allottedData[dept] || []}
+                        deptName={formatDeptName(dept)}
+                        hideMobile={true}
+                      />
+                    ))}
+
+                    <div className="pt-8 mt-8 border-t border-border">
+                      <h2 className="text-3xl font-bold text-center text-primary mb-4">
+                        {allotmentSubTab === "spot" ? "Spot Allotment Results: Non-LET Candidates" : "Allotment Results: Non-LET Candidates"}
+                      </h2>
+                      <div className="flex items-start gap-3 p-5 rounded-xl border-l-4 border-blue-500 bg-blue-50 text-blue-800 text-sm mb-8">
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <p>
+                          <strong>Note:</strong> Allotment for non-LET candidates follows the official reservation policy.
+                          Students belonging to reservation categories are considered first in their respective quotas.
+                          General category candidates are considered only after reserved seats are filled.
+                          Inclusion in this list does not guarantee admission.
+                        </p>
+                      </div>
+                      {getDepartmentsForYear(selectedYear).map((dept) => (
+                        <AllottedNoTable
+                          key={dept}
+                          students={allottedData2[dept] || []}
+                          deptName={formatDeptName(dept)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </div>
         ) : (
