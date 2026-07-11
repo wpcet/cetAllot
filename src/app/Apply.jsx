@@ -6,6 +6,7 @@ import { ApplicationForm } from "./admin/ApplicationForm";
 import { MtechApplicationForm } from "./admin/MtechApplicationForm";
 import { db } from "@/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 // Reusable status screen for "coming" and "closed" states
 const StatusScreen = ({ status, program }) => {
@@ -132,6 +133,12 @@ export default function Apply() {
             </span>{" "}
             Ensure all details are accurate and complete.
           </p>
+          <div className="mt-4 flex justify-center gap-1.5 text-sm">
+            <span className="text-muted-foreground">Forgot to download your submitted application?</span>
+            <Link to="/download-application" className="text-primary hover:underline font-semibold">
+              Click here to retrieve it
+            </Link>
+          </div>
         </motion.div>
 
         <motion.div

@@ -112,7 +112,9 @@ export const ApplicationTable = ({
     const appYear = getAppYear(app);
     const matchesYear = activeYearFilter === "all" || String(appYear) === activeYearFilter;
     
-    return matchesSearch && matchesStatus && matchesDepartment && matchesYear;
+    const matchesSpot = isSpotMode ? (app.isSpot === true) : (!app.isSpot);
+    
+    return matchesSearch && matchesStatus && matchesDepartment && matchesYear && matchesSpot;
   });
 
   const onExport = () => {
