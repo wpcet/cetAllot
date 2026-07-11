@@ -10,6 +10,7 @@ import { NoticeCards } from "./Notices/NoticeCards";
 import { NoticeDialog } from "./Notices/NoticeDialog";
 import { AllotmentResults } from "./Allotment/AllotmentResults";
 import { MtechAllotmentResults } from "./Allotment/MtechAllotmentResults";
+import { SpotAllotmentResults } from "./Allotment/SpotAllotmentResults";
 import { DashboardStats, DashboardStatsSkeleton } from "./DashboardStats";
 import { Skeleton, SkeletonTable, SkeletonNoticeCard } from "@/components/ui/Skeleton";
 import { db } from "@/firebase";
@@ -17,6 +18,7 @@ import { collection, getDocs, getDoc, doc, onSnapshot, setDoc } from "firebase/f
 import { saveNoticeToFirestore, deleteNoticeFromFirestore } from "../utils/saveNotice";
 import { runAllotmentHandler } from "../utils/runAllotmentHandler";
 import { runMtechAllotmentHandler } from "../utils/runMtechAllotmentHandler";
+import { runSpotAllotmentHandler } from "../utils/runSpotAllotmentHandler";
 import uploadRealData from "../utils/uploadRealData";
 import { Button } from "@/components/ui/Button";
 import { UploadCloud, Check, Settings } from "lucide-react";
@@ -41,6 +43,7 @@ export default function Dashboard() {
   const [selectedYear, setSelectedYear] = useState("2026");
   const [loadingAllotment, setLoadingAllotment] = useState(false);
   const [loadingMtechAllotment, setLoadingMtechAllotment] = useState(false);
+  const [loadingSpotAllotment, setLoadingSpotAllotment] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [btechStatus, setBtechStatus] = useState("open");
   const [mtechStatus, setMtechStatus] = useState("coming");
@@ -68,6 +71,19 @@ export default function Dashboard() {
       alert(`M.Tech allotment completed successfully for ${selectedYear}!`);
     } else {
       alert("M.Tech allotment failed. Check console for errors.");
+    }
+  };
+
+  const handleRunSpotAllotment = async () => {
+    if (!window.confirm(`Are you sure you want to run the B.Tech SPOT allotment for ${selectedYear}?`)) return;
+    setLoadingSpotAllotment(true);
+    const result = await runSpotAllotmentHandler(selectedYear);
+    setLoadingSpotAllotment(false);
+
+    if (result.success) {
+      alert(`B.Tech SPOT allotment completed successfully for ${selectedYear}!`);
+    } else {
+      alert("B.Tech SPOT allotment failed. Check console for errors.");
     }
   };
 
@@ -324,6 +340,7 @@ export default function Dashboard() {
             <TabsList className="bg-muted/50 p-1">
               <TabsTrigger value="applications">Applications</TabsTrigger>
               <TabsTrigger value="allotment">Allotment</TabsTrigger>
+              <TabsTrigger value="spot_allotment">Spot Allotment</TabsTrigger>
             </TabsList>
 
             <TabsContent value="applications" className="space-y-4">
@@ -341,7 +358,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <ApplicationTable
-                  applications={filteredApplications}
+                  applications={filteredApplications.filter(app => !app.isSpot)}
                   departments={departments}
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
@@ -375,6 +392,67 @@ export default function Dashboard() {
                   setSelectedYear={setSelectedYear}
                 />
               )}
+            </TabsContent>
+
+            <TabsContent value="spot_allotment" className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border/50 rounded-xl p-4">
+                <div>
+                  <h3 className="font-bold text-lg">B.Tech Spot Allotment Control</h3>
+                  <p className="text-xs text-muted-foreground">Manage spot applications and run the spot allotment algorithm</p>
+                </div>
+                <Button
+                  onClick={handleRunSpotAllotment}
+                  disabled={loadingSpotAllotment}
+                  className="shadow-sm bg-violet-600 hover:bg-violet-700 text-white"
+                >
+                  {loadingSpotAllotment ? "Running Spot Allotment..." : "Run Spot Allotment"}
+                </Button>
+              </div>
+
+              <Tabs defaultValue="spot_applications" className="space-y-6">
+                <TabsList className="bg-muted/50 p-1">
+                  <TabsTrigger value="spot_applications">Spot Applications</TabsTrigger>
+                  <TabsTrigger value="spot_results">Spot Allotment Results</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="spot_applications" className="space-y-4">
+                  {initialLoading ? (
+                    <div className="space-y-4 animate-fade-in">
+                      <SkeletonTable rows={8} columns={14} />
+                    </div>
+                  ) : (
+                    <ApplicationTable
+                      applications={filteredApplications.filter(app => app.isSpot)}
+                      departments={departments}
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      statusFilter={statusFilter}
+                      setStatusFilter={setStatusFilter}
+                      departmentFilter={departmentFilter}
+                      setDepartmentFilter={setDepartmentFilter}
+                      isLoading={isLoading}
+                      onEdit={() => {}}
+                      onNewApplication={() => {}}
+                      yearFilter={selectedYear}
+                      setYearFilter={setSelectedYear}
+                      isSpotMode={true}
+                    />
+                  )}
+                </TabsContent>
+
+                <TabsContent value="spot_results">
+                  {initialLoading ? (
+                    <div className="space-y-6 animate-fade-in">
+                      <SkeletonTable rows={5} columns={5} />
+                    </div>
+                  ) : (
+                    <SpotAllotmentResults
+                      selectedYear={selectedYear}
+                      setSelectedYear={setSelectedYear}
+                    />
+                  )}
+                </TabsContent>
+              </Tabs>
             </TabsContent>
           </Tabs>
         </TabsContent>
@@ -538,7 +616,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between p-4 border border-border/40 rounded-lg bg-muted/20">
                 <div>
                   <h4 className="font-medium text-sm">B.Tech Application Form</h4>
-                  <p className="text-xs text-muted-foreground">Status: <span className={`font-semibold ${btechStatus === "open" ? "text-emerald-500" : btechStatus === "closed" ? "text-red-500" : "text-amber-500"}`}>{btechStatus === "open" ? "Open" : btechStatus === "closed" ? "Closed" : "Coming Soon"}</span></p>
+                  <p className="text-xs text-muted-foreground">Status: <span className={`font-semibold ${btechStatus === "open" ? "text-emerald-500" : btechStatus === "closed" ? "text-red-500" : btechStatus === "spot" ? "text-violet-500" : "text-amber-500"}`}>{btechStatus === "open" ? "Open" : btechStatus === "closed" ? "Closed" : btechStatus === "spot" ? "Spot Admission Open" : "Coming Soon"}</span></p>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -556,6 +634,14 @@ export default function Dashboard() {
                     className={`shadow-sm text-xs ${btechStatus === "open" ? "bg-emerald-500 hover:bg-emerald-600" : ""}`}
                   >
                     Open
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={btechStatus === "spot" ? "default" : "outline"}
+                    onClick={() => updateProgramStatus("btech", "spot")}
+                    className={`shadow-sm text-xs ${btechStatus === "spot" ? "bg-violet-500 hover:bg-violet-600 text-white" : ""}`}
+                  >
+                    Spot
                   </Button>
                   <Button
                     size="sm"

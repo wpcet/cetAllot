@@ -283,7 +283,7 @@ const required = (label) => (
   </span>
 );
 
-export const ApplicationForm = ({ onSuccess }) => {
+export const ApplicationForm = ({ onSuccess, isSpot = false }) => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: initialFormData,
@@ -328,6 +328,7 @@ export const ApplicationForm = ({ onSuccess }) => {
         distance: submittedData.distance ? Number(submittedData.distance) : null,
         category: submittedData.reservationCategory,
         submittedAt: Timestamp.now(),
+        isSpot: isSpot,
       };
 
       await addDoc(collection(db, "applications"), formattedData);
@@ -577,6 +578,17 @@ export const ApplicationForm = ({ onSuccess }) => {
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(handleReviewData, onError)} className="space-y-8">
+        {isSpot && (
+          <div className="bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 rounded-xl p-4 flex items-center justify-between shadow-sm">
+            <div>
+              <h4 className="font-bold text-sm">Spot Admission Phase</h4>
+              <p className="text-xs text-muted-foreground">You are currently submitting an application for the Spot Allotment round.</p>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500 text-white animate-pulse">
+              Spot Round
+            </span>
+          </div>
+        )}
         {/* Personal Information */}
         <FormSection title="Personal Information" icon={User}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

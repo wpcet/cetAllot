@@ -46,6 +46,7 @@ export const ApplicationTable = ({
   onNewApplication,
   yearFilter,
   setYearFilter,
+  isSpotMode = false,
 }) => {
   const [applications, setApplications] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -134,8 +135,8 @@ export const ApplicationTable = ({
     }));
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Applications");
-    XLSX.writeFile(workbook, "Applications.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, isSpotMode ? "Spot Applications" : "Applications");
+    XLSX.writeFile(workbook, isSpotMode ? "Spot_Applications.xlsx" : "Applications.xlsx");
   };
 
   return (

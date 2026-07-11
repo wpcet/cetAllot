@@ -4,6 +4,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { jsPDF } from "jspdf";
 import fs from 'fs';
+import * as XLSX from 'xlsx';
 import { calculateAllotment } from './src/app/utils/calculateAllotment.js';
 
 const firebaseConfig = {
@@ -198,12 +199,47 @@ Below is the list of all students who have been successfully allotted seats acro
 
     // --- GENERATE allotment.pdf ---
     console.log("Generating allotment.pdf...");
-    const pdfDoc = new jsPDF();
+    const pdfDoc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageWidth = 297;
+    const pageHeight = 210;
     let y = 15;
-    const pageHeight = 280;
+
+    const drawCell = (doc, text, x, y, w, h, align = "center", isBold = false, fontSize = 9) => {
+      doc.setFont("helvetica", isBold ? "bold" : "normal");
+      doc.setFontSize(fontSize);
+      doc.setTextColor(0, 0, 0);
+      doc.rect(x, y, w, h); // Draw border
+      
+      const cleanText = text !== undefined && text !== null ? String(text).trim() : "";
+      const textY = y + (h / 2) + (fontSize * 0.35 / 2);
+      
+      if (align === "left") {
+        const textX = x + 3;
+        let truncatedText = cleanText;
+        const maxWidth = w - 6;
+        if (doc.getTextWidth(truncatedText) > maxWidth) {
+          while (truncatedText.length > 0 && doc.getTextWidth(truncatedText + "..") > maxWidth) {
+            truncatedText = truncatedText.substring(0, truncatedText.length - 1);
+          }
+          truncatedText += "..";
+        }
+        doc.text(truncatedText, textX, textY);
+      } else {
+        const textX = x + w / 2;
+        let truncatedText = cleanText;
+        const maxWidth = w - 4;
+        if (doc.getTextWidth(truncatedText) > maxWidth) {
+          while (truncatedText.length > 0 && doc.getTextWidth(truncatedText + "..") > maxWidth) {
+            truncatedText = truncatedText.substring(0, truncatedText.length - 1);
+          }
+          truncatedText += "..";
+        }
+        doc.text(truncatedText, textX, textY, { align: "center" });
+      }
+    };
 
     const checkPageBreak = (neededHeight) => {
-      if (y + neededHeight > pageHeight) {
+      if (y + neededHeight > pageHeight - 15) {
         pdfDoc.addPage();
         y = 15;
         drawPageHeader();
@@ -215,8 +251,8 @@ Below is the list of all students who have been successfully allotted seats acro
       pdfDoc.setFontSize(8);
       pdfDoc.setTextColor(120, 120, 120);
       pdfDoc.text("COLLEGE OF ENGINEERING TRIVANDRUM", 15, 10);
-      pdfDoc.text("B.TECH ADMISSIONS 2026", 155, 10);
-      pdfDoc.line(15, 12, 195, 12);
+      pdfDoc.text("B.TECH ADMISSIONS 2026", 240, 10);
+      pdfDoc.line(15, 12, 282, 12);
       y = Math.max(y, 18);
     };
 
@@ -234,12 +270,12 @@ Below is the list of all students who have been successfully allotted seats acro
     y += 8;
 
     // Summary Section
-    checkPageBreak(50);
+    checkPageBreak(55);
     pdfDoc.setFont("helvetica", "bold");
     pdfDoc.setFontSize(12);
     pdfDoc.text("1. Allotment Summary", 15, y);
     y += 6;
-    pdfDoc.line(15, y, 195, y);
+    pdfDoc.line(15, y, 282, y);
     y += 6;
 
     pdfDoc.setFont("helvetica", "normal");
@@ -260,31 +296,26 @@ Below is the list of all students who have been successfully allotted seats acro
     y += 6;
 
     // Department Seat Status Section
-    checkPageBreak(50);
+    checkPageBreak(55);
     pdfDoc.setFont("helvetica", "bold");
     pdfDoc.setFontSize(12);
     pdfDoc.text("2. Department Seat Status", 15, y);
     y += 6;
-    pdfDoc.line(15, y, 195, y);
+    pdfDoc.line(15, y, 282, y);
     y += 6;
 
-    pdfDoc.setFont("helvetica", "bold");
-    pdfDoc.setFontSize(9);
-    pdfDoc.text("Department Name", 15, y);
-    pdfDoc.text("Total Seats", 110, y);
-    pdfDoc.text("Seats Filled", 140, y);
-    pdfDoc.text("SM Seats Filled", 170, y);
-    y += 4;
-    pdfDoc.line(15, y, 195, y);
-    y += 6;
+    drawCell(pdfDoc, "Department Name", 15, y, 120, 8, "left", true, 9);
+    drawCell(pdfDoc, "Total Seats", 135, y, 40, 8, "center", true, 9);
+    drawCell(pdfDoc, "Seats Filled", 175, y, 40, 8, "center", true, 9);
+    drawCell(pdfDoc, "SM Seats Filled", 215, y, 40, 8, "center", true, 9);
+    y += 8;
 
-    pdfDoc.setFont("helvetica", "normal");
     printableDepartments.forEach(dept => {
-      pdfDoc.text(dept.name, 15, y);
-      pdfDoc.text(`${dept.totalSeats}`, 110, y);
-      pdfDoc.text(`${dept.filledSeats}`, 140, y);
-      pdfDoc.text(`${dept.smSeatsFilled}`, 170, y);
-      y += 6;
+      drawCell(pdfDoc, dept.name, 15, y, 120, 8, "left", false, 9);
+      drawCell(pdfDoc, `${dept.totalSeats}`, 135, y, 40, 8, "center", false, 9);
+      drawCell(pdfDoc, `${dept.filledSeats}`, 175, y, 40, 8, "center", false, 9);
+      drawCell(pdfDoc, `${dept.smSeatsFilled}`, 215, y, 40, 8, "center", false, 9);
+      y += 8;
     });
     y += 6;
 
@@ -292,9 +323,9 @@ Below is the list of all students who have been successfully allotted seats acro
     checkPageBreak(30);
     pdfDoc.setFont("helvetica", "bold");
     pdfDoc.setFontSize(12);
-    pdfDoc.text("3. Allotted Students List", 15, y);
+    pdfDoc.text("3. Allotted Students List (Attendance Registers)", 15, y);
     y += 6;
-    pdfDoc.line(15, y, 195, y);
+    pdfDoc.line(15, y, 282, y);
     y += 8;
 
     departmentsList.forEach((deptName, deptIdx) => {
@@ -314,121 +345,342 @@ Below is the list of all students who have been successfully allotted seats acro
 
       // Start each department on a fresh page
       pdfDoc.addPage();
-      y = 15;
-      
-      // CET Page Header Block
-      pdfDoc.setFont("helvetica", "bold");
-      pdfDoc.setFontSize(11);
-      pdfDoc.setTextColor(0, 51, 102); // CET Blue
-      pdfDoc.text("COLLEGE OF ENGINEERING TRIVANDRUM", 15, y);
-      y += 5.5;
-      
-      pdfDoc.setFont("helvetica", "bold");
-      pdfDoc.setFontSize(10);
-      pdfDoc.setTextColor(60, 60, 60);
-      pdfDoc.text("B.Tech (Working Professionals) Admission 2026", 15, y);
-      y += 5.5;
+      let currentY = 12;
+      const rowHeight = 8;
 
-      pdfDoc.setFont("helvetica", "bold");
-      pdfDoc.setFontSize(10);
-      pdfDoc.setTextColor(0, 0, 0);
-      pdfDoc.text(`Department of ${deptName.toUpperCase()}`, 15, y);
-      y += 5.5;
+      const drawDepartmentGridHeader = (yPos) => {
+        // Row 1: Merged title
+        drawCell(pdfDoc, "COLLEGE OF ENGINEERING TRIVANDRUM Office of the Programs for Working Professionals", 10, yPos, 277, 10, "center", true, 11);
+        // Row 2: Merged stream
+        drawCell(pdfDoc, `STREAM: ${deptName.toUpperCase()}`, 10, yPos + 10, 277, 8, "center", true, 10);
+        // Row 3: Headers
+        const headerY = yPos + 18;
+        drawCell(pdfDoc, "Serial No.", 10, headerY, 20, 8, "center", true, 9);
+        drawCell(pdfDoc, "Name", 30, headerY, 65, 8, "center", true, 9);
+        drawCell(pdfDoc, "LET Rank", 95, headerY, 25, 8, "center", true, 9);
+        drawCell(pdfDoc, "Allotment Quota", 120, headerY, 35, 8, "center", true, 9);
+        drawCell(pdfDoc, "Email", 155, headerY, 60, 8, "center", true, 9);
+        drawCell(pdfDoc, "Phone No.", 215, headerY, 37, 8, "center", true, 9);
+        drawCell(pdfDoc, "Signature", 252, headerY, 35, 8, "center", true, 9);
+      };
 
-      pdfDoc.setFont("helvetica", "bolditalic");
-      pdfDoc.setFontSize(9);
-      pdfDoc.setTextColor(100, 100, 100);
-      pdfDoc.text("STUDENT ATTENDANCE & ADMISSION SIGNATURE REGISTER", 15, y);
-      y += 4;
-      pdfDoc.line(15, y, 195, y);
-      y += 7;
+      const checkPdfPageBreak = (neededHeight) => {
+        if (currentY + neededHeight > pageHeight - 12) {
+          pdfDoc.addPage();
+          currentY = 12;
+          drawDepartmentGridHeader(currentY);
+          currentY += 26;
+        }
+      };
 
-      pdfDoc.setFont("helvetica", "bold");
-      pdfDoc.setFontSize(8.5);
-      pdfDoc.setTextColor(0, 0, 0);
-      // Table Header matching the screenshot
-      pdfDoc.text("Serial No.", 15, y);
-      pdfDoc.text("Name", 32, y);
-      pdfDoc.text("LET Rank", 78, y);
-      pdfDoc.text("Allotment Quota", 95, y);
-      pdfDoc.text("Email", 125, y);
-      pdfDoc.text("Phone No.", 160, y);
-      pdfDoc.text("Signature", 182, y);
-      y += 3;
-      pdfDoc.line(15, y, 195, y);
-      y += 5.5;
+      drawDepartmentGridHeader(currentY);
+      currentY += 26;
 
-      pdfDoc.setFont("helvetica", "normal");
-      pdfDoc.setFontSize(8);
       if (allottedStudents.length === 0) {
-        pdfDoc.text("No students allotted.", 15, y);
-        y += 6;
+        checkPdfPageBreak(rowHeight);
+        drawCell(pdfDoc, "No students allotted.", 10, currentY, 277, rowHeight, "center", false, 9);
+        currentY += rowHeight;
       } else {
         allottedStudents.forEach((student, index) => {
-          checkPageBreak(8);
-          pdfDoc.text(`${index + 1}`, 15, y);
-          let name = student.name || "";
-          if (name.length > 25) name = name.substring(0, 23) + "..";
-          pdfDoc.text(name.trim(), 32, y);
-          pdfDoc.text(`${student.letRank}`, 78, y);
-          
-          let quota = student.allottedCategory || "";
-          if (quota.length > 18) quota = quota.substring(0, 16) + "..";
-          pdfDoc.text(quota, 95, y);
-          
-          let email = student.email || "";
-          if (email.length > 22) email = email.substring(0, 20) + "..";
-          pdfDoc.text(email, 125, y);
-          
-          pdfDoc.text(`${student.phone || ""}`, 160, y);
-          // Signature column remains blank for physical signing
-          pdfDoc.text("_______________", 182, y);
-          y += 6.5;
+          checkPdfPageBreak(rowHeight);
+          drawCell(pdfDoc, `${index + 1}`, 10, currentY, 20, rowHeight, "center", false, 8);
+          drawCell(pdfDoc, student.name, 30, currentY, 65, rowHeight, "left", false, 8);
+          drawCell(pdfDoc, `${student.letRank}`, 95, currentY, 25, rowHeight, "center", false, 8);
+          drawCell(pdfDoc, student.allottedCategory || "", 120, currentY, 35, rowHeight, "center", false, 8);
+          drawCell(pdfDoc, student.email || "", 155, currentY, 60, rowHeight, "left", false, 8);
+          drawCell(pdfDoc, student.phone || "", 215, currentY, 37, rowHeight, "center", false, 8);
+          drawCell(pdfDoc, "", 252, currentY, 35, rowHeight, "center", false, 8);
+          currentY += rowHeight;
         });
       }
     });
 
     // Waiting List Section
-    checkPageBreak(30);
-    pdfDoc.setFont("helvetica", "bold");
-    pdfDoc.setFontSize(12);
-    pdfDoc.text("4. Waiting List", 15, y);
-    y += 6;
-    pdfDoc.line(15, y, 195, y);
-    y += 8;
+    const drawWaitingListHeader = (yPos) => {
+      drawCell(pdfDoc, "COLLEGE OF ENGINEERING TRIVANDRUM Office of the Programs for Working Professionals", 10, yPos, 277, 10, "center", true, 11);
+      drawCell(pdfDoc, "STREAM: WAITING LIST", 10, yPos + 10, 277, 8, "center", true, 10);
+      
+      const headerY = yPos + 18;
+      drawCell(pdfDoc, "Serial No.", 10, headerY, 20, 8, "center", true, 9);
+      drawCell(pdfDoc, "Name", 30, headerY, 65, 8, "center", true, 9);
+      drawCell(pdfDoc, "LET Rank", 95, headerY, 25, 8, "center", true, 9);
+      drawCell(pdfDoc, "Reason", 120, headerY, 35, 8, "center", true, 9);
+      drawCell(pdfDoc, "Email", 155, headerY, 60, 8, "center", true, 9);
+      drawCell(pdfDoc, "Phone No.", 215, headerY, 37, 8, "center", true, 9);
+      drawCell(pdfDoc, "Signature", 252, headerY, 35, 8, "center", true, 9);
+    };
 
-    pdfDoc.setFont("helvetica", "bold");
-    pdfDoc.setFontSize(8);
-    pdfDoc.text("Sl.", 15, y);
-    pdfDoc.text("Student Name", 22, y);
-    pdfDoc.text("LET Rank", 85, y);
-    pdfDoc.text("Mark %", 105, y);
-    pdfDoc.text("Category", 122, y);
-    pdfDoc.text("Reason", 157, y);
-    pdfDoc.text("Exp", 185, y);
-    y += 3;
-    pdfDoc.line(15, y, 195, y);
-    y += 5;
+    pdfDoc.addPage();
+    let wlY = 12;
+    const rowHeight = 8;
+    
+    const checkWlPageBreak = (neededHeight) => {
+      if (wlY + neededHeight > pageHeight - 12) {
+        pdfDoc.addPage();
+        wlY = 12;
+        drawWaitingListHeader(wlY);
+        wlY += 26;
+      }
+    };
 
-    pdfDoc.setFont("helvetica", "normal");
-    waitingListStudents.forEach((student, index) => {
-      checkPageBreak(8);
-      pdfDoc.text(`${index + 1}`, 15, y);
-      let name = student.name || "";
-      if (name.length > 30) name = name.substring(0, 28) + "..";
-      pdfDoc.text(name, 22, y);
-      pdfDoc.text(`${student.letRank}`, 85, y);
-      pdfDoc.text(`${student.mark}%`, 105, y);
-      pdfDoc.text(`${student.category || 'General'}`, 122, y);
-      const reason = student.allottedCategory === "experience_requirement" ? "Insufficient Exp" : "Seats Full";
-      pdfDoc.text(reason, 157, y);
-      pdfDoc.text(`${student.experience === null || student.experience === undefined ? 'null' : student.experience} yrs`, 185, y);
-      y += 5.5;
-    });
+    drawWaitingListHeader(wlY);
+    wlY += 26;
+
+    if (waitingListStudents.length === 0) {
+      checkWlPageBreak(rowHeight);
+      drawCell(pdfDoc, "No students in the waiting list.", 10, wlY, 277, rowHeight, "center", false, 9);
+      wlY += rowHeight;
+    } else {
+      waitingListStudents.forEach((student, index) => {
+        checkWlPageBreak(rowHeight);
+        const reason = student.allottedCategory === "experience_requirement" ? "Insufficient Exp" : "Seats Full";
+        
+        drawCell(pdfDoc, `${index + 1}`, 10, wlY, 20, rowHeight, "center", false, 8);
+        drawCell(pdfDoc, student.name, 30, wlY, 65, rowHeight, "left", false, 8);
+        drawCell(pdfDoc, `${student.letRank}`, 95, wlY, 25, rowHeight, "center", false, 8);
+        drawCell(pdfDoc, reason, 120, wlY, 35, rowHeight, "center", false, 8);
+        drawCell(pdfDoc, student.email || "", 155, wlY, 60, rowHeight, "left", false, 8);
+        drawCell(pdfDoc, student.phone || "", 215, wlY, 37, rowHeight, "center", false, 8);
+        drawCell(pdfDoc, "", 252, wlY, 35, rowHeight, "center", false, 8);
+        
+        wlY += rowHeight;
+      });
+    }
+
+    // Not Eligible / Rejected Section
+    const drawNotEligibleHeader = (yPos) => {
+      drawCell(pdfDoc, "COLLEGE OF ENGINEERING TRIVANDRUM Office of the Programs for Working Professionals", 10, yPos, 277, 10, "center", true, 11);
+      drawCell(pdfDoc, "NOT ELIGIBLE / REJECTED CANDIDATES (2026)", 10, yPos + 10, 277, 8, "center", true, 10);
+      
+      const headerY = yPos + 18;
+      drawCell(pdfDoc, "Sl. No.", 10, headerY, 15, 8, "center", true, 9);
+      drawCell(pdfDoc, "Student Name", 25, headerY, 55, 8, "center", true, 9);
+      drawCell(pdfDoc, "LET Rank", 80, headerY, 20, 8, "center", true, 9);
+      drawCell(pdfDoc, "Marks", 100, headerY, 18, 8, "center", true, 9);
+      drawCell(pdfDoc, "Category", 118, headerY, 25, 8, "center", true, 9);
+      drawCell(pdfDoc, "Reason / Status", 143, headerY, 50, 8, "center", true, 9);
+      drawCell(pdfDoc, "Education", 193, headerY, 25, 8, "center", true, 9);
+      drawCell(pdfDoc, "Distance", 218, headerY, 25, 8, "center", true, 9);
+      drawCell(pdfDoc, "Experience", 243, headerY, 44, 8, "center", true, 9);
+    };
+
+    pdfDoc.addPage();
+    let neY = 12;
+    const checkNePageBreak = (neededHeight) => {
+      if (neY + neededHeight > pageHeight - 12) {
+        pdfDoc.addPage();
+        neY = 12;
+        drawNotEligibleHeader(neY);
+        neY += 26;
+      }
+    };
+
+    drawNotEligibleHeader(neY);
+    neY += 26;
+
+    if (notEligibleStudents.length === 0) {
+      checkNePageBreak(rowHeight);
+      drawCell(pdfDoc, "No rejected students.", 10, neY, 277, rowHeight, "center", false, 9);
+      neY += rowHeight;
+    } else {
+      notEligibleStudents.forEach((student, index) => {
+        checkNePageBreak(rowHeight);
+        
+        let reason = "Did not meet eligibility criteria";
+        if (student.allottedCategory === "exam_not_attended") {
+          reason = "LET Exam Not Attended";
+        } else {
+          const isMarkInvalid = parseFloat(student.mark) < (student.category ? 40 : 45);
+          const isDistanceInvalid = parseFloat(student.distance) > 70;
+          const isRankInvalid = !student.letRank || student.letRank === "NA";
+          
+          const reasons = [];
+          if (isMarkInvalid) reasons.push("Low Marks");
+          if (isDistanceInvalid) reasons.push("Distance > 70km");
+          if (isRankInvalid) reasons.push("Invalid LET Rank");
+          if (reasons.length > 0) reason = reasons.join(" & ");
+        }
+
+        drawCell(pdfDoc, `${index + 1}`, 10, neY, 15, 8, "center", false, 8);
+        drawCell(pdfDoc, student.name, 25, neY, 55, 8, "left", false, 8);
+        drawCell(pdfDoc, `${student.letRank}`, 80, neY, 20, 8, "center", false, 8);
+        drawCell(pdfDoc, `${student.mark}%`, 100, neY, 18, 8, "center", false, 8);
+        drawCell(pdfDoc, student.category || 'General', 118, neY, 25, 8, "center", false, 8);
+        drawCell(pdfDoc, reason, 143, neY, 50, 8, "left", false, 8);
+        drawCell(pdfDoc, student.education || 'Diploma', 193, neY, 25, 8, "center", false, 8);
+        drawCell(pdfDoc, `${student.distance} km`, 218, neY, 25, 8, "center", false, 8);
+        drawCell(pdfDoc, `${student.experience === null || student.experience === undefined ? 'null' : student.experience} yrs`, 243, neY, 44, 8, "center", false, 8);
+        
+        neY += rowHeight;
+      });
+    }
 
     const pdfData = pdfDoc.output();
     fs.writeFileSync('allotment.pdf', pdfData, 'binary');
     console.log("allotment.pdf written.");
+
+    // --- GENERATE SEPARATE EXCEL FILES FOR EACH DEPARTMENT ---
+    departmentsList.forEach((deptName) => {
+      console.log(`Generating Excel file for ${deptName}...`);
+      const deptWorkbook = XLSX.utils.book_new();
+
+      const allottedStudents = updatedApplications.filter(
+        app => app.allotmentStatus === "allotted" && app.allottedDepartment === deptName
+      );
+
+      allottedStudents.sort((a, b) => {
+        const epA = getEducationPriority(a.education);
+        const epB = getEducationPriority(b.education);
+        if (epA !== epB) return epA - epB;
+        const rA = parseFloat(a.letRank) || 999999;
+        const rB = parseFloat(b.letRank) || 999999;
+        if (rA !== rB) return rA - rB;
+        return (parseFloat(b.mark) || 0) - (parseFloat(a.mark) || 0);
+      });
+
+      const rows = [
+        ["COLLEGE OF ENGINEERING TRIVANDRUM Office of the Programs for Working Professionals", "", "", "", "", "", ""],
+        [`STREAM: ${deptName.toUpperCase()}`, "", "", "", "", "", ""],
+        ["Serial No.", "Name", "LET Rank", "Allotment Quota", "Email", "Phone No.", "Signature"]
+      ];
+
+      allottedStudents.forEach((student, index) => {
+        rows.push([
+          index + 1,
+          student.name.trim(),
+          student.letRank,
+          student.allottedCategory,
+          student.email,
+          student.phone,
+          "" // Signature
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+
+      ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }, // Merge A1:G1
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }  // Merge A2:G2
+      ];
+
+      ws['!cols'] = [
+        { wch: 10 }, // Serial No.
+        { wch: 30 }, // Name
+        { wch: 12 }, // LET Rank
+        { wch: 18 }, // Allotment Quota
+        { wch: 30 }, // Email
+        { wch: 15 }, // Phone No.
+        { wch: 15 }  // Signature
+      ];
+
+      ws['!pageSetup'] = { orientation: 'landscape' };
+
+      const sheetName = deptName === "Computer Science and Engineering" ? "CSE"
+        : deptName === "Electronics and Communication Engineering" ? "ECE"
+        : "Mechanical";
+
+      XLSX.utils.book_append_sheet(deptWorkbook, ws, sheetName);
+
+      const fileName = `${deptName.replace(/\s+/g, '_')}_Allotment.xlsx`;
+      XLSX.writeFile(deptWorkbook, fileName);
+      console.log(`${fileName} written.`);
+    });
+
+    // --- GENERATE SEPARATE EXCEL FILE FOR WAITING LIST ---
+    console.log("Generating Excel file for Waiting List...");
+    const wlWorkbook = XLSX.utils.book_new();
+
+    const wlRows = [
+      ["COLLEGE OF ENGINEERING TRIVANDRUM Office of the Programs for Working Professionals", "", "", "", "", "", ""],
+      ["STREAM: WAITING LIST", "", "", "", "", "", ""],
+      ["Serial No.", "Name", "LET Rank", "Reason", "Email", "Phone No.", "Signature"]
+    ];
+
+    waitingListStudents.forEach((student, index) => {
+      const reason = student.allottedCategory === "experience_requirement" ? "Insufficient Exp" : "Seats Full";
+      wlRows.push([
+        index + 1,
+        student.name.trim(),
+        student.letRank,
+        reason,
+        student.email,
+        student.phone,
+        "" // Signature
+      ]);
+    });
+
+    const wsWl = XLSX.utils.aoa_to_sheet(wlRows);
+    wsWl['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }, // Merge A1:G1
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }  // Merge A2:G2
+    ];
+    wsWl['!cols'] = [
+      { wch: 10 }, // Serial No.
+      { wch: 30 }, // Name
+      { wch: 12 }, // LET Rank
+      { wch: 18 }, // Reason
+      { wch: 30 }, // Email
+      { wch: 15 }, // Phone No.
+      { wch: 15 }  // Signature
+    ];
+    wsWl['!pageSetup'] = { orientation: 'landscape' };
+    XLSX.utils.book_append_sheet(wlWorkbook, wsWl, "Waiting List");
+
+    XLSX.writeFile(wlWorkbook, "Waiting_List.xlsx");
+    console.log("Waiting_List.xlsx written.");
+
+    // --- GENERATE SEPARATE EXCEL FILE FOR NOT ELIGIBLE ---
+    console.log("Generating Excel file for Not Eligible...");
+    const neWorkbook = XLSX.utils.book_new();
+
+    const neRows = [
+      ["COLLEGE OF ENGINEERING TRIVANDRUM Office of the Programs for Working Professionals", "", "", "", "", "", "", "", ""],
+      ["NOT ELIGIBLE / REJECTED CANDIDATES (2026)", "", "", "", "", "", "", "", ""],
+      ["Sl. No.", "Student Name", "LET Rank", "Marks", "Category", "Reason / Status", "Education", "Distance", "Experience"]
+    ];
+
+    notEligibleStudents.forEach((student, index) => {
+      let reason = "Did not meet eligibility criteria";
+      if (student.allottedCategory === "exam_not_attended") {
+        reason = "LET Exam Not Attended";
+      } else {
+        const isMarkInvalid = parseFloat(student.mark) < (student.category ? 40 : 45);
+        const isDistanceInvalid = parseFloat(student.distance) > 70;
+        const isRankInvalid = !student.letRank || student.letRank === "NA";
+        
+        const reasons = [];
+        if (isMarkInvalid) reasons.push("Low Marks");
+        if (isDistanceInvalid) reasons.push("Distance > 70km");
+        if (isRankInvalid) reasons.push("Invalid LET Rank");
+        if (reasons.length > 0) reason = reasons.join(" & ");
+      }
+      neRows.push([
+        index + 1,
+        student.name,
+        student.letRank,
+        `${student.mark}%`,
+        student.category || 'General',
+        reason,
+        student.education || 'Diploma',
+        `${student.distance} km`,
+        student.experience === null || student.experience === undefined ? 'null' : `${student.experience} yrs`
+      ]);
+    });
+
+    const wsNe = XLSX.utils.aoa_to_sheet(neRows);
+    wsNe['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } }
+    ];
+    wsNe['!cols'] = [
+      { wch: 8 }, { wch: 30 }, { wch: 12 }, { wch: 10 }, { wch: 15 }, { wch: 30 }, { wch: 12 }, { wch: 12 }, { wch: 12 }
+    ];
+    wsNe['!pageSetup'] = { orientation: 'landscape' };
+    XLSX.utils.book_append_sheet(neWorkbook, wsNe, "Not Eligible");
+
+    XLSX.writeFile(neWorkbook, "Not_Eligible.xlsx");
+    console.log("Not_Eligible.xlsx written.");
+
     process.exit(0);
   } catch (error) {
     console.error("Execution failed:", error);

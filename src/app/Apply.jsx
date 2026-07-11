@@ -123,7 +123,7 @@ export default function Apply() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-3">
-            Application Form
+            {degreeType === "btech" && btechStatus === "spot" ? "B.Tech Spot Application Form" : "Application Form"}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-pretty">
             Please read the instructions carefully before filling out the form.{" "}
@@ -165,8 +165,8 @@ export default function Apply() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="bg-card border border-border/50 rounded-2xl shadow-sm p-6 md:p-10">
-                  {btechStatus === "open" ? (
-                    <ApplicationForm />
+                  {btechStatus === "open" || btechStatus === "spot" ? (
+                    <ApplicationForm isSpot={btechStatus === "spot"} />
                   ) : (
                     <StatusScreen status={btechStatus} program="B.Tech" />
                   )}
