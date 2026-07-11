@@ -44,7 +44,24 @@ export const runSpotAllotmentHandler = async (year) => {
       (app) => getAppYear(app) === currentYear && app.isSpot === true
     );
 
-    const departments = [
+    const departments = currentYear === 2025 ? [
+      {
+        "name": "Civil Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Electrical and Electronics Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Mechanical Engineering",
+        "totalSeats": 30
+      },
+      {
+        "name": "Waiting List",
+        "totalSeats": 100
+      }
+    ] : [
       {
         "name": "Computer Science and Engineering",
         "totalSeats": 30

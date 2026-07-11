@@ -45,6 +45,18 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
+    // Spot Allotment results and publish status
+    match /spot_allotment/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Spot Non-LET Allotment results and publish status
+    match /spot_no_exam_allotment/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
     // M.Tech Allotment results and publish status
     match /mtech_allotment/{document=**} {
       allow read: if true;

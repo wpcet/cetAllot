@@ -43,7 +43,7 @@ export const runAllotmentHandler = async (year) => {
       }
     };
 
-    const filteredApplications = applications.filter(app => getAppYear(app) === currentYear);
+    const filteredApplications = applications.filter(app => getAppYear(app) === currentYear && !app.isSpot);
 
     const departments = currentYear === 2025 ? [
       {

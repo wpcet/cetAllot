@@ -8,7 +8,8 @@ const getCategoryKey = (app) => {
     'SC': 'SC', 'ST': 'ST', 'Physically Disabled': 'PD', 'Transgender': 'TG',
     'Sports': 'SPORTS', 'DTE Staff': 'STAFF', 'Central govt. employee': 'CENTRAL',
   };
-  return map[app.category];
+  const categoryValue = app.category || app.reservationCategory;
+  return map[categoryValue];
 };
 
 const mapDepartmentNameToKey = (name) => {
@@ -43,7 +44,6 @@ const getMinMarkForCategory = (app) => {
 };
 
 const MIN_EXPERIENCE = 1; // Minimum experience requirement in years
-const SM_SEAT_LIMIT = 15; // Fixed SM seat limit per department
 
 const isValidRank = (letRank) => {
   const num = Number(letRank);
@@ -103,232 +103,6 @@ const isBasicEligible = (app) => {
   return validDistance && validRank && validMark;
 };
 
-export const calculateSMAllotment = (applications, departments) => {
-  // Filter eligible applications for SM allotment (including experience requirement)
-  const eligibleApplications = applications
-    .filter(isEligibleForAllotment);
-
-    const sortedEligibleApplications = sortByEducationThenRankThenMarks(eligibleApplications);
-
-  const hasCandidate = (category) => {
-    return sortedEligibleApplications.some(app => getCategoryKey(app) === category);
-  };
-
-  const SEBC_CATEGORIES = ["EZ", "M", "BH", "LC", "DV", "VK", "KN", "BX", "KU"];
-  const SPECIAL_CATEGORIES = ["TG", "PD", "SPORTS", "STAFF", "CENTRAL"];
-  const SPECIAL_PRESENT = Object.fromEntries(
-    SPECIAL_CATEGORIES.map(category => [category, hasCandidate(category)])
-  );
-
-  // Deep copy departments to avoid mutation
-  const updatedDepartments = departments.map((dept) => {
-    const totalSeats = dept.totalSeats;
-
-    // Define percentage-based seat quotas calculated directly on the branch's total intake (30 seats)
-    // using Math.round to prevent minor categories from receiving 0 seats.
-    const seatDistribution = {
-      SM: Math.round(totalSeats * 0.5), // 50% = 15
-      EWS: Math.round(totalSeats * 0.1), // 10% = 3
-      SC: Math.round(totalSeats * 0.08), // 8% = 2
-      ST: Math.round(totalSeats * 0.02), // 2% = 1
-      EZ: Math.round(totalSeats * 0.09), // 9% = 3
-      M: Math.round(totalSeats * 0.08), // 8% = 2
-      BH: Math.round(totalSeats * 0.03), // 3% = 1
-      LC: Math.round(totalSeats * 0.03), // 3% = 1
-      DV: Math.round(totalSeats * 0.02), // 2% = 1
-      VK: Math.round(totalSeats * 0.02), // 2% = 1
-      KN: Math.round(totalSeats * 0.01), // 1% = 0
-      BX: Math.round(totalSeats * 0.01), // 1% = 0
-      KU: Math.round(totalSeats * 0.01), // 1% = 0
-      
-      // Supernumerary seats (Supernumerary & Quotas are in addition to totalSeats)
-      PD: 2,
-      TG: 1,
-      SPORTS: 1,
-      STAFF: 1,
-      CENTRAL: 1
-    };
-
-    return {
-      ...dept,
-      allottedStudents: [],
-      filledSeats: 0,
-      smSeatsFilled: 0,
-      smSeatLimit: seatDistribution.SM,
-      seatDistribution,
-      categorySeatsFilled: Object.fromEntries(
-        [
-          'SM', 'EWS', 'SC', 'ST', 
-          ...SEBC_CATEGORIES, 
-          ...SPECIAL_CATEGORIES
-        ].map(cat => [cat, 0])
-      ),
-    };
-  });
-
-  const allotments = new Map();
-
-  // SM Allotment - only for candidates with experience >= 1
-  for (const app of sortedEligibleApplications) {
-    const choices = extractChoices(app);
-    for (const choice of choices) {
-      const dept = updatedDepartments.find((d) => mapDepartmentNameToKey(d.name) === choice);
-      if (!dept) continue;
-
-      // Check SM seat limit strictly
-      if (dept.smSeatsFilled < dept.seatDistribution.SM) {
-        // console.log(Allotting ${app.name} to ${dept.name} under SM category);
-        dept.smSeatsFilled++;
-        dept.filledSeats++;
-        dept.categorySeatsFilled.SM++;
-        dept.allottedStudents.push(app.id);
-        allotments.set(app.id, { 
-          ...app, 
-          allottedDepartment: dept.name,
-          allottedCategory: "SM"
-        });
-        break;
-      }
-    }
-  }
-
-  const updatedApplications = applications.map((app) => {
-    const allot = allotments.get(app.id);
-    return {
-      ...app,
-      allotmentStatus: allot ? "allotted" : "not_allotted",
-      allottedDepartment: allot?.allottedDepartment || null,
-      allottedCategory: allot?.allottedCategory || null,
-    };
-  });
-
-  return {
-    updatedApplications,
-    updatedDepartments,
-    unallocatedApplications: updatedApplications.filter(app => app.allotmentStatus === "not_allotted")
-  };
-};
-
-export const calculateReservationAllotment = (unallocatedApplications, departmentsFromSMAllotment) => {
-  // Deep copy to avoid mutation
-  const updatedDepartments = JSON.parse(JSON.stringify(departmentsFromSMAllotment));
-  const allotments = new Map();
-
-  // Filter eligible candidates from unallocated applications (including experience requirement)
-  const eligibleUnallocated = unallocatedApplications.filter((app) => {
-    const validMark = parseFloat(app.mark) >= getMinMarkForCategory(app);
-    const validDistance = parseFloat(app.distance) <= MAX_DISTANCE;
-      const validExperience = parseFloat(app.experience) >= MIN_EXPERIENCE;
-    const validRank = isValidRank(app.letRank);
-    const hasCategory = getCategoryKey(app) !== undefined;
-    return validDistance && validRank && validMark && validExperience && hasCategory;
-  });
-
-  // Sort eligible applications by education priority and then by letRank
-  const sortedEligibleUnallocated = sortByEducationThenRankThenMarks(eligibleUnallocated);
-
-
-  for (const app of sortedEligibleUnallocated) {
-    const categoryKey = getCategoryKey(app);
-    if (!categoryKey) continue; // Skip if no valid category
-    
-    const choices = extractChoices(app);
-    let allotted = false;
-    
-    for (const choice of choices) {
-      const deptIndex = updatedDepartments.findIndex((d) => mapDepartmentNameToKey(d.name) === choice);
-      if (deptIndex === -1) continue;
-      
-      const dept = updatedDepartments[deptIndex];
-      
-      // Primary category allocation
-      if (dept.seatDistribution[categoryKey] > 0 &&
-          dept.categorySeatsFilled[categoryKey] < dept.seatDistribution[categoryKey]) {
-        dept.categorySeatsFilled[categoryKey]++;
-        dept.filledSeats++;
-        if (categoryKey === "PD" || categoryKey === "TG" || categoryKey === "SPORTS" || categoryKey === "STAFF" || categoryKey === "CENTRAL") {
-          dept.totalSeats++;
-        }
-        dept.allottedStudents.push(app.id);
-        allotments.set(app.id, { 
-          ...app, 
-          allottedDepartment: dept.name,
-          allottedCategory: categoryKey 
-        });
-        allotted = true;
-        break;
-      }
-      
-      // Special handling for SC/ST fallback
-      if (!allotted && (categoryKey === "ST" || categoryKey === "SC")) {
-        // Try ST first if candidate is ST
-        if (categoryKey === "ST" && 
-            dept.seatDistribution["ST"] > 0 &&
-            dept.categorySeatsFilled["ST"] < dept.seatDistribution["ST"]) {
-          dept.categorySeatsFilled["ST"]++;
-          dept.filledSeats++;
-          dept.allottedStudents.push(app.id);
-          allotments.set(app.id, { 
-            ...app, 
-            allottedDepartment: dept.name,
-            allottedCategory: "ST"
-          });
-          allotted = true;
-          break;
-        }
-        // Try SC next if candidate is ST or SC
-        else if (dept.seatDistribution["SC"] > 0 &&
-                dept.categorySeatsFilled["SC"] < dept.seatDistribution["SC"]) {
-          dept.categorySeatsFilled["SC"]++;
-          dept.filledSeats++;
-          dept.allottedStudents.push(app.id);
-          allotments.set(app.id, { 
-            ...app, 
-            allottedDepartment: dept.name,
-            allottedCategory: "SC"
-          });
-          allotted = true;
-          break;
-        }
-        // Finally try EZ if SC/ST candidate
-        else if (dept.seatDistribution["EZ"] > 0 &&
-                dept.categorySeatsFilled["EZ"] < dept.seatDistribution["EZ"]) {
-          dept.categorySeatsFilled["EZ"]++;
-          dept.filledSeats++;
-          dept.allottedStudents.push(app.id);
-          allotments.set(app.id, { 
-            ...app, 
-            allottedDepartment: dept.name,
-            allottedCategory: "EZ"
-          });
-          allotted = true;
-          break;
-        }
-      }
-      
-      if (allotted) break;
-    }
-  }
-
-  // Update applications with allotment results
-  const finalUpdatedApplications = unallocatedApplications.map((app) => {
-    const allot = allotments.get(app.id);
-    return {
-      ...app,
-      allotmentStatus: allot ? "allotted" : "not_allotted",
-      allottedDepartment: allot?.allottedDepartment || null,
-      allottedCategory: allot?.allottedCategory || null,
-    };
-  });
-
-  return {
-    updatedApplications: finalUpdatedApplications,
-    updatedDepartments
-  };
-};
-
-
-
 const transformEducationData = (applications) => {
   const normalizeEducation = (educationValue) => {
     if (!educationValue || typeof educationValue !== 'string') {
@@ -366,73 +140,183 @@ const transformEducationData = (applications) => {
   }));
 };
 
-
-
-
-
 export const calculateAllotment = (applications, departments) => {
   const transformedApplications = transformEducationData(applications);
-  console.log("Transformed Applications:", transformedApplications);
   
-  // Step 1: Calculate SM allotment (only for candidates with experience >= 1)
-  const smResult = calculateSMAllotment(transformedApplications, departments);
-  console.log("SM Allotment Result:", {
-    totalAllocated: smResult.updatedApplications.filter(app => app.allotmentStatus === "allotted").length,
-    unallocated: smResult.unallocatedApplications.length
+  // Filter eligible applications (including experience requirement)
+  const eligibleApplications = transformedApplications.filter(isEligibleForAllotment);
+  const sortedEligibleApplications = sortByEducationThenRankThenMarks(eligibleApplications);
+
+  const SEBC_CATEGORIES = ["EZ", "M", "BH", "LC", "DV", "VK", "KN", "BX", "KU"];
+  const SPECIAL_CATEGORIES = ["TG", "PD", "SPORTS", "STAFF", "CENTRAL"];
+
+  // Initialize departments with seat distribution
+  const updatedDepartments = departments.map((dept) => {
+    const totalSeats = dept.totalSeats;
+
+    const seatDistribution = {
+      SM: Math.round(totalSeats * 0.5), // 50% = 15
+      EWS: Math.round(totalSeats * 0.1), // 10% = 3
+      SC: Math.round(totalSeats * 0.08), // 8% = 2
+      ST: Math.round(totalSeats * 0.02), // 2% = 1
+      EZ: Math.round(totalSeats * 0.09), // 9% = 3
+      M: Math.round(totalSeats * 0.08), // 8% = 2
+      BH: Math.round(totalSeats * 0.03), // 3% = 1
+      LC: Math.round(totalSeats * 0.03), // 3% = 1
+      DV: Math.round(totalSeats * 0.02), // 2% = 1
+      VK: Math.round(totalSeats * 0.02), // 2% = 1
+      KN: Math.round(totalSeats * 0.01), // 1% = 0
+      BX: Math.round(totalSeats * 0.01), // 1% = 0
+      KU: Math.round(totalSeats * 0.01), // 1% = 0
+      
+      // Supernumerary seats
+      PD: 2,
+      TG: 1,
+      SPORTS: 1,
+      STAFF: 1,
+      CENTRAL: 1
+    };
+
+    return {
+      ...dept,
+      allottedStudents: [],
+      filledSeats: 0,
+      smSeatsFilled: 0,
+      smSeatLimit: seatDistribution.SM,
+      seatDistribution,
+      categorySeatsFilled: Object.fromEntries(
+        [
+          'SM', 'EWS', 'SC', 'ST', 
+          ...SEBC_CATEGORIES, 
+          ...SPECIAL_CATEGORIES
+        ].map(cat => [cat, 0])
+      ),
+    };
   });
-  
-  // Step 2: Calculate reservation allotment for unallocated candidates (only those with experience >= 1)
-  const reservationResult = calculateReservationAllotment(
-    smResult.unallocatedApplications, 
-    smResult.updatedDepartments
-  );
 
-  console.log("Reservation Allotment Result:", {
-    totalAllocated: reservationResult.updatedApplications.filter(app => app.allotmentStatus === "allotted").length,
-    stillUnallocated: reservationResult.updatedApplications.filter(app => app.allotmentStatus === "not_allotted").length
-  });
+  const allotments = new Map();
 
-  // Step 3: Create a map of all allotted applications for efficient lookup
-  const allAllotments = new Map();
-  
-  // Add SM allotments
-  smResult.updatedApplications
-    .filter(app => app.allotmentStatus === "allotted")
-    .forEach(app => allAllotments.set(app.id, app));
-  
-  // Add reservation allotments
-  reservationResult.updatedApplications
-    .filter(app => app.allotmentStatus === "allotted")
-    .forEach(app => allAllotments.set(app.id, app));
+  // Process candidates in order of merit
+  for (const app of sortedEligibleApplications) {
+    const choices = extractChoices(app);
+    const categoryKey = getCategoryKey(app);
+    let allotted = false;
 
-  // Step 4: Create final applications array with proper status assignment
+    for (const choice of choices) {
+      const deptIndex = updatedDepartments.findIndex((d) => mapDepartmentNameToKey(d.name) === choice);
+      if (deptIndex === -1) continue;
+
+      const dept = updatedDepartments[deptIndex];
+
+      // 1. Try to allot under State Merit (SM) first for this choice
+      if (dept.smSeatsFilled < dept.seatDistribution.SM) {
+        dept.smSeatsFilled++;
+        dept.filledSeats++;
+        dept.categorySeatsFilled.SM++;
+        dept.allottedStudents.push(app.id);
+        allotments.set(app.id, {
+          ...app,
+          allottedDepartment: dept.name,
+          allottedCategory: "SM"
+        });
+        allotted = true;
+        break; // Allotted to this choice, stop evaluating further choices
+      }
+
+      // 2. If SM is not available, try to allot under their Reservation Category for this choice
+      if (categoryKey && categoryKey !== "General" && dept.seatDistribution[categoryKey] > 0 &&
+          dept.categorySeatsFilled[categoryKey] < dept.seatDistribution[categoryKey]) {
+        
+        dept.categorySeatsFilled[categoryKey]++;
+        dept.filledSeats++;
+        if (SPECIAL_CATEGORIES.includes(categoryKey)) {
+          dept.totalSeats++;
+        }
+        dept.allottedStudents.push(app.id);
+        allotments.set(app.id, {
+          ...app,
+          allottedDepartment: dept.name,
+          allottedCategory: categoryKey
+        });
+        allotted = true;
+        break; // Allotted to this choice, stop evaluating further choices
+      }
+
+      // 3. Fallback SC/ST/EZ rules for this choice
+      if (!allotted && (categoryKey === "ST" || categoryKey === "SC")) {
+        // Try ST
+        if (categoryKey === "ST" && 
+            dept.seatDistribution["ST"] > 0 &&
+            dept.categorySeatsFilled["ST"] < dept.seatDistribution["ST"]) {
+          dept.categorySeatsFilled["ST"]++;
+          dept.filledSeats++;
+          dept.allottedStudents.push(app.id);
+          allotments.set(app.id, { 
+            ...app, 
+            allottedDepartment: dept.name,
+            allottedCategory: "ST"
+          });
+          allotted = true;
+          break;
+        }
+        // Try SC next
+        else if (dept.seatDistribution["SC"] > 0 &&
+                dept.categorySeatsFilled["SC"] < dept.seatDistribution["SC"]) {
+          dept.categorySeatsFilled["SC"]++;
+          dept.filledSeats++;
+          dept.allottedStudents.push(app.id);
+          allotments.set(app.id, { 
+            ...app, 
+            allottedDepartment: dept.name,
+            allottedCategory: "SC"
+          });
+          allotted = true;
+          break;
+        }
+        // Try EZ next
+        else if (dept.seatDistribution["EZ"] > 0 &&
+                dept.categorySeatsFilled["EZ"] < dept.seatDistribution["EZ"]) {
+          dept.categorySeatsFilled["EZ"]++;
+          dept.filledSeats++;
+          dept.allottedStudents.push(app.id);
+          allotments.set(app.id, { 
+            ...app, 
+            allottedDepartment: dept.name,
+            allottedCategory: "EZ"
+          });
+          allotted = true;
+          break;
+        }
+      }
+    }
+  }
+
+  // Create final applications array with proper status assignment
   const finalApplications = transformedApplications.map(app => {
-    const allottedApp = allAllotments.get(app.id);
+    const allottedApp = allotments.get(app.id);
     
     if (allottedApp) {
       return {
-        ...app, // Preserve original data
+        ...app,
         allotmentStatus: "allotted",
         allottedDepartment: allottedApp.allottedDepartment,
         allottedCategory: allottedApp.allottedCategory
       };
     }
     
-    // If not allotted, check if application is eligible for waiting list
-    // if exam not attended
-    if ((!isValidRank(app.letRank) || app.letRank === "NA")&& parseFloat(app.distance) <= MAX_DISTANCE &&
+    // Check if application is eligible for waiting list if exam not attended
+    if ((!isValidRank(app.letRank) || app.letRank === "NA" || Number(app.letRank) === 0) && 
+        parseFloat(app.distance) <= MAX_DISTANCE &&
         parseFloat(app.mark) >= getMinMarkForCategory(app)) {
       return {
         ...app,
-        letRank:99999,
+        letRank: 99999,
         allotmentStatus: "not_eligible",
         allottedDepartment: app.priorityChoices?.["1"] || "Computer Science and Engineering",
         allottedCategory: "exam_not_attended"
       };
     }
 
-    // Check if application is otherwise eligible (mark, distance, letRank)
-    
     if (!isBasicEligible(app)) {
       return {
         ...app,
@@ -453,8 +337,6 @@ export const calculateAllotment = (applications, departments) => {
       };
     }
     
-    
-    
     // For eligible but unallotted applications - assign to waiting list
     return {
       ...app,
@@ -473,11 +355,10 @@ export const calculateAllotment = (applications, departments) => {
     reservation_allotted: finalApplications.filter(app => app.allotmentStatus === "allotted" && app.allottedCategory !== "SM").length
   };
 
-
   return {
     updatedApplications: finalApplications,
-    updatedDepartments: reservationResult.updatedDepartments,
+    updatedDepartments: updatedDepartments,
     noExamApplications: finalApplications.filter(app => app.allottedCategory === "exam_not_attended"),
     summary: statusCounts
-};
+  };
 };
