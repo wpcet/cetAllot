@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Search, Download, AlertCircle, FileText, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { db } from "@/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { generateBtechPDF } from "./utils/generateBtechPDF";
 import { Button } from "@/components/ui/Button";
 
@@ -17,15 +17,7 @@ export default function DownloadApplication() {
   const [errorMsg, setErrorMsg] = useState("");
   const [applicationData, setApplicationData] = useState(null);
 
-  const getAppYear = (app) => {
-    if (!app.submittedAt) return 2025;
-    try {
-      const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
-      return date.getFullYear();
-    } catch {
-      return 2025;
-    }
-  };
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -40,16 +32,28 @@ export default function DownloadApplication() {
     setApplicationData(null);
 
     try {
-      const querySnapshot = await getDocs(collection(db, "applications"));
-      const apps = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const normalizeString = (str) => String(str || "").trim().toLowerCase();
+      const normalizedLet = normalizeString(letRollNo);
+      const normalizedEmail = normalizeString(email);
+      const normalizedPhone = normalizeString(phone);
 
-      const found = apps.find(app => {
-        const yearMatch = String(getAppYear(app)) === year;
-        const rollMatch = app.letRegNo?.trim().toLowerCase() === letRollNo.trim().toLowerCase();
-        const emailMatch = app.email?.trim().toLowerCase() === email.trim().toLowerCase();
-        const phoneMatch = app.phone?.trim() === phone.trim();
-        return yearMatch && rollMatch && emailMatch && phoneMatch;
-      });
+      const regDocId = `btech_${year}_reg_${normalizedLet}_${normalizedEmail}_${normalizedPhone}`;
+      const spotDocId = `btech_${year}_spot_${normalizedLet}_${normalizedEmail}_${normalizedPhone}`;
+
+      const regDocRef = doc(db, "applications", regDocId);
+      const spotDocRef = doc(db, "applications", spotDocId);
+
+      const [regSnap, spotSnap] = await Promise.all([
+        getDoc(regDocRef),
+        getDoc(spotDocRef)
+      ]);
+
+      let found = null;
+      if (spotSnap.exists()) {
+        found = { id: spotSnap.id, ...spotSnap.data() };
+      } else if (regSnap.exists()) {
+        found = { id: regSnap.id, ...regSnap.data() };
+      }
 
       if (found) {
         setApplicationData(found);

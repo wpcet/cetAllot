@@ -45,7 +45,7 @@ import {
 
 // Firebase
 import { db } from "@/firebase";
-import { collection, addDoc, Timestamp, getDocs } from "firebase/firestore";
+import { setDoc, doc, getDoc, Timestamp } from "firebase/firestore";
 
 const FormSchema = z.object({
   adharNumber: z.string().min(1, "Aadhaar number is required").regex(/^\d{12}$/, "Aadhaar number must be exactly 12 digits and only numbers"),
@@ -188,34 +188,17 @@ export const ApplicationForm = ({ onSuccess, isSpot = false }) => {
     if (!submittedData) return;
     setIsSubmitting(true);
     try {
-      // 🔴 Perform duplicate check within the current academic year
-      const querySnapshot = await getDocs(collection(db, "applications"));
-      const existingApps = querySnapshot.docs.map(doc => doc.data());
-      
-      const getAppYear = (app) => {
-        if (!app.submittedAt) return 2025;
-        try {
-          const date = app.submittedAt.toDate ? app.submittedAt.toDate() : new Date(app.submittedAt);
-          return date.getFullYear();
-        } catch {
-          return 2025;
-        }
-      };
-
       const currentYear = new Date().getFullYear();
-      const duplicate = existingApps.find(app => 
-        getAppYear(app) === currentYear &&
-        !!app.isSpot === !!isSpot &&
-        (
-          app.email?.toLowerCase() === submittedData.email.toLowerCase() ||
-          app.phone === submittedData.phone ||
-          (submittedData.letRegNo !== "0" && submittedData.letRegNo?.toLowerCase() !== "na" && app.letRegNo?.toLowerCase() === submittedData.letRegNo?.toLowerCase())
-        )
-      );
+      const normalizeString = (str) => String(str || "").trim().toLowerCase();
+      const docId = `btech_${currentYear}_${isSpot ? "spot" : "reg"}_${normalizeString(submittedData.letRegNo)}_${normalizeString(submittedData.email)}_${normalizeString(submittedData.phone)}`;
+      
+      // 🔴 Perform duplicate check within the current academic year using single document lookup
+      const docRef = doc(db, "applications", docId);
+      const docSnap = await getDoc(docRef);
 
-      if (duplicate) {
+      if (docSnap.exists()) {
         toast.error("Duplicate Submission Rejected", {
-          description: "An application with the same Email, Phone, or LET Roll number already exists for this year."
+          description: "An application with the same Email, Phone, and LET Roll number already exists for this year."
         });
         setIsSubmitting(false);
         return;
@@ -232,7 +215,7 @@ export const ApplicationForm = ({ onSuccess, isSpot = false }) => {
         isSpot: isSpot,
       };
 
-      await addDoc(collection(db, "applications"), formattedData);
+      await setDoc(docRef, formattedData);
 
       toast.success("Submitted!", {
         duration: 4000,

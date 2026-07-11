@@ -11,16 +11,20 @@ service cloud.firestore {
     match /applications/{applicationId} {
       // Anyone can submit (create) a B.Tech application
       allow create: if true;
-      // Only authenticated admin users can read, update, or delete them
-      allow read, update, delete: if isAuthenticated();
+      // Anyone can retrieve a single application if they know its ID
+      allow get: if true;
+      // Only authenticated admin users can list (query), update, or delete them
+      allow list, update, delete: if isAuthenticated();
     }
 
     // M.Tech Applications
     match /mtech_applications/{applicationId} {
       // Anyone can submit (create) an M.Tech application
       allow create: if true;
-      // Only authenticated admin users can read, update, or delete them
-      allow read, update, delete: if isAuthenticated();
+      // Anyone can retrieve a single application if they know its ID
+      allow get: if true;
+      // Only authenticated admin users can list (query), update, or delete them
+      allow list, update, delete: if isAuthenticated();
     }
 
     // Public Notices & Announcements
